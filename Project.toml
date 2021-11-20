@@ -1,0 +1,15 @@
+name = "ESDGPerf"
+uuid = "28cfb2e1-5512-4720-bc88-c394053c54d2"
+authors = ["Maciej Waruszewski <mwarusz@igf.fuw.edu.pl>"]
+version = "0.1.0"
+
+[deps]
+Bennu = "a1f7094c-8d14-434f-a772-7144e1a1c6c0"
+CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+KernelAbstractions = "63c18a36-062a-441e-b654-da1e3ab1ce7c"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+StructArrays = "09ab397b-f2b6-538f-b94a-2f83cf4a842a"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
