@@ -131,15 +131,15 @@ end
   end
 end
 
-@inline function volume_flux(H, state1, aux1, state2, aux2)
+@inline function volume_flux(H, q1, aux1, q2, aux2)
   FT = eltype(H)
 
   @inbounds @fastmath begin
-    ρ1 = state1[_ρ]
-    ρu1 = state1[_ρu]
-    ρv1 = state1[_ρv]
-    ρw1 = state1[_ρw]
-    ρe1 = state1[_ρe]
+    ρ1 =  q1[_ρ]
+    ρu1 = q1[_ρu]
+    ρv1 = q1[_ρv]
+    ρw1 = q1[_ρw]
+    ρe1 = q1[_ρe]
     Φ1 = aux1[_Φ]
 
     u1 = ρu1 / ρ1
@@ -149,11 +149,11 @@ end
     b1 = ρ1 / (2 * p1)
     usq1 = u1 * u1 + v1 * v1 + w1 * w1
 
-    ρ2 = state2[_ρ]
-    ρu2 = state2[_ρu]
-    ρv2 = state2[_ρv]
-    ρw2 = state2[_ρw]
-    ρe2 = state2[_ρe]
+    ρ2 =  q2[_ρ]
+    ρu2 = q2[_ρu]
+    ρv2 = q2[_ρv]
+    ρw2 = q2[_ρw]
+    ρe2 = q2[_ρe]
     Φ2 = aux2[_Φ]
 
     u2 = ρu2 / ρ2
