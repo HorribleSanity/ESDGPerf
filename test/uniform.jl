@@ -109,6 +109,6 @@ let
 
   for kernel in (VolumeKernel{0}(), VolumeKernel{1}())
     err = run(kernel, FT, N, K)
-    @test err ≈ expected_error atol=4sqrt(eps(FT))
+    @test err ≈ expected_error atol=10sqrt(eps(FT))
   end
 end
