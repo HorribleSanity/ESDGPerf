@@ -1,4 +1,6 @@
 const _MJI = 15
+const _logρ = 6
+const _logb = 7
 
 function kernel_vgeo(::VolumeKernel{1}, vgeo)
   MJ = view(vgeo, :, _MJ:_MJ, :)
@@ -21,18 +23,18 @@ function volume_knl(::VolumeKernel{1},
 
   l_H = MMatrix{3, nstate, FT}(undef)
   l_dq = MVector{nstate, FT}(undef)
-  l_q1 = MVector{nstate, FT}(undef)
-  l_q2 = MVector{nstate, FT}(undef)
+  l_q1 = MVector{nstate+2, FT}(undef)
+  l_q2 = MVector{nstate+2, FT}(undef)
   l_aux1 = MVector{naux, FT}(undef)
   l_aux2 = MVector{naux, FT}(undef)
 
   s_G = @cuStaticSharedMem(FT, (Nq3, 3))
-  s_q = @cuStaticSharedMem(FT, (Nq3, nstate))
+  s_q = @cuStaticSharedMem(FT, (Nq3, nstate+2))
   s_D = @cuStaticSharedMem(FT, (Nq, Nq))
 
   ijk = i + Nq * (j - 1 + Nq * (k - 1))
 
-  @inbounds @fastmath begin
+  @inbounds begin
     @unroll for s in 1:nstate
       l_dq[s] = dq[ijk + Nq3 * (s - 1) + Nq3 * nstate * (e - 1)]
     end
@@ -41,17 +43,24 @@ function volume_knl(::VolumeKernel{1},
       l_q1[s] = q[ijk + Nq3 * (s - 1) + Nq3 * nstate * (e - 1)]
     end
 
+    @unroll for s in 1:naux
+      l_aux1[s] = aux[ijk + (s - 1) * Nq3 + Nq3 * naux * (e - 1)]
+    end
+
     iρ = 1 / l_q1[_ρ]
     @unroll for s in 2:nstate
       l_q1[s] *= iρ
     end
+    p = pressure_prim(l_q1[_ρ], l_q1[_ρu], l_q1[_ρv], l_q1[_ρw], l_q1[_ρe], l_aux1[_Φ])
+    ip = FT(1) / p
+    b = FT(1 / 2) * l_q1[_ρ] * ip
 
-    @unroll for s in 1:nstate
+    l_q1[_ρe] = b
+    l_q1[_logρ] = log(l_q1[_ρ])
+    l_q1[_logb] = log(b)
+
+    @unroll for s in 1:nstate+2
       s_q[ijk, s] = l_q1[s]
-    end
-
-    @unroll for s in 1:naux
-      l_aux1[s] = aux[ijk + (s - 1) * Nq3 + Nq3 * naux * (e - 1)]
     end
 
     MJI = vgeo[ijk + (_MJI - 1) * Nq3 + Nq3 * nvgeo * (e - 1)]
@@ -76,7 +85,7 @@ function volume_knl(::VolumeKernel{1},
         ljk = i + Nq * ((j - 1) + Nq * (l - 1))
       end
 
-      @unroll for s in 1:nstate
+      @unroll for s in 1:nstate+2
         l_q2[s] = s_q[ljk, s]
       end
 
@@ -124,7 +133,7 @@ function volume_knl(::VolumeKernel{1},
 end
 
 
-@inline function logave_fast(a::FT, b::FT) where {FT}
+@inline function logave_fast(a::FT, b::FT, loga::FT, logb::FT) where {FT}
     amb = a - b
     apb = a + b
     if abs(amb) < sqrt(eps(FT)) * abs(apb)
@@ -140,8 +149,6 @@ end
       iF = FT(1) / F
       return apb * iF
     else
-      loga = log(a)
-      logb = log(b)
       ilog = FT(1) / (loga - logb)
       return amb * ilog
     end
@@ -163,22 +170,22 @@ end
     u1 = q1[_ρu]
     v1 = q1[_ρv]
     w1 = q1[_ρw]
-    e1 = q1[_ρe]
+    b1 = q1[_ρe]
+    logρ1 = q1[_logρ]
+    logb1 = q1[_logb]
     Φ1 = aux1[_Φ]
 
-    p1 = pressure_prim(ρ1, u1, v1, w1, e1, Φ1)
-    b1 = ρ1 / (2 * p1)
     usq1 = u1 * u1 + v1 * v1 + w1 * w1
 
     ρ2 =  q2[_ρ]
     u2 = q2[_ρu]
     v2 = q2[_ρv]
     w2 = q2[_ρw]
-    e2 = q2[_ρe]
+    b2 = q2[_ρe]
+    logρ2 = q2[_logρ]
+    logb2 = q2[_logb]
     Φ2 = aux2[_Φ]
 
-    p2 = pressure_prim(ρ2, u2, v2, w2, e2, Φ2)
-    b2 = ρ2 / (2 * p2)
     usq2 = u2 * u2 + v2 * v2 + w2 * w2
 
     r_avg = ave(ρ1, ρ2)
@@ -189,8 +196,8 @@ end
     Φ_avg = ave(Φ1, Φ2)
     usq_avg = ave(usq1, usq2)
 
-    r_log = logave_fast(ρ1, ρ2)
-    b_log = logave_fast(b1, b2)
+    r_log = logave_fast(ρ1, ρ2, logρ1, logρ2)
+    b_log = logave_fast(b1, b2, logb1, logb2)
     alpha = b_avg * r_log / (2 * b1)
 
     H[1, _ρ] = u_avg * r_log
