@@ -124,6 +124,30 @@ function volume_knl(::VolumeKernel{1},
 end
 
 
+@inline function logave_fast(a::FT, b::FT) where {FT}
+    amb = a - b
+    apb = a + b
+    if abs(amb) < sqrt(eps(FT)) * abs(apb)
+      c1 = FT(2) / FT(3)
+      c2 = FT(2) / FT(5)
+      c3 = FT(2) / FT(7)
+      c4 = FT(2) / FT(9)
+
+      iapb = FT(1) / apb
+      u = amb ^ 2 * iapb ^ 2
+
+      F = 2 + u * (c1 + u * (c2 + u * (c3 + u * c4)))
+      iF = FT(1) / F
+      return apb * iF
+    else
+      loga = log(a)
+      logb = log(b)
+      ilog = FT(1) / (loga - logb)
+      return amb * ilog
+    end
+end
+
+
 @inline function pressure_prim(ρ, u, v, w, e, Φ)
   @fastmath begin
     FT = typeof(ρ)
@@ -165,8 +189,8 @@ end
     Φ_avg = ave(Φ1, Φ2)
     usq_avg = ave(usq1, usq2)
 
-    r_log = logave(ρ1, ρ2)
-    b_log = logave(b1, b2)
+    r_log = logave_fast(ρ1, ρ2)
+    b_log = logave_fast(b1, b2)
     alpha = b_avg * r_log / (2 * b1)
 
     H[1, _ρ] = u_avg * r_log
