@@ -49,12 +49,14 @@ function profile(kernel, FT, N, K)
   fill!(dq, FT(0))
 
   @CUDA.profile launch_volume(kernel, dq, q, aux, vgeo, cell, grid)
+  elap = @CUDA.elapsed launch_volume(kernel, dq, q, aux, vgeo, cell, grid)
+  println("Elapsed time: $elap s")
 end
 
 let
   FT = Float64
   N  = 4
-  K = 20
+  K = 60
   for kernel in (VolumeKernel{0}(), VolumeKernel{1}())
     profile(kernel, FT, N, K)
   end
