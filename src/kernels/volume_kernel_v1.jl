@@ -2,6 +2,8 @@ const _MJI = 15
 const _logρ = 6
 const _logb = 7
 
+directionally_split(::VolumeKernel{1}) = false
+
 function kernel_vgeo(::VolumeKernel{1}, vgeo)
   MJ = view(vgeo, :, _MJ:_MJ, :)
   MJI = 1 ./ MJ
@@ -12,7 +14,7 @@ end
 
 function volume_knl(::VolumeKernel{1},
                     dq, q, aux, vgeo, D,
-                    ::Val{Nq}, ::Val{nvgeo}, ::Val{dir}) where {Nq, nvgeo, dir}
+                    ::Val{Nq}, ::Val{nvgeo}) where {Nq, nvgeo}
   FT = eltype(dq)
   Nq3 = Nq ^ 3
 
@@ -36,6 +38,9 @@ function volume_knl(::VolumeKernel{1},
   ijk = i + Nq * (j - 1 + Nq * (k - 1))
 
   @inbounds begin
+    MJI = vgeo[ijk + (_MJI - 1) * Nq3 + Nq3 * nvgeo * (e - 1)]
+    s_D[i, j] = D[i + Nq * (j - 1)]
+
     @unroll for s in 1:nstate
       l_dq[s] = dq[ijk + Nq3 * (s - 1) + Nq3 * nstate * (e - 1)]
     end
@@ -65,49 +70,45 @@ function volume_knl(::VolumeKernel{1},
       s_q[ijk, s] = l_q1[s]
     end
 
-    MJI = vgeo[ijk + (_MJI - 1) * Nq3 + Nq3 * nvgeo * (e - 1)]
-
-    @unroll for d in 1:3
-      l_G1[d] = vgeo[ijk + (_g11 - 1 + dir - 1 + 3 * (d - 1)) * Nq3 + Nq3 * nvgeo * (e - 1)]
-    end
-
-    s_D[i, j] = D[i + Nq * (j - 1)]
 
     sync_threads()
 
-    @unroll 1 for l in 1:Nq
-      if dir == 1
-        id = i
-        ljk = l + Nq * ((j - 1) + Nq * (k - 1))
-      elseif dir == 2
-        id = j
-        ljk = i + Nq * ((l - 1) + Nq * (k - 1))
-      elseif dir == 3
-        id = k
-        ljk = i + Nq * ((j - 1) + Nq * (l - 1))
-      end
+    @unroll 1 for dir in 1:3
+      @unroll 1 for l in 1:Nq
+        if dir == 1
+          id = i
+          ljk = l + Nq * ((j - 1) + Nq * (k - 1))
+        elseif dir == 2
+          id = j
+          ljk = i + Nq * ((l - 1) + Nq * (k - 1))
+        elseif dir == 3
+          id = k
+          ljk = i + Nq * ((j - 1) + Nq * (l - 1))
+        end
 
-      @unroll for s in 1:nstate+2
-        l_q2[s] = s_q[ljk, s]
-      end
+        Didl = s_D[id, l]
+        Dlid = s_D[l, id]
 
-      @unroll for s in 1:naux
-        l_aux2[s] = s_aux[ljk, s]
-      end
+        @unroll for s in 1:nstate+2
+          l_q2[s] = s_q[ljk, s]
+        end
 
-      @unroll for d in 1:3
-        l_G2[d] = vgeo[ljk + (_g11 - 1 + dir - 1 + 3 * (d - 1)) * Nq3 + Nq3 * nvgeo * (e - 1)]
-      end
+        @unroll for s in 1:naux
+          l_aux2[s] = s_aux[ljk, s]
+        end
 
-      Didl = s_D[id, l]
-      Dlid = s_D[l, id]
-      volume_dq_prim(l_dq, Didl, Dlid, MJI, l_G1, l_G2, l_q1, l_aux1, l_q2, l_aux2)
+        @unroll for d in 1:3
+          l_G1[d] = vgeo[ijk + (_g11 - 1 + dir - 1 + 3 * (d - 1)) * Nq3 + Nq3 * nvgeo * (e - 1)]
+          l_G2[d] = vgeo[ljk + (_g11 - 1 + dir - 1 + 3 * (d - 1)) * Nq3 + Nq3 * nvgeo * (e - 1)]
+        end
+
+        volume_dq_prim(l_dq, Didl, Dlid, MJI, l_G1, l_G2, l_q1, l_aux1, l_q2, l_aux2)
+      end
     end
 
-  @unroll for s in 1:nstate
-    dq[ijk + Nq3 * (s - 1) + Nq3 * nstate * (e - 1)] = l_dq[s]
-  end
-
+    @unroll for s in 1:nstate
+      dq[ijk + Nq3 * (s - 1) + Nq3 * nstate * (e - 1)] = l_dq[s]
+    end
   end
   nothing
 end
