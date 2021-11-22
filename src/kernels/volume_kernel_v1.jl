@@ -21,14 +21,14 @@ function volume_knl(::VolumeKernel{1},
   j = threadIdx().y
   k = threadIdx().z
 
-  l_H = MMatrix{3, nstate, FT}(undef)
+  l_G1 = MVector{3, FT}(undef)
+  l_G2 = MVector{3, FT}(undef)
   l_dq = MVector{nstate, FT}(undef)
   l_q1 = MVector{nstate+2, FT}(undef)
   l_q2 = MVector{nstate+2, FT}(undef)
   l_aux1 = MVector{naux, FT}(undef)
   l_aux2 = MVector{naux, FT}(undef)
 
-  s_G = @cuStaticSharedMem(FT, (Nq3, 3))
   s_q = @cuStaticSharedMem(FT, (Nq3, nstate+2))
   s_D = @cuStaticSharedMem(FT, (Nq, Nq))
 
@@ -66,7 +66,7 @@ function volume_knl(::VolumeKernel{1},
     MJI = vgeo[ijk + (_MJI - 1) * Nq3 + Nq3 * nvgeo * (e - 1)]
 
     @unroll for d in 1:3
-      s_G[ijk, d] = vgeo[ijk + (_g11 - 1 + dir - 1 + 3 * (d - 1)) * Nq3 + Nq3 * nvgeo * (e - 1)]
+      l_G1[d] = vgeo[ijk + (_g11 - 1 + dir - 1 + 3 * (d - 1)) * Nq3 + Nq3 * nvgeo * (e - 1)]
     end
 
     s_D[i, j] = D[i + Nq * (j - 1)]
@@ -93,35 +93,41 @@ function volume_knl(::VolumeKernel{1},
         l_aux2[s] = aux[ljk + (s - 1) * Nq3 + Nq3 * naux * (e - 1)]
       end
 
-      volume_flux_prim(l_H, l_q1, l_aux1, l_q2, l_aux2)
-
-      @unroll for s in 1:nstate
-        G1_ljk = s_G[ljk, 1]
-        G2_ljk = s_G[ljk, 2]
-        G3_ljk = s_G[ljk, 3]
-
-        G1_ijk = s_G[ijk, 1]
-        G2_ijk = s_G[ijk, 2]
-        G3_ijk = s_G[ijk, 3]
-
-        l_dq[s] -=
-          MJI *
-          s_D[id, l] *
-          (
-              G1_ijk * l_H[1, s] +
-              G2_ijk * l_H[2, s] +
-              G3_ijk * l_H[3, s]
-          )
-
-        l_dq[s] +=
-          MJI *
-          (
-              l_H[1, s] * G1_ljk +
-              l_H[2, s] * G2_ljk +
-              l_H[3, s] * G3_ljk
-          ) *
-          s_D[l, id]
+      @unroll for d in 1:3
+        l_G2[d] = vgeo[ljk + (_g11 - 1 + dir - 1 + 3 * (d - 1)) * Nq3 + Nq3 * nvgeo * (e - 1)]
       end
+
+      Didl = s_D[id, l]
+      Dlid = s_D[l, id]
+      volume_dq_prim(l_dq, Didl, Dlid, MJI, l_G1, l_G2, l_q1, l_aux1, l_q2, l_aux2)
+
+      #@unroll for s in 1:nstate
+      #  G1_ljk = s_G[ljk, 1]
+      #  G2_ljk = s_G[ljk, 2]
+      #  G3_ljk = s_G[ljk, 3]
+
+      #  G1_ijk = s_G[ijk, 1]
+      #  G2_ijk = s_G[ijk, 2]
+      #  G3_ijk = s_G[ijk, 3]
+
+      #  l_dq[s] -=
+      #    MJI *
+      #    s_D[id, l] *
+      #    (
+      #        G1_ijk * l_H[1, s] +
+      #        G2_ijk * l_H[2, s] +
+      #        G3_ijk * l_H[3, s]
+      #    )
+
+      #  l_dq[s] +=
+      #    MJI *
+      #    (
+      #        l_H[1, s] * G1_ljk +
+      #        l_H[2, s] * G2_ljk +
+      #        l_H[3, s] * G3_ljk
+      #    ) *
+      #    s_D[l, id]
+      #end
     end
 
   @unroll for s in 1:nstate
@@ -162,8 +168,8 @@ end
   end
 end
 
-@inline function volume_flux_prim(H, q1, aux1, q2, aux2)
-  FT = eltype(H)
+@inline function volume_dq_prim(l_dq, Didl, Dlid, MJI, G1, G2, q1, aux1, q2, aux2)
+  FT = eltype(l_dq)
 
   @inbounds @fastmath begin
     ρ1 =  q1[_ρ]
@@ -188,7 +194,7 @@ end
 
     usq2 = u2 * u2 + v2 * v2 + w2 * w2
 
-    r_avg = ave(ρ1, ρ2)
+    ρ_avg = ave(ρ1, ρ2)
     u_avg = ave(u1, u2)
     v_avg = ave(v1, v2)
     w_avg = ave(w1, w2)
@@ -196,40 +202,56 @@ end
     Φ_avg = ave(Φ1, Φ2)
     usq_avg = ave(usq1, usq2)
 
-    r_log = logave_fast(ρ1, ρ2, logρ1, logρ2)
+    ρ_log = logave_fast(ρ1, ρ2, logρ1, logρ2)
     b_log = logave_fast(b1, b2, logb1, logb2)
-    alpha = b_avg * r_log / (2 * b1)
 
-    H[1, _ρ] = u_avg * r_log
-    H[2, _ρ] = v_avg * r_log
-    H[3, _ρ] = w_avg * r_log
-
-    p = r_avg / (2 * b_avg)
+    alpha = b_avg * ρ_log / (2 * b1)
+    p = ρ_avg / (2 * b_avg)
     D = -alpha * (Φ1 - Φ2)
-
-    H[1, _ρu] = u_avg * H[1, _ρ] + p
-    H[2, _ρu] = v_avg * H[1, _ρ]
-    H[3, _ρu] = w_avg * H[1, _ρ]
-
-    H[1, _ρv] = u_avg * H[2, _ρ]
-    H[2, _ρv] = v_avg * H[2, _ρ] + p
-    H[3, _ρv] = w_avg * H[2, _ρ]
-
-    H[1, _ρw] = u_avg * H[3, _ρ]
-    H[2, _ρw] = v_avg * H[3, _ρ]
-    H[3, _ρw] = w_avg * H[3, _ρ] + p
-
     c = (1 / (2 * (_γ(FT) - 1) * b_log) - usq_avg / 2 + Φ_avg)
 
-    c1 = H[1, _ρu] * u_avg + H[1, _ρv] * v_avg + H[1, _ρw] * w_avg
-    c2 = H[2, _ρu] * u_avg + H[2, _ρv] * v_avg + H[2, _ρw] * w_avg
-    c3 = H[3, _ρu] * u_avg + H[3, _ρv] * v_avg + H[3, _ρw] * w_avg
-    H[1, _ρe] = c * H[1, _ρ] + c1
-    H[2, _ρe] = c * H[2, _ρ] + c2
-    H[3, _ρe] = c * H[3, _ρ] + c3
+    ρuhat1 = G1[1] * u_avg + G1[2] * v_avg + G1[3] * w_avg
+    ρuhat1 *= ρ_log
 
-    H[1, _ρu] += D
-    H[2, _ρv] += D
-    H[3, _ρw] += D
+    H1ijk_ρ = ρuhat1
+    H1ijk_ρu = ρuhat1 * u_avg + p * G1[1]
+    H1ijk_ρv = ρuhat1 * v_avg + p * G1[2]
+    H1ijk_ρw = ρuhat1 * w_avg + p * G1[3]
+    H1ijk_ρe = c * H1ijk_ρ + H1ijk_ρu * u_avg + H1ijk_ρv * v_avg + H1ijk_ρw * w_avg
+
+    H1ijk_ρu += G1[1] * D
+    H1ijk_ρv += G1[2] * D
+    H1ijk_ρw += G1[3] * D
+
+    H1ijk_ρ *= Didl
+    H1ijk_ρu *= Didl
+    H1ijk_ρv *= Didl
+    H1ijk_ρw *= Didl
+    H1ijk_ρe *= Didl
+
+    ρuhat2 = G2[1] * u_avg + G2[2] * v_avg + G2[3] * w_avg
+    ρuhat2 *= ρ_log
+
+    H2ijk_ρ = ρuhat2
+    H2ijk_ρu = ρuhat2 * u_avg + p * G2[1]
+    H2ijk_ρv = ρuhat2 * v_avg + p * G2[2]
+    H2ijk_ρw = ρuhat2 * w_avg + p * G2[3]
+    H2ijk_ρe = c * H2ijk_ρ + H2ijk_ρu * u_avg + H2ijk_ρv * v_avg + H2ijk_ρw * w_avg
+
+    H2ijk_ρu += G2[1] * D
+    H2ijk_ρv += G2[2] * D
+    H2ijk_ρw += G2[3] * D
+
+    H2ijk_ρ  *= Dlid
+    H2ijk_ρu *= Dlid
+    H2ijk_ρv *= Dlid
+    H2ijk_ρw *= Dlid
+    H2ijk_ρe *= Dlid
+
+    l_dq[_ρ] += MJI * (H2ijk_ρ  - H1ijk_ρ)
+    l_dq[_ρu] += MJI * (H2ijk_ρu  - H1ijk_ρu)
+    l_dq[_ρv] += MJI * (H2ijk_ρv  - H1ijk_ρv)
+    l_dq[_ρw] += MJI * (H2ijk_ρw  - H1ijk_ρw)
+    l_dq[_ρe] += MJI * (H2ijk_ρe  - H1ijk_ρe)
   end
 end
