@@ -30,6 +30,7 @@ function volume_knl(::VolumeKernel{1},
   l_aux2 = MVector{naux, FT}(undef)
 
   s_q = @cuStaticSharedMem(FT, (Nq3, nstate+2))
+  s_aux = @cuStaticSharedMem(FT, (Nq3, naux))
   s_D = @cuStaticSharedMem(FT, (Nq, Nq))
 
   ijk = i + Nq * (j - 1 + Nq * (k - 1))
@@ -45,6 +46,7 @@ function volume_knl(::VolumeKernel{1},
 
     @unroll for s in 1:naux
       l_aux1[s] = aux[ijk + (s - 1) * Nq3 + Nq3 * naux * (e - 1)]
+      s_aux[ijk, s] = l_aux1[s]
     end
 
     iρ = 1 / l_q1[_ρ]
@@ -90,7 +92,7 @@ function volume_knl(::VolumeKernel{1},
       end
 
       @unroll for s in 1:naux
-        l_aux2[s] = aux[ljk + (s - 1) * Nq3 + Nq3 * naux * (e - 1)]
+        l_aux2[s] = s_aux[ljk, s]
       end
 
       @unroll for d in 1:3
@@ -100,34 +102,6 @@ function volume_knl(::VolumeKernel{1},
       Didl = s_D[id, l]
       Dlid = s_D[l, id]
       volume_dq_prim(l_dq, Didl, Dlid, MJI, l_G1, l_G2, l_q1, l_aux1, l_q2, l_aux2)
-
-      #@unroll for s in 1:nstate
-      #  G1_ljk = s_G[ljk, 1]
-      #  G2_ljk = s_G[ljk, 2]
-      #  G3_ljk = s_G[ljk, 3]
-
-      #  G1_ijk = s_G[ijk, 1]
-      #  G2_ijk = s_G[ijk, 2]
-      #  G3_ijk = s_G[ijk, 3]
-
-      #  l_dq[s] -=
-      #    MJI *
-      #    s_D[id, l] *
-      #    (
-      #        G1_ijk * l_H[1, s] +
-      #        G2_ijk * l_H[2, s] +
-      #        G3_ijk * l_H[3, s]
-      #    )
-
-      #  l_dq[s] +=
-      #    MJI *
-      #    (
-      #        l_H[1, s] * G1_ljk +
-      #        l_H[2, s] * G2_ljk +
-      #        l_H[3, s] * G3_ljk
-      #    ) *
-      #    s_D[l, id]
-      #end
     end
 
   @unroll for s in 1:nstate
