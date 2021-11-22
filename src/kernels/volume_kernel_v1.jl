@@ -25,7 +25,7 @@ function volume_knl(::VolumeKernel{1},
 
   l_G1 = MVector{3, FT}(undef)
   l_G2 = MVector{3, FT}(undef)
-  l_dq = MVector{nstate, FT}(undef)
+  l_dq_ijk = MVector{nstate, FT}(undef)
   l_q1 = MVector{nstate+2, FT}(undef)
   l_q2 = MVector{nstate+2, FT}(undef)
   l_aux1 = MVector{naux, FT}(undef)
@@ -34,6 +34,7 @@ function volume_knl(::VolumeKernel{1},
   s_q = @cuStaticSharedMem(FT, (Nq3, nstate+2))
   s_aux = @cuStaticSharedMem(FT, (Nq3, naux))
   s_D = @cuStaticSharedMem(FT, (Nq, Nq))
+  s_dq = @cuStaticSharedMem(FT, (Nq3, nstate))
 
   ijk = i + Nq * (j - 1 + Nq * (k - 1))
 
@@ -42,7 +43,7 @@ function volume_knl(::VolumeKernel{1},
     s_D[i, j] = D[i + Nq * (j - 1)]
 
     @unroll for s in 1:nstate
-      l_dq[s] = dq[ijk + Nq3 * (s - 1) + Nq3 * nstate * (e - 1)]
+      l_dq_ijk[s] = dq[ijk + Nq3 * (s - 1) + Nq3 * nstate * (e - 1)]
     end
 
     @unroll for s in 1:nstate
@@ -69,20 +70,28 @@ function volume_knl(::VolumeKernel{1},
     @unroll for s in 1:nstate+2
       s_q[ijk, s] = l_q1[s]
     end
-
+    @unroll for s in 1:nstate
+      s_dq[ijk, s] = -zero(FT)
+    end
 
     sync_threads()
 
     @unroll 1 for dir in 1:3
-      @unroll 1 for l in 1:Nq
+      if dir == 1
+        id = i
+      elseif dir == 2
+        id = j
+      elseif dir == 3
+        id = k
+      end
+      @unroll 1 for ll in 2:(Nq ÷ 2 + 1)
+        l = mod(id + ll -2, Nq) + 1
+
         if dir == 1
-          id = i
           ljk = l + Nq * ((j - 1) + Nq * (k - 1))
         elseif dir == 2
-          id = j
           ljk = i + Nq * ((l - 1) + Nq * (k - 1))
         elseif dir == 3
-          id = k
           ljk = i + Nq * ((j - 1) + Nq * (l - 1))
         end
 
@@ -102,12 +111,13 @@ function volume_knl(::VolumeKernel{1},
           l_G2[d] = vgeo[ljk + (_g11 - 1 + dir - 1 + 3 * (d - 1)) * Nq3 + Nq3 * nvgeo * (e - 1)]
         end
 
-        volume_dq_prim(l_dq, Didl, Dlid, MJI, l_G1, l_G2, l_q1, l_aux1, l_q2, l_aux2)
+        volume_dq_prim(l_dq_ijk, s_dq, ljk, Didl, Dlid, MJI, l_G1, l_G2, l_q1, l_aux1, l_q2, l_aux2)
       end
     end
 
     @unroll for s in 1:nstate
-      dq[ijk + Nq3 * (s - 1) + Nq3 * nstate * (e - 1)] = l_dq[s]
+      l_dq_ijk[s] += MJI * s_dq[ijk, s]
+      dq[ijk + Nq3 * (s - 1) + Nq3 * nstate * (e - 1)] = l_dq_ijk[s]
     end
   end
   nothing
@@ -143,8 +153,8 @@ end
   end
 end
 
-@inline function volume_dq_prim(l_dq, Didl, Dlid, MJI, G1, G2, q1, aux1, q2, aux2)
-  FT = eltype(l_dq)
+@inline function volume_dq_prim(dq_ijk, s_dq, ljk, Didl, Dlid, MJI, G1, G2, q1, aux1, q2, aux2)
+  FT = eltype(dq_ijk)
 
   @inbounds @fastmath begin
     ρ1 =  q1[_ρ]
@@ -184,6 +194,7 @@ end
     p = ρ_avg / (2 * b_avg)
     D = -alpha * (Φ1 - Φ2)
     c = (1 / (2 * (_γ(FT) - 1) * b_log) - usq_avg / 2 + Φ_avg)
+    Dfac = -D * 2 * b1 / b2
 
     ρuhat1 = G1[1] * u_avg + G1[2] * v_avg + G1[3] * w_avg
     ρuhat1 *= ρ_log
@@ -193,6 +204,10 @@ end
     H1ijk_ρv = ρuhat1 * v_avg + p * G1[2]
     H1ijk_ρw = ρuhat1 * w_avg + p * G1[3]
     H1ijk_ρe = c * H1ijk_ρ + H1ijk_ρu * u_avg + H1ijk_ρv * v_avg + H1ijk_ρw * w_avg
+
+    H1ljk_ρu = H1ijk_ρu + Dfac * G1[1]
+    H1ljk_ρv = H1ijk_ρv + Dfac * G1[2]
+    H1ljk_ρw = H1ijk_ρw + Dfac * G1[3]
 
     H1ijk_ρu += G1[1] * D
     H1ijk_ρv += G1[2] * D
@@ -204,6 +219,10 @@ end
     H1ijk_ρw *= Didl
     H1ijk_ρe *= Didl
 
+    H1ljk_ρu *= Didl
+    H1ljk_ρv *= Didl
+    H1ljk_ρw *= Didl
+
     ρuhat2 = G2[1] * u_avg + G2[2] * v_avg + G2[3] * w_avg
     ρuhat2 *= ρ_log
 
@@ -212,6 +231,10 @@ end
     H2ijk_ρv = ρuhat2 * v_avg + p * G2[2]
     H2ijk_ρw = ρuhat2 * w_avg + p * G2[3]
     H2ijk_ρe = c * H2ijk_ρ + H2ijk_ρu * u_avg + H2ijk_ρv * v_avg + H2ijk_ρw * w_avg
+
+    H2ljk_ρu = H2ijk_ρu + Dfac * G2[1]
+    H2ljk_ρv = H2ijk_ρv + Dfac * G2[2]
+    H2ljk_ρw = H2ijk_ρw + Dfac * G2[3]
 
     H2ijk_ρu += G2[1] * D
     H2ijk_ρv += G2[2] * D
@@ -223,10 +246,22 @@ end
     H2ijk_ρw *= Dlid
     H2ijk_ρe *= Dlid
 
-    l_dq[_ρ] += MJI * (H2ijk_ρ  - H1ijk_ρ)
-    l_dq[_ρu] += MJI * (H2ijk_ρu  - H1ijk_ρu)
-    l_dq[_ρv] += MJI * (H2ijk_ρv  - H1ijk_ρv)
-    l_dq[_ρw] += MJI * (H2ijk_ρw  - H1ijk_ρw)
-    l_dq[_ρe] += MJI * (H2ijk_ρe  - H1ijk_ρe)
+    H2ljk_ρu *= Dlid
+    H2ljk_ρv *= Dlid
+    H2ljk_ρw *= Dlid
+
+    dq_ijk[_ρ]  += MJI * (H2ijk_ρ  - H1ijk_ρ)
+    dq_ijk[_ρu] += MJI * (H2ijk_ρu  - H1ijk_ρu)
+    dq_ijk[_ρv] += MJI * (H2ijk_ρv  - H1ijk_ρv)
+    dq_ijk[_ρw] += MJI * (H2ijk_ρw  - H1ijk_ρw)
+    dq_ijk[_ρe] += MJI * (H2ijk_ρe  - H1ijk_ρe)
+
+    sync_threads()
+    s_dq[ljk, _ρ]  +=  -(H2ijk_ρ  - H1ijk_ρ)
+    s_dq[ljk, _ρu] +=  (-H2ljk_ρu  + H1ljk_ρu)
+    s_dq[ljk, _ρv] +=  (-H2ljk_ρv  + H1ljk_ρv)
+    s_dq[ljk, _ρw] +=  (-H2ljk_ρw  + H1ljk_ρw)
+    s_dq[ljk, _ρe] +=  -(H2ijk_ρe  - H1ijk_ρe)
+    sync_threads()
   end
 end
