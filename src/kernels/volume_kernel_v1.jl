@@ -123,6 +123,27 @@ function volume_knl(::VolumeKernel{1},
   nothing
 end
 
+@inline function inv_logave_fast(a::FT, b::FT, loga::FT, logb::FT) where {FT}
+    amb = a - b
+    apb = a + b
+    if abs(amb) < sqrt(eps(FT)) * abs(apb)
+      c1 = FT(2) / FT(3)
+      c2 = FT(2) / FT(5)
+      c3 = FT(2) / FT(7)
+      c4 = FT(2) / FT(9)
+
+      iapb = FT(1) / apb
+      u = amb ^ 2 * iapb ^ 2
+
+      F = 2 + u * (c1 + u * (c2 + u * (c3 + u * c4)))
+      iapb = FT(1) / apb
+      return iapb * F
+    else
+      iamb = FT(1) / amb
+      return iamb * (loga - logb)
+    end
+end
+
 
 @inline function logave_fast(a::FT, b::FT, loga::FT, logb::FT) where {FT}
     amb = a - b
@@ -188,12 +209,12 @@ end
     usq_avg = ave(usq1, usq2)
 
     ρ_log = logave_fast(ρ1, ρ2, logρ1, logρ2)
-    b_log = logave_fast(b1, b2, logb1, logb2)
+    ib_log = inv_logave_fast(b1, b2, logb1, logb2)
 
     alpha = b_avg * ρ_log / (2 * b1)
     p = ρ_avg / (2 * b_avg)
     D = -alpha * (Φ1 - Φ2)
-    c = (1 / (2 * (_γ(FT) - 1) * b_log) - usq_avg / 2 + Φ_avg)
+    c = (ib_log / (2 * (_γ(FT) - 1)) - usq_avg / 2 + Φ_avg)
     Dfac = -D * 2 * b1 / b2
 
     ρuhat1 = G1[1] * u_avg + G1[2] * v_avg + G1[3] * w_avg
