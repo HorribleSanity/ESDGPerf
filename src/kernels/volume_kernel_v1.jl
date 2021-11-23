@@ -89,7 +89,8 @@ function volume_knl(::VolumeKernel{1},
         id = k
       end
 
-      ijk_G_dir = ijk_vgeo + (_g11 + dir - 1 - 3) * Nq3
+      G_dir = (_g11 + dir - 1 - 3) * Nq3
+      ijk_G_dir = ijk_vgeo + G_dir
       @unroll for d in 1:3
         l_G1[d] = vgeo[ijk_G_dir + 3 * d * Nq3]
       end
@@ -109,7 +110,7 @@ function volume_knl(::VolumeKernel{1},
         Dlid = s_D[l, id]
 
         ljk_vgeo = ljk - Nq3 + Nq3 * nvgeo * (e - 1)
-        ljk_G_dir = ljk_vgeo + (_g11 + dir - 1 - 3) * Nq3
+        ljk_G_dir = ljk_vgeo + G_dir
         @unroll for d in 1:3
           l_G2[d] = vgeo[ljk_G_dir + 3 * d * Nq3]
         end
