@@ -38,20 +38,24 @@ function volume_knl(::VolumeKernel{1},
 
   ijk = i + Nq * (j - 1 + Nq * (k - 1))
 
+  ijk_vgeo = ijk - Nq3 + Nq3 * nvgeo * (e - 1)
+  ijk_state = ijk - Nq3 + Nq3 * nstate * (e - 1)
+  ijk_aux = ijk - Nq3 + Nq3 * naux * (e - 1)
+
   @inbounds begin
-    MJI = vgeo[ijk + (_MJI - 1) * Nq3 + Nq3 * nvgeo * (e - 1)]
+    MJI = vgeo[ijk_vgeo + _MJI * Nq3]
     s_D[i, j] = D[i + Nq * (j - 1)]
 
     @unroll for s in 1:nstate
-      l_dq_ijk[s] = dq[ijk + Nq3 * (s - 1) + Nq3 * nstate * (e - 1)]
+      l_dq_ijk[s] = dq[ijk_state + Nq3 * s]
     end
 
     @unroll for s in 1:nstate
-      l_q1[s] = q[ijk + Nq3 * (s - 1) + Nq3 * nstate * (e - 1)]
+      l_q1[s] = q[ijk_state + Nq3 * s]
     end
 
     @unroll for s in 1:naux
-      l_aux1[s] = aux[ijk + (s - 1) * Nq3 + Nq3 * naux * (e - 1)]
+      l_aux1[s] = aux[ijk_aux + s * Nq3]
       s_aux[ijk, s] = l_aux1[s]
     end
 
@@ -99,7 +103,7 @@ function volume_knl(::VolumeKernel{1},
         Dlid = s_D[l, id]
 
         @unroll for d in 1:3
-          l_G1[d] = vgeo[ijk + (_g11 - 1 + dir - 1 + 3 * (d - 1)) * Nq3 + Nq3 * nvgeo * (e - 1)]
+          l_G1[d] = vgeo[ijk_vgeo + (_g11 + dir - 1 + 3 * (d - 1)) * Nq3]
           l_G2[d] = vgeo[ljk + (_g11 - 1 + dir - 1 + 3 * (d - 1)) * Nq3 + Nq3 * nvgeo * (e - 1)]
         end
 
@@ -109,7 +113,7 @@ function volume_knl(::VolumeKernel{1},
 
     @unroll for s in 1:nstate
       l_dq_ijk[s] += MJI * s_dq[ijk, s]
-      dq[ijk + Nq3 * (s - 1) + Nq3 * nstate * (e - 1)] = l_dq_ijk[s]
+      dq[ijk_state + Nq3 * s] = l_dq_ijk[s]
     end
   end
   nothing
