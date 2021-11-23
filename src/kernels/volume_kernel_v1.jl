@@ -27,9 +27,9 @@ function volume_knl(::VolumeKernel{1},
   l_G2 = MVector{3, FT}(undef)
   l_dq_ijk = MVector{nstate, FT}(undef)
   l_q1 = MVector{nstate+2, FT}(undef)
-  l_q2 = MVector{nstate+2, FT}(undef)
+  #l_q2 = MVector{nstate+2, FT}(undef)
   l_aux1 = MVector{naux, FT}(undef)
-  l_aux2 = MVector{naux, FT}(undef)
+  #l_aux2 = MVector{naux, FT}(undef)
 
   s_q = @cuStaticSharedMem(FT, (Nq3, nstate+2))
   s_aux = @cuStaticSharedMem(FT, (Nq3, naux))
@@ -98,20 +98,12 @@ function volume_knl(::VolumeKernel{1},
         Didl = s_D[id, l]
         Dlid = s_D[l, id]
 
-        @unroll for s in 1:nstate+2
-          l_q2[s] = s_q[ljk, s]
-        end
-
-        @unroll for s in 1:naux
-          l_aux2[s] = s_aux[ljk, s]
-        end
-
         @unroll for d in 1:3
           l_G1[d] = vgeo[ijk + (_g11 - 1 + dir - 1 + 3 * (d - 1)) * Nq3 + Nq3 * nvgeo * (e - 1)]
           l_G2[d] = vgeo[ljk + (_g11 - 1 + dir - 1 + 3 * (d - 1)) * Nq3 + Nq3 * nvgeo * (e - 1)]
         end
 
-        volume_dq_prim(l_dq_ijk, s_dq, ljk, Didl, Dlid, MJI, l_G1, l_G2, l_q1, l_aux1, l_q2, l_aux2)
+        volume_dq_prim(l_dq_ijk, s_dq, ljk, Didl, Dlid, MJI, l_G1, l_G2, l_q1, l_aux1, s_q, s_aux)
       end
     end
 
@@ -189,14 +181,14 @@ end
 
     usq1 = u1 * u1 + v1 * v1 + w1 * w1
 
-    ρ2 =  q2[_ρ]
-    u2 = q2[_ρu]
-    v2 = q2[_ρv]
-    w2 = q2[_ρw]
-    b2 = q2[_ρe]
-    logρ2 = q2[_logρ]
-    logb2 = q2[_logb]
-    Φ2 = aux2[_Φ]
+    ρ2 =  q2[ljk, _ρ]
+    u2 = q2[ljk, _ρu]
+    v2 = q2[ljk, _ρv]
+    w2 = q2[ljk, _ρw]
+    b2 = q2[ljk, _ρe]
+    logρ2 = q2[ljk, _logρ]
+    logb2 = q2[ljk, _logb]
+    Φ2 = aux2[ljk, _Φ]
 
     usq2 = u2 * u2 + v2 * v2 + w2 * w2
 
