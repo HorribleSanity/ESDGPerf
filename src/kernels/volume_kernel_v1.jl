@@ -88,6 +88,10 @@ function volume_knl(::VolumeKernel{1},
       elseif dir == 3
         id = k
       end
+      @unroll for d in 1:3
+        l_G1[d] = vgeo[ijk_vgeo + (_g11 + dir - 1 + 3 * (d - 1)) * Nq3]
+      end
+
       @unroll 1 for ll in 2:(Nq ÷ 2 + 1)
         l = mod(id + ll -2, Nq) + 1
 
@@ -103,7 +107,6 @@ function volume_knl(::VolumeKernel{1},
         Dlid = s_D[l, id]
 
         @unroll for d in 1:3
-          l_G1[d] = vgeo[ijk_vgeo + (_g11 + dir - 1 + 3 * (d - 1)) * Nq3]
           l_G2[d] = vgeo[ljk + (_g11 - 1 + dir - 1 + 3 * (d - 1)) * Nq3 + Nq3 * nvgeo * (e - 1)]
         end
 
