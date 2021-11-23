@@ -80,7 +80,7 @@ function volume_knl(::VolumeKernel{1},
 
     sync_threads()
 
-    @unroll 1 for dir in 1:3
+    @unroll for dir in 1:3
       if dir == 1
         id = i
       elseif dir == 2
