@@ -28,7 +28,7 @@ function volume_knl(::VolumeKernel{1},
   l_dq_ijk = MVector{nstate, FT}(undef)
   l_q1 = MVector{nstate+2, FT}(undef)
   #l_q2 = MVector{nstate+2, FT}(undef)
-  l_aux1 = MVector{naux, FT}(undef)
+  #l_aux1 = MVector{naux, FT}(undef)
   #l_aux2 = MVector{naux, FT}(undef)
 
   s_q = @cuStaticSharedMem(FT, (Nq3, nstate+2))
@@ -55,15 +55,15 @@ function volume_knl(::VolumeKernel{1},
     end
 
     @unroll for s in 1:naux
-      l_aux1[s] = aux[ijk_aux + s * Nq3]
-      s_aux[ijk, s] = l_aux1[s]
+      #l_aux1[s] = aux[ijk_aux + s * Nq3]
+      s_aux[ijk, s] = aux[ijk_aux + s * Nq3]
     end
 
     iρ = 1 / l_q1[_ρ]
     @unroll for s in 2:nstate
       l_q1[s] *= iρ
     end
-    p = pressure_prim(l_q1[_ρ], l_q1[_ρu], l_q1[_ρv], l_q1[_ρw], l_q1[_ρe], l_aux1[_Φ])
+    p = pressure_prim(l_q1[_ρ], l_q1[_ρu], l_q1[_ρv], l_q1[_ρw], l_q1[_ρe], s_aux[ijk,_Φ])
     ip = FT(1) / p
     b = FT(1 / 2) * l_q1[_ρ] * ip
 
@@ -114,7 +114,7 @@ function volume_knl(::VolumeKernel{1},
           l_G2[d] = vgeo[ljk_G_dir + 3 * d * Nq3]
         end
 
-        volume_dq_prim(l_dq_ijk, s_dq, ljk, Didl, Dlid, MJI, l_G1, l_G2, l_q1, l_aux1, s_q, s_aux)
+        volume_dq_prim(l_dq_ijk, s_dq, Didl, Dlid, MJI, l_G1, l_G2, l_q1, s_q, s_aux, ijk, ljk)
       end
     end
 
@@ -177,7 +177,7 @@ end
   end
 end
 
-@inline function volume_dq_prim(dq_ijk, s_dq, ljk, Didl, Dlid, MJI, G1, G2, q1, aux1, q2, aux2)
+@inline function volume_dq_prim(dq_ijk, s_dq, Didl, Dlid, MJI, G1, G2, q1, s_q, s_aux, ijk, ljk)
   FT = eltype(dq_ijk)
 
   @inbounds @fastmath begin
@@ -188,18 +188,18 @@ end
     b1 = q1[_ρe]
     logρ1 = q1[_logρ]
     logb1 = q1[_logb]
-    Φ1 = aux1[_Φ]
+    Φ1 = s_aux[ijk, _Φ]
 
     usq1 = u1 * u1 + v1 * v1 + w1 * w1
 
-    ρ2 =  q2[ljk, _ρ]
-    u2 = q2[ljk, _ρu]
-    v2 = q2[ljk, _ρv]
-    w2 = q2[ljk, _ρw]
-    b2 = q2[ljk, _ρe]
-    logρ2 = q2[ljk, _logρ]
-    logb2 = q2[ljk, _logb]
-    Φ2 = aux2[ljk, _Φ]
+    ρ2 = s_q[ljk, _ρ]
+    u2 = s_q[ljk, _ρu]
+    v2 = s_q[ljk, _ρv]
+    w2 = s_q[ljk, _ρw]
+    b2 = s_q[ljk, _ρe]
+    logρ2 = s_q[ljk, _logρ]
+    logb2 = s_q[ljk, _logb]
+    Φ2 = s_aux[ljk, _Φ]
 
     usq2 = u2 * u2 + v2 * v2 + w2 * w2
 
