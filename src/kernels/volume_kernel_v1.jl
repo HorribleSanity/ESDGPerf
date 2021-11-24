@@ -127,8 +127,9 @@ function volume_knl(::VolumeKernel{1},
   nothing
 end
 
-ave_fast(a, b) = (a + b) / 2
+ave_fast(a::FT, b::FT) where {FT} = muladd(b, FT(1) / FT(2), a)
 @inline function inv_logave_fast(a::FT, b::FT, loga::FT, logb::FT) where {FT}
+    a *= 2
     amb = a - b
     apb = a + b
     if abs(amb) < sqrt(eps(FT)) * abs(apb)
@@ -150,6 +151,7 @@ end
 
 
 @inline function logave_fast(a::FT, b::FT, loga::FT, logb::FT) where {FT}
+    a *= 2
     amb = a - b
     apb = a + b
     if abs(amb) < sqrt(eps(FT)) * abs(apb)
@@ -182,17 +184,17 @@ end
   @inbounds begin
     half = FT(1) / FT(2)
 
-    ρ1 =  q1[_ρ]
-    u1 = q1[_ρu]
-    v1 = q1[_ρv]
-    w1 = q1[_ρw]
-    b1 = q1[_ρe]
+    ρ1 = half * q1[_ρ]
+    u1 = half * q1[_ρu]
+    v1 = half * q1[_ρv]
+    w1 = half * q1[_ρw]
+    b1 = half * q1[_ρe]
     ib1 = FT(1) / b1
     logρ1 = q1[_logρ]
     logb1 = q1[_logb]
-    Φ1 = s_aux[ijk, _Φ]
+    Φ1 = half * s_aux[ijk, _Φ]
 
-    usq1 = u1 * u1 + v1 * v1 + w1 * w1
+    usq1 = 2 * (u1 * u1 + v1 * v1 + w1 * w1)
 
     ρ2 = s_q[ljk, _ρ]
     u2 = s_q[ljk, _ρu]
@@ -222,8 +224,8 @@ end
     p = ρ_avg * ib_avg / 2
     igm1h = FT(1) / (2 * (_γ(FT) - 1))
     c = (ib_log * igm1h - usq_avg / 2 + Φ_avg)
-    alpha = b_avg * ρ_log * ib1 / 2
-    D = -alpha * (Φ1 - Φ2)
+    alpha = b_avg * ρ_log * ib1 / 4
+    D = -alpha * (2 * Φ1 - Φ2)
     Dfac = -D * fac
 
     ρuhat1 = G1[1] * u_avg + G1[2] * v_avg + G1[3] * w_avg
