@@ -106,8 +106,6 @@ function volume_knl(::VolumeKernel{1},
           ljk = i + Nq * ((j - 1) + Nq * (l - 1))
         end
 
-        Didl = s_D[id, l]
-        Dlid = s_D[l, id]
 
         ljk_vgeo = ljk - Nq3 + Nq3 * nvgeo * (e - 1)
         ljk_G_dir = ljk_vgeo + G_dir
@@ -115,7 +113,7 @@ function volume_knl(::VolumeKernel{1},
           l_G2[d] = vgeo[ljk_G_dir + 3 * d * Nq3]
         end
 
-        volume_dq_prim(l_dq_ijk, s_dq, Didl, Dlid, MJI, l_G1, l_G2, l_q1, s_q, s_aux, ijk, ljk)
+        volume_dq_prim(l_dq_ijk, s_dq, s_D, MJI, l_G1, l_G2, l_q1, s_q, s_aux, ijk, ljk, id, l)
       end
     end
 
@@ -178,7 +176,7 @@ end
   (_γ(FT) - 1) * ρ * (e - (u * u + v * v + w * w) / 2 - Φ)
 end
 
-@inline function volume_dq_prim(dq_ijk, s_dq, Didl, Dlid, MJI, G1, G2, q1, s_q, s_aux, ijk, ljk)
+@inline function volume_dq_prim(dq_ijk, s_dq, s_D, MJI, G1, G2, q1, s_q, s_aux, ijk, ljk, id, l)
   FT = eltype(dq_ijk)
 
   @inbounds begin
@@ -244,6 +242,9 @@ end
     H1ijk_ρu += G1[1] * D
     H1ijk_ρv += G1[2] * D
     H1ijk_ρw += G1[3] * D
+
+    Didl = s_D[id, l]
+    Dlid = s_D[l, id]
 
     H1ijk_ρ *= Didl
     H1ijk_ρu *= Didl
