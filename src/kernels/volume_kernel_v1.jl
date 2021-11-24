@@ -210,17 +210,19 @@ end
     v_avg = ave_fast(v1, v2)
     w_avg = ave_fast(w1, w2)
     b_avg = ave_fast(b1, b2)
+    ib2 = FT(1) / b2
+    fac = 2 * b1 * ib2
     Φ_avg = ave_fast(Φ1, Φ2)
     usq_avg = ave_fast(usq1, usq2)
 
     ρ_log = logave_fast(ρ1, ρ2, logρ1, logρ2)
     ib_log = inv_logave_fast(b1, b2, logb1, logb2)
 
-    alpha = b_avg * ρ_log / (2 * b1)
     p = ρ_avg / (2 * b_avg)
-    D = -alpha * (Φ1 - Φ2)
     c = (ib_log / (2 * (_γ(FT) - 1)) - usq_avg / 2 + Φ_avg)
-    Dfac = -D * 2 * b1 / b2
+    alpha = b_avg * ρ_log / (2 * b1)
+    D = -alpha * (Φ1 - Φ2)
+    Dfac = -D * fac
 
     ρuhat1 = G1[1] * u_avg + G1[2] * v_avg + G1[3] * w_avg
     ρuhat1 *= ρ_log
