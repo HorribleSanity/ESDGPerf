@@ -141,7 +141,6 @@ ave_fast(a, b) = (a + b) / 2
       u = amb ^ 2 * iapb ^ 2
 
       F = 2 + u * (c1 + u * (c2 + u * (c3 + u * c4)))
-      iapb = FT(1) / apb
       return iapb * F
     else
       iamb = FT(1) / amb
@@ -188,6 +187,7 @@ end
     v1 = q1[_ρv]
     w1 = q1[_ρw]
     b1 = q1[_ρe]
+    ib1 = FT(1) / b1
     logρ1 = q1[_logρ]
     logb1 = q1[_logb]
     Φ1 = s_aux[ijk, _Φ]
@@ -199,6 +199,7 @@ end
     v2 = s_q[ljk, _ρv]
     w2 = s_q[ljk, _ρw]
     b2 = s_q[ljk, _ρe]
+    ib2 = FT(1) / b2
     logρ2 = s_q[ljk, _logρ]
     logb2 = s_q[ljk, _logb]
     Φ2 = s_aux[ljk, _Φ]
@@ -210,7 +211,7 @@ end
     v_avg = ave_fast(v1, v2)
     w_avg = ave_fast(w1, w2)
     b_avg = ave_fast(b1, b2)
-    ib2 = FT(1) / b2
+    ib_avg = FT(1) / b_avg
     fac = 2 * b1 * ib2
     Φ_avg = ave_fast(Φ1, Φ2)
     usq_avg = ave_fast(usq1, usq2)
@@ -218,9 +219,9 @@ end
     ρ_log = logave_fast(ρ1, ρ2, logρ1, logρ2)
     ib_log = inv_logave_fast(b1, b2, logb1, logb2)
 
-    p = ρ_avg / (2 * b_avg)
+    p = ρ_avg * ib_avg / 2
     c = (ib_log / (2 * (_γ(FT) - 1)) - usq_avg / 2 + Φ_avg)
-    alpha = b_avg * ρ_log / (2 * b1)
+    alpha = b_avg * ρ_log * ib1 / 2
     D = -alpha * (Φ1 - Φ2)
     Dfac = -D * fac
 
