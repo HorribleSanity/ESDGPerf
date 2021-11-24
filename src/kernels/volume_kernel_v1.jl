@@ -127,6 +127,7 @@ function volume_knl(::VolumeKernel{1},
   nothing
 end
 
+ave_fast(a, b) = (a + b) / 2
 @inline function inv_logave_fast(a::FT, b::FT, loga::FT, logb::FT) where {FT}
     amb = a - b
     apb = a + b
@@ -172,16 +173,16 @@ end
 
 
 @inline function pressure_prim(ρ, u, v, w, e, Φ)
-  @fastmath begin
-    FT = typeof(ρ)
-    (_γ(FT) - 1) * ρ * (e - (u * u + v * v + w * w) / 2 - Φ)
-  end
+  FT = typeof(ρ)
+  (_γ(FT) - 1) * ρ * (e - (u * u + v * v + w * w) / 2 - Φ)
 end
 
 @inline function volume_dq_prim(dq_ijk, s_dq, Didl, Dlid, MJI, G1, G2, q1, s_q, s_aux, ijk, ljk)
   FT = eltype(dq_ijk)
 
-  @inbounds @fastmath begin
+  @inbounds begin
+    half = FT(1) / FT(2)
+
     ρ1 =  q1[_ρ]
     u1 = q1[_ρu]
     v1 = q1[_ρv]
@@ -204,13 +205,13 @@ end
 
     usq2 = u2 * u2 + v2 * v2 + w2 * w2
 
-    ρ_avg = ave(ρ1, ρ2)
-    u_avg = ave(u1, u2)
-    v_avg = ave(v1, v2)
-    w_avg = ave(w1, w2)
-    b_avg = ave(b1, b2)
-    Φ_avg = ave(Φ1, Φ2)
-    usq_avg = ave(usq1, usq2)
+    ρ_avg = ave_fast(ρ1, ρ2)
+    u_avg = ave_fast(u1, u2)
+    v_avg = ave_fast(v1, v2)
+    w_avg = ave_fast(w1, w2)
+    b_avg = ave_fast(b1, b2)
+    Φ_avg = ave_fast(Φ1, Φ2)
+    usq_avg = ave_fast(usq1, usq2)
 
     ρ_log = logave_fast(ρ1, ρ2, logρ1, logρ2)
     ib_log = inv_logave_fast(b1, b2, logb1, logb2)
