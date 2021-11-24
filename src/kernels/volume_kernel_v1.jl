@@ -59,7 +59,7 @@ function volume_knl(::VolumeKernel{1},
       s_aux[ijk, s] = aux[ijk_aux + s * Nq3]
     end
 
-    iρ = 1 / l_q1[_ρ]
+    iρ = FT(1) / l_q1[_ρ]
     @unroll for s in 2:nstate
       l_q1[s] *= iρ
     end
@@ -220,7 +220,8 @@ end
     ib_log = inv_logave_fast(b1, b2, logb1, logb2)
 
     p = ρ_avg * ib_avg / 2
-    c = (ib_log / (2 * (_γ(FT) - 1)) - usq_avg / 2 + Φ_avg)
+    igm1h = FT(1) / (2 * (_γ(FT) - 1))
+    c = (ib_log * igm1h - usq_avg / 2 + Φ_avg)
     alpha = b_avg * ρ_log * ib1 / 2
     D = -alpha * (Φ1 - Φ2)
     Dfac = -D * fac
