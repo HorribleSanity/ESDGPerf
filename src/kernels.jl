@@ -35,9 +35,10 @@ function launch_face(dq, q, aux, vgeo, sgeo, cell, grid)
   Ne = length(grid)
   faceoffsets = Bennu.connectivityoffsets(cell, Val(2))
   faceix⁻, faceix⁺ = faceindices(grid)
+  bndfaces = boundaryfaces(grid)
 
   @cuda threads=Nq^2 blocks=Ne face_knl(dq, q, aux,
-                                        faceix⁻, faceix⁺, sgeo, vgeo,
+                                        faceix⁻, faceix⁺, sgeo, vgeo, bndfaces,
                                         Val(Nq), Val(faceoffsets))
 end
 

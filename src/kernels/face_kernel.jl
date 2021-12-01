@@ -1,4 +1,4 @@
-function face_knl(dq, q, aux, faceix⁻, faceix⁺, sgeo, vgeo,
+function face_knl(dq, q, aux, faceix⁻, faceix⁺, sgeo, vgeo, boundaryfaces,
                   ::Val{Nq}, ::Val{faceoffsets}) where {Nq, faceoffsets}
   FT = eltype(dq)
   Nq3 = Nq ^ 3
@@ -19,11 +19,9 @@ function face_knl(dq, q, aux, faceix⁻, faceix⁺, sgeo, vgeo,
       j = i + faceoffsets[face]
 
       id⁻ = faceix⁻[j, e⁻]
-      id⁺ = faceix⁺[j, e⁻]
-
       ijk⁻ = (id⁻ - 1) % Nq3 + 1
-      ijk⁺ = (id⁺ - 1) % Nq3 + 1
-      e⁺ = (id⁺ - 1) ÷ Nq3 + 1
+
+      boundarytag = boundaryfaces[face, e⁻]
 
       n⃗ = SVector(sgeo[j, 1, e⁻],
                   sgeo[j, 2, e⁻],
@@ -38,11 +36,19 @@ function face_knl(dq, q, aux, faceix⁻, faceix⁺, sgeo, vgeo,
         l_aux⁻[s] = aux[ijk⁻ + (s - 1) * Nq3 + Nq3 * naux * (e⁻ - 1)]
       end
 
-      @unroll for s in 1:nstate
-        l_q⁺[s] = q[ijk⁺ + Nq3 * (s - 1) + Nq3 * nstate * (e⁺ - 1)]
-      end
-      @unroll for s in 1:naux
-        l_aux⁺[s] = aux[ijk⁺ + (s - 1) * Nq3 + Nq3 * naux * (e⁺ - 1)]
+      if boundarytag == 0
+        id⁺ = faceix⁺[j, e⁻]
+        e⁺ = (id⁺ - 1) ÷ Nq3 + 1
+        ijk⁺ = (id⁺ - 1) % Nq3 + 1
+
+        @unroll for s in 1:nstate
+          l_q⁺[s] = q[ijk⁺ + Nq3 * (s - 1) + Nq3 * nstate * (e⁺ - 1)]
+        end
+        @unroll for s in 1:naux
+          l_aux⁺[s] = aux[ijk⁺ + (s - 1) * Nq3 + Nq3 * naux * (e⁺ - 1)]
+        end
+      else
+        boundarystate!(l_q⁺, l_aux⁺, n⃗, l_q⁻, l_aux⁻)
       end
 
       volume_flux(l_H, l_q⁻, l_aux⁻, l_q⁺, l_aux⁺)
