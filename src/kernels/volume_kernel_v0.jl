@@ -21,7 +21,7 @@ function volume_knl(::VolumeKernel{0},
 
   ijk = i + Nq * (j - 1 + Nq * (k - 1))
 
-  @inbounds @fastmath begin
+  @inbounds begin
     @unroll for s in 1:nstate
       l_dq[s] = dq[ijk + Nq3 * (s - 1) + Nq3 * nstate * (e - 1)]
     end
@@ -104,37 +104,33 @@ function volume_knl(::VolumeKernel{0},
   nothing
 end
 
-@inline ave(a, b) = @fastmath (a + b) / 2
+ave(a, b) = (a + b) / 2
 @inline function logave(a::FT, b::FT) where {FT}
-    #@fastmath begin
-      zeta = a / b
-      f = (zeta - 1) / (zeta + 1)
-      u = f * f
+  zeta = a / b
+  f = (zeta - 1) / (zeta + 1)
+  u = f * f
 
-      if u < eps(FT)
-          u2 = u * u
-          u3 = u2 * u
-          u4 = u2 * u2
-          F = u4 / 9 + u3 / 7 + u2 / 5 + u / 3 + 1;
-      else
-          F = log(zeta) / (2 * f)
-      end
+  if u < eps(FT)
+      u2 = u * u
+      u3 = u2 * u
+      u4 = u2 * u2
+      F = u4 / 9 + u3 / 7 + u2 / 5 + u / 3 + 1
+  else
+      F = log(zeta) / (2 * f)
+  end
 
-      return (a + b) / (2 * F)
-    #end
+  return (a + b) / (2 * F)
 end
 
 @inline function pressure(ρ, ρu, ρv, ρw, ρe, Φ)
-  @fastmath begin
-    FT = typeof(ρ)
-    (_γ(FT) - 1) * (ρe - (ρu * ρu + ρv * ρv + ρw * ρw) / 2ρ - ρ * Φ)
-  end
+  FT = typeof(ρ)
+  (_γ(FT) - 1) * (ρe - (ρu * ρu + ρv * ρv + ρw * ρw) / 2ρ - ρ * Φ)
 end
 
 @inline function volume_flux(H, q1, aux1, q2, aux2)
   FT = eltype(H)
 
-  @inbounds @fastmath begin
+  @inbounds begin
     ρ1 =  q1[_ρ]
     ρu1 = q1[_ρu]
     ρv1 = q1[_ρv]
