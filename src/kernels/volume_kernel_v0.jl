@@ -110,7 +110,7 @@ ave(a, b) = (a + b) / 2
   f = (zeta - 1) / (zeta + 1)
   u = f * f
 
-  if u < eps(FT)
+  if u < logave_ϵ(FT)
       u2 = u * u
       u3 = u2 * u
       u4 = u2 * u2

@@ -130,7 +130,7 @@ ave_fast(a::FT, b::FT) where {FT} = muladd(b, FT(1) / FT(2), a)
     a *= 2
     amb = a - b
     apb = a + b
-    if abs(amb) < sqrt(eps(FT)) * abs(apb)
+    if abs(amb) < sqrt(logave_ϵ(FT)) * abs(apb)
       c1 = FT(2) / FT(3)
       c2 = FT(2) / FT(5)
       c3 = FT(2) / FT(7)
@@ -152,7 +152,7 @@ end
     a *= 2
     amb = a - b
     apb = a + b
-    if abs(amb) < sqrt(eps(FT)) * abs(apb)
+    if abs(amb) < sqrt(logave_ϵ(FT)) * abs(apb)
       c1 = FT(2) / FT(3)
       c2 = FT(2) / FT(5)
       c3 = FT(2) / FT(7)
@@ -217,7 +217,10 @@ end
     usq_avg = ave_fast(usq1, usq2)
 
     ρ_log = logave_fast(ρ1, ρ2, logρ1, logρ2)
+    #ib_log = inv_logave_fast(b1, b2, logb1, logb2)
     ib_log = inv_logave_fast(b1, b2, logb1, logb2)
+    #ρ_log = logave(2*ρ1, ρ2)
+    #ib_log = FT(1) / logave(2*b1, b2)
 
     p = ρ_avg * ib_avg / 2
     igm1h = FT(1) / (2 * (_γ(FT) - 1))
