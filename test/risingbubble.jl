@@ -69,7 +69,7 @@ function run(kernel, FT, N, K)
   dq = similar(q)
   fill!(dq, FT(0))
 
-  timeend = FT(1000)
+  timeend = FT(100)
   cfl = FT(1 // 10)
   dt = cfl * min_node_distance(grid) / FT(330)
   numberofsteps = ceil(Int, timeend / dt)
@@ -118,6 +118,8 @@ function run(kernel, FT, N, K)
   ηf           = %.16e
   Δη           = %.16e
   """ enf ηf Δη
+
+  @test abs(Δη) < 10eps(FT)
 
   nothing
 end

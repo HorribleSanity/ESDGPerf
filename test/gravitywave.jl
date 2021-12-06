@@ -154,8 +154,8 @@ function run(kernel, FT, N, KX, KZ)
   dq = similar(q)
   fill!(dq, FT(0))
 
-  timeend = FT(30 * 60)
-  cfl = FT(1 // 10)
+  timeend = FT(10 * 60)
+  cfl = FT(1 // 4)
   dt = cfl * min_node_distance(grid) / FT(330)
   numberofsteps = ceil(Int, timeend / dt)
   dt = timeend / numberofsteps
@@ -212,22 +212,22 @@ let
   nlevels = 2
 
   expected_error = Dict()
-  #expected_error[1] = 10.565260824355402
-  #expected_error[2] = 1.979328074210503
-  #expected_error[3] = 0.31708845493131743
+  expected_error[1] = 7.4700628972712752e+02
+  expected_error[2] = 1.4229051094831473e+02
 
-  for kernel in (VolumeKernel{1}(),)
+  for kernel in (VolumeKernel{0}(), VolumeKernel{1}())
     errs = zeros(FT, nlevels)
     for l in 1:nlevels
       KX = 30 * 2 ^ (l - 1)
       KZ = 3 * 2 ^ (l - 1)
       errs[l] = run(kernel, FT, N, KX, KZ)
-      #@test errs[l] ≈ expected_error[l]
+      @test errs[l] ≈ expected_error[l] rtol=10sqrt(eps(FT))
     end
     if nlevels > 1
       rates = log2.(errs[1:(nlevels-1)] ./ errs[2:nlevels])
       @info "Convergence rates\n" *
         join(["rate for levels $l → $(l + 1) = $(rates[l])" for l in 1:(nlevels - 1)], "\n")
+      @test rates[1] ≈ 2.39 atol = 0.01
     end
   end
 end
