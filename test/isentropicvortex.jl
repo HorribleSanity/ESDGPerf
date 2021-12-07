@@ -116,7 +116,7 @@ let
   expected_error[2] = 1.979328074210503
   expected_error[3] = 0.31708845493131743
 
-  for kernel in (VolumeKernel{0}(), VolumeKernel{1}())
+  for kernel in all_kernels
     errs = zeros(FT, nlevels)
     for l in 1:nlevels
       K = 5 * 2 ^ (l - 1)

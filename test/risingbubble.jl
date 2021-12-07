@@ -131,7 +131,7 @@ let
   expected_error = Dict()
 
   K = 5
-  for kernel in (VolumeKernel{0}(), VolumeKernel{1}(),)
+  for kernel in all_kernels
     run(kernel, FT, N, K)
   end
 end

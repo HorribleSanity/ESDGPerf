@@ -2,9 +2,9 @@ const _MJI = 15
 const _logρ = 6
 const _logb = 7
 
-directionally_split(::VolumeKernel{1}) = false
+directionally_split(::VolumeKernel{:final}) = false
 
-function kernel_vgeo(::VolumeKernel{1}, vgeo)
+function kernel_vgeo(::VolumeKernel{:final}, vgeo)
   MJ = view(vgeo, :, _MJ:_MJ, :)
   MJI = 1 ./ MJ
   G = view(vgeo, :, _g11:_g11+9, :)
@@ -12,7 +12,7 @@ function kernel_vgeo(::VolumeKernel{1}, vgeo)
   cat(vgeo, MJI, dims=2)
 end
 
-function volume_knl(::VolumeKernel{1},
+function volume_knl(::VolumeKernel{:final},
                     dq, q, aux, vgeo, D,
                     ::Val{Nq}, ::Val{nvgeo}) where {Nq, nvgeo}
   FT = eltype(dq)

@@ -14,5 +14,8 @@ module ESDGPerf
   include("kernels/init_kernel.jl")
   include("kernels/face_kernel.jl")
   include("kernels/volume_kernel_v0.jl")
-  include("kernels/volume_kernel_v1.jl")
+  include("kernels/volume_kernel_vfinal.jl")
+
+  const all_kernels = (VolumeKernel{0}(), VolumeKernel{:final}())
+  export all_kernels
 end

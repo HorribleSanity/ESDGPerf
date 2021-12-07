@@ -107,7 +107,7 @@ let
 
   expected_error = 1.7457299184063730e-07
 
-  for kernel in (VolumeKernel{0}(), VolumeKernel{1}())
+  for kernel in all_kernels
     err = run(kernel, FT, N, K)
     @test err ≈ expected_error atol=10sqrt(eps(FT))
   end
