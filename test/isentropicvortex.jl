@@ -40,7 +40,15 @@ function run(kernel, FT, N, K)
   vx = range(FT(0), stop=FT(20), length=K+1)
   vy = range(FT(-5), stop=FT(5), length=K+1)
   vz = range(FT(-5), stop=FT(5), length=2)
-  grid = brickgrid(cell, (vx, vy, vz); periodic=(true, true, true))
+
+  function meshwarp(x)
+      x₁, x₂, x₃ = x
+      x̃₁ = x₁ + sinpi(x₁ / 20) * sinpi(2 * (x₂ + 5) / 10) * 4
+      x̃₂ = x₂ - sinpi(2 * x₁ / 20) * sinpi((x₂ + 5) / 10) * 2
+      x̃₃ = x₃
+      SVector(x̃₁, x̃₂, x̃₃)
+  end
+  grid = brickgrid(meshwarp, cell, (vx, vy, vz); periodic=(true, true, true))
 
   vgeo, sgeo = geometric_factors(kernel, cell, grid)
   MJ = view(vgeo, :, _MJ:_MJ, :)
@@ -112,9 +120,9 @@ let
   nlevels = 3
 
   expected_error = Dict()
-  expected_error[1] = 10.565260824355402
-  expected_error[2] = 1.979328074210503
-  expected_error[3] = 0.31708845493131743
+  expected_error[1] = 1.3808132150048602e+01
+  expected_error[2] = 6.2418885314721635e+00
+  expected_error[3] = 8.4685056013974602e-01
 
   for kernel in all_kernels
     errs = zeros(FT, nlevels)

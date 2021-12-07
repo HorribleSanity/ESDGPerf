@@ -51,12 +51,27 @@ function run(kernel, FT, N, K)
 
   cell = LobattoCell{FT, A}(Nq, Nq, Nq)
 
-  vx = range(FT(-1e3), stop=FT(1e3), length=K)
-  vy = range(FT(-1e3), stop=FT(1e3), length=K)
-  vz = range(FT(0), stop=FT(2e3), length=K)
-  grid = brickgrid(cell, (vx, vy, vz); periodic=(true, true, false))
+  L = FT(2e3)
+  H = FT(2e3)
+  vx = range(FT(-L / 2), stop=FT(L / 2), length=K)
+  vy = range(FT(-L / 2), stop=FT(L / 2), length=K)
+  vz = range(FT(0), stop=FT(H), length=K)
 
+  function meshwarp(x)
+      x₁, x₂, x₃ = x
+
+      x₁ += L / 2
+      x₂ += L / 2
+
+      x̃₁ = x₁ + sinpi(x₁ / L) * sinpi(2 * x₂ / L) * sinpi(x₃ / H) * L / 5
+      x̃₂ = x₂ - sinpi(2 * x₁ / L) * sinpi(x₂ / L) * sinpi(2 * x₃ / H) * L / 10
+      x̃₃ = x₃ + sinpi(x₁ / L) * sinpi(2 * x₂ / L) * sinpi(x₃ / H) * L / 5
+      SVector(x̃₁, x̃₂, x̃₃)
+  end
+
+  grid = brickgrid(meshwarp, cell, (vx, vy, vz); periodic=(true, true, false))
   vgeo, sgeo = geometric_factors(kernel, cell, grid)
+
   MJ = view(vgeo, :, _MJ:_MJ, :)
 
   ncells = length(grid)
