@@ -4,10 +4,7 @@ export launch_volume
 export rhs!
 
 abstract type AbstractVolumeKernel end
-abstract type AbstractDirSplitKernel <: AbstractVolumeKernel end
-abstract type AbstractFusedKernel <: AbstractVolumeKernel end
-
-directionally_split(::AbstractVolumeKernel) = true
+@inline directionally_split(::AbstractVolumeKernel) = true
 
 struct VolumeKernel{V} <: AbstractVolumeKernel end
 

@@ -57,7 +57,7 @@ let
   FT = Float64
   N  = 4
   K = 60
-  for kernel in (VolumeKernel{0}(), VolumeKernel{1}())
+  for kernel in all_kernels
     profile(kernel, FT, N, K)
   end
 end

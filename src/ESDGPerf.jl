@@ -5,7 +5,7 @@ module ESDGPerf
   using CUDA
   using KernelAbstractions.Extras: @unroll
 
-  logave_ϵ(FT) = FT(1e-4)
+  @inline logave_ϵ(FT) = FT(1e-4)
 
   include("euler_gravity.jl")
   include("kernels.jl")

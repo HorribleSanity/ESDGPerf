@@ -3,7 +3,7 @@ export nstate, naux
 export _ρ, _ρu, _ρv, _ρw, _ρe, _Φ
 export entropyintegral
 
-_γ(::Type{FT}) where {FT} = FT(7 / 5)
+@inline _γ(::Type{FT}) where {FT} = FT(7 / 5)
 
 const nstate = 5
 const _ρ, _ρu, _ρv, _ρw, _ρe = 1:5
