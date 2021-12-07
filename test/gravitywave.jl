@@ -221,7 +221,7 @@ let
       KX = 30 * 2 ^ (l - 1)
       KZ = 3 * 2 ^ (l - 1)
       errs[l] = run(kernel, FT, N, KX, KZ)
-      @test errs[l] ≈ expected_error[l] rtol=10sqrt(eps(FT))
+      @test errs[l] ≈ expected_error[l] rtol=20sqrt(eps(FT))
     end
     if nlevels > 1
       rates = log2.(errs[1:(nlevels-1)] ./ errs[2:nlevels])
