@@ -286,18 +286,21 @@ end
     H2ljk_ρv *= Dlid
     H2ljk_ρw *= Dlid
 
-    dq_ijk[_ρ]  += MJI * (H2ijk_ρ  - H1ijk_ρ)
+    H21ijk_ρ = H2ijk_ρ - H1ijk_ρ
+    H21ijk_ρe = H2ijk_ρe - H1ijk_ρe
+
+    dq_ijk[_ρ]  += MJI * H21ijk_ρ
     dq_ijk[_ρu] += MJI * (H2ijk_ρu  - H1ijk_ρu)
     dq_ijk[_ρv] += MJI * (H2ijk_ρv  - H1ijk_ρv)
     dq_ijk[_ρw] += MJI * (H2ijk_ρw  - H1ijk_ρw)
-    dq_ijk[_ρe] += MJI * (H2ijk_ρe  - H1ijk_ρe)
+    dq_ijk[_ρe] += MJI * H21ijk_ρe
 
     sync_threads()
-    s_dq[ljk, _ρ]  +=  -(H2ijk_ρ  - H1ijk_ρ)
+    s_dq[ljk, _ρ]  -=  H21ijk_ρ
     s_dq[ljk, _ρu] +=  (-H2ljk_ρu  + H1ljk_ρu)
     s_dq[ljk, _ρv] +=  (-H2ljk_ρv  + H1ljk_ρv)
     s_dq[ljk, _ρw] +=  (-H2ljk_ρw  + H1ljk_ρw)
-    s_dq[ljk, _ρe] +=  -(H2ijk_ρe  - H1ijk_ρe)
+    s_dq[ljk, _ρe] -=  H21ijk_ρe
     sync_threads()
   end
 end
