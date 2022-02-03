@@ -18,13 +18,13 @@ function volume_knl(::VolumeKernel{:final},
   FT = eltype(dq)
   Nq3 = Nq ^ 3
 
+  vgeo = Base.Experimental.Const(vgeo)
+
   e = blockIdx().x
   i = threadIdx().x
   j = threadIdx().y
   k = threadIdx().z
 
-  l_G1 = MVector{3, FT}(undef)
-  l_G2 = MVector{3, FT}(undef)
   l_dq_ijk = MVector{nstate, FT}(undef)
   l_q1 = MVector{nstate+2, FT}(undef)
   #l_q2 = MVector{nstate+2, FT}(undef)
@@ -91,9 +91,6 @@ function volume_knl(::VolumeKernel{:final},
 
       G_dir = (_g11 + dir - 1 - 3) * Nq3
       ijk_G_dir = ijk_vgeo + G_dir
-      @unroll for d in 1:3
-        l_G1[d] = vgeo[ijk_G_dir + 3 * d * Nq3]
-      end
 
       @unroll 1 for ll in 2:(Nq ÷ 2 + 1)
         l = mod(id + ll -2, Nq) + 1
@@ -106,14 +103,11 @@ function volume_knl(::VolumeKernel{:final},
           ljk = i + Nq * ((j - 1) + Nq * (l - 1))
         end
 
-
         ljk_vgeo = ljk - Nq3 + Nq3 * nvgeo * (e - 1)
         ljk_G_dir = ljk_vgeo + G_dir
-        @unroll for d in 1:3
-          l_G2[d] = vgeo[ljk_G_dir + 3 * d * Nq3]
-        end
 
-        volume_dq_prim(l_dq_ijk, s_dq, s_D, MJI, l_G1, l_G2, l_q1, s_q, s_aux, ijk, ljk, id, l)
+        volume_dq_prim(l_dq_ijk, s_dq, s_D, MJI, vgeo, l_q1, s_q, s_aux, ijk, ljk, id, l,
+                       ijk_G_dir, ljk_G_dir, 3 * Nq3)
       end
     end
 
@@ -176,11 +170,20 @@ end
   (_γ(FT) - 1) * ρ * (e - (u * u + v * v + w * w) / 2 - Φ)
 end
 
-@inline function volume_dq_prim(dq_ijk, s_dq, s_D, MJI, G1, G2, q1, s_q, s_aux, ijk, ljk, id, l)
+@inline function volume_dq_prim(dq_ijk, s_dq, s_D, MJI, vgeo, q1, s_q, s_aux, ijk, ljk, id, l,
+                                G1base, G2base, Gstride)
   FT = eltype(dq_ijk)
 
   @inbounds begin
     half = FT(1) / FT(2)
+
+    G11 = vgeo[G1base + Gstride]
+    G12 = vgeo[G1base + 2Gstride]
+    G13 = vgeo[G1base + 3Gstride]
+
+    G21 = vgeo[G2base + Gstride]
+    G22 = vgeo[G2base + 2Gstride]
+    G23 = vgeo[G2base + 3Gstride]
 
     ρ1 = half * q1[_ρ]
     u1 = half * q1[_ρu]
@@ -229,22 +232,22 @@ end
     D = -alpha * (2 * Φ1 - Φ2)
     Dfac = -D * fac
 
-    ρuhat1 = G1[1] * u_avg + G1[2] * v_avg + G1[3] * w_avg
+    ρuhat1 = G11 * u_avg + G12 * v_avg + G13 * w_avg
     ρuhat1 *= ρ_log
 
     H1ijk_ρ = ρuhat1
-    H1ijk_ρu = ρuhat1 * u_avg + p * G1[1]
-    H1ijk_ρv = ρuhat1 * v_avg + p * G1[2]
-    H1ijk_ρw = ρuhat1 * w_avg + p * G1[3]
+    H1ijk_ρu = ρuhat1 * u_avg + p * G11
+    H1ijk_ρv = ρuhat1 * v_avg + p * G12
+    H1ijk_ρw = ρuhat1 * w_avg + p * G13
     H1ijk_ρe = c * H1ijk_ρ + H1ijk_ρu * u_avg + H1ijk_ρv * v_avg + H1ijk_ρw * w_avg
 
-    H1ljk_ρu = H1ijk_ρu + Dfac * G1[1]
-    H1ljk_ρv = H1ijk_ρv + Dfac * G1[2]
-    H1ljk_ρw = H1ijk_ρw + Dfac * G1[3]
+    H1ljk_ρu = H1ijk_ρu + Dfac * G11
+    H1ljk_ρv = H1ijk_ρv + Dfac * G12
+    H1ljk_ρw = H1ijk_ρw + Dfac * G13
 
-    H1ijk_ρu += G1[1] * D
-    H1ijk_ρv += G1[2] * D
-    H1ijk_ρw += G1[3] * D
+    H1ijk_ρu += G11 * D
+    H1ijk_ρv += G12 * D
+    H1ijk_ρw += G13 * D
 
     Didl = s_D[id, l]
     Dlid = s_D[l, id]
@@ -259,22 +262,22 @@ end
     H1ljk_ρv *= Didl
     H1ljk_ρw *= Didl
 
-    ρuhat2 = G2[1] * u_avg + G2[2] * v_avg + G2[3] * w_avg
+    ρuhat2 = G21 * u_avg + G22 * v_avg + G23 * w_avg
     ρuhat2 *= ρ_log
 
     H2ijk_ρ = ρuhat2
-    H2ijk_ρu = ρuhat2 * u_avg + p * G2[1]
-    H2ijk_ρv = ρuhat2 * v_avg + p * G2[2]
-    H2ijk_ρw = ρuhat2 * w_avg + p * G2[3]
+    H2ijk_ρu = ρuhat2 * u_avg + p * G21
+    H2ijk_ρv = ρuhat2 * v_avg + p * G22
+    H2ijk_ρw = ρuhat2 * w_avg + p * G23
     H2ijk_ρe = c * H2ijk_ρ + H2ijk_ρu * u_avg + H2ijk_ρv * v_avg + H2ijk_ρw * w_avg
 
-    H2ljk_ρu = H2ijk_ρu + Dfac * G2[1]
-    H2ljk_ρv = H2ijk_ρv + Dfac * G2[2]
-    H2ljk_ρw = H2ijk_ρw + Dfac * G2[3]
+    H2ljk_ρu = H2ijk_ρu + Dfac * G21
+    H2ljk_ρv = H2ijk_ρv + Dfac * G22
+    H2ljk_ρw = H2ijk_ρw + Dfac * G23
 
-    H2ijk_ρu += G2[1] * D
-    H2ijk_ρv += G2[2] * D
-    H2ijk_ρw += G2[3] * D
+    H2ijk_ρu += G21 * D
+    H2ijk_ρv += G22 * D
+    H2ijk_ρw += G23 * D
 
     H2ijk_ρ  *= Dlid
     H2ijk_ρu *= Dlid
