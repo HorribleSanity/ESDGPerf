@@ -7,6 +7,7 @@ module ESDGPerf
 
   @inline logave_ϵ(FT) = FT(1e-4)
 
+  include("contract.jl")
   include("euler_gravity.jl")
   include("kernels.jl")
   include("geometry.jl")
