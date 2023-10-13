@@ -71,11 +71,12 @@ function run(kernel, FT, N, K)
 
   en0 = sqrt(sum(@. MJ * q ^ 2))
   @info @sprintf """Starting
+  FT       = %s
   N        = %d
   K        = %d
   kernel   = %s
   norm(q)  = %.16e
-  """ N K kernel en0
+  """ FT N K kernel en0
 
   for _ = 1:numberofsteps
     for stage = eachindex(RKA, RKB)
@@ -100,14 +101,15 @@ function run(kernel, FT, N, K)
 end
 
 let
-  FT = Float64
   N  = 4
   K = 10
 
   expected_error = 1.7457299184063730e-07
 
-  for kernel in all_kernels
-    err = run(kernel, FT, N, K)
-    @test err ≈ expected_error atol=10sqrt(eps(FT))
+  for FT in (Float64,)
+    for kernel in all_kernels
+      err = run(kernel, FT, N, K)
+      @test err ≈ expected_error atol=10sqrt(eps(FT))
+    end
   end
 end
