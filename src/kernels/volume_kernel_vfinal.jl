@@ -7,7 +7,7 @@ directionally_split(::VolumeKernel{:final}) = false
 function kernel_vgeo(::VolumeKernel{:final}, vgeo)
   MJ = view(vgeo, :, _MJ:_MJ, :)
   MJI = 1 ./ MJ
-  G = view(vgeo, :, _g11:_g11+9, :)
+  G = view(vgeo, :, _g11:_g11+8, :)
   G .*= MJ
   cat(vgeo, MJI, dims=2)
 end
