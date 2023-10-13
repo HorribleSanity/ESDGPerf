@@ -9,6 +9,7 @@ function kernel_vgeo(::VolumeKernel{:final}, vgeo)
   MJI = 1 ./ MJ
   G = view(vgeo, :, _g11:_g11+8, :)
   G .*= MJ
+  @assert _MJI == size(vgeo, 2) + 1
   cat(vgeo, MJI, dims=2)
 end
 
