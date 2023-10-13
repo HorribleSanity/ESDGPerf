@@ -1,6 +1,5 @@
 module ESDGPerf
-  using Reexport
-  @reexport using Bennu
+  using Raven
   using StaticArrays
   using CUDA
   using KernelAbstractions.Extras: @unroll

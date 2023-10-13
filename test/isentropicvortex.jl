@@ -1,3 +1,4 @@
+using Raven
 using ESDGPerf
 using CUDA
 using StaticArrays
@@ -35,7 +36,7 @@ function run(kernel, FT, N, K)
   A = CuArray
   Nq = N + 1
 
-  cell = LobattoCell{FT, A}(Nq, Nq, Nq)
+  cell = LobattoCell{Tuple{Nq, Nq, Nq}, FT, A}()
 
   vx = range(FT(0), stop=FT(20), length=K+1)
   vy = range(FT(-5), stop=FT(5), length=K+1)
@@ -48,9 +49,11 @@ function run(kernel, FT, N, K)
       x̃₃ = x₃
       SVector(x̃₁, x̃₂, x̃₃)
   end
-  grid = brickgrid(meshwarp, cell, (vx, vy, vz); periodic=(true, true, true))
+  cg = brick((vx, vy, vz), (true, true, true))
+  gm = GridManager(cell, cg)
+  grid = generate(meshwarp, gm)
 
-  vgeo, sgeo = geometric_factors(kernel, cell, grid)
+  vgeo, sgeo = geometric_factors(kernel, grid)
   MJ = view(vgeo, :, _MJ:_MJ, :)
 
   ncells = length(grid)
@@ -92,8 +95,8 @@ function run(kernel, FT, N, K)
   norm(q)  = %.16e
   """ N K kernel en0
 
-  for step = 1:numberofsteps
-    for stage = 1:length(RKA)
+  for _ = 1:numberofsteps
+    for stage = eachindex(RKA, RKB)
       dq .*= RKA[stage]
       rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid)
       q .+= RKB[stage] * dt * dq

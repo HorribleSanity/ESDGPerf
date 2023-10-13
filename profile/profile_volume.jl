@@ -1,3 +1,4 @@
+using Raven
 using ESDGPerf
 using CUDA
 using StaticArrays
@@ -29,14 +30,17 @@ function profile(kernel, FT, N, K)
   A = CuArray
   Nq = N + 1
 
-  cell = LobattoCell{FT, A}(Nq, Nq, Nq)
+  cell = LobattoCell{Tuple{Nq, Nq, Nq}, FT, A}()
 
   vx = range(FT(-5), stop=FT(5), length=K+1)
   vy = range(FT(-5), stop=FT(5), length=K+1)
   vz = range(FT(-5), stop=FT(5), length=K+1)
-  grid = brickgrid(cell, (vx, vy, vz); periodic=(true, true, true))
 
-  vgeo, sgeo = geometric_factors(kernel, cell, grid)
+  cg = brick((vx, vy, vz), (true, true, true))
+  gm = GridManager(cell, cg)
+  grid = generate(gm)
+
+  vgeo, _ = geometric_factors(kernel, grid)
 
   ncells = length(grid)
   np = length(cell)

@@ -49,7 +49,7 @@ function run(kernel, FT, N, K)
   A = CuArray
   Nq = N + 1
 
-  cell = LobattoCell{FT, A}(Nq, Nq, Nq)
+  cell = LobattoCell{Tuple{Nq, Nq, Nq}, FT, A}()
 
   L = FT(2e3)
   H = FT(2e3)
@@ -69,9 +69,11 @@ function run(kernel, FT, N, K)
       SVector(x̃₁, x̃₂, x̃₃)
   end
 
-  grid = brickgrid(meshwarp, cell, (vx, vy, vz); periodic=(true, true, false))
-  vgeo, sgeo = geometric_factors(kernel, cell, grid)
+  cg = brick((vx, vy, vz), (true, true, false))
+  gm = GridManager(cell, cg)
+  grid = generate(meshwarp, gm)
 
+  vgeo, sgeo = geometric_factors(kernel, grid)
   MJ = view(vgeo, :, _MJ:_MJ, :)
 
   ncells = length(grid)

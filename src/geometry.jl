@@ -6,36 +6,38 @@ const _J = 10
 const _MJ = 11
 const _x = 12
 
-using StructArrays: StructArray
+const _sx = 1
+const _sJ = 4
+const _sMJ = 5
 
-rcomponents(a) = a
-rcomponents(a::StructArray) = map(rcomponents, components(a))
-rcat(a::AbstractArray) = reshape(a, size(a, 1), 1, size(a, 2))
-rcat(a) = cat(map(rcat, a)..., dims= 2)
-plainarray(a::StructArray) = rcat(rcomponents(a))
+function plainarray(a::GridArray)
+  Np = prod(size(a)[1:end-1])
+  ncells = last(size(a))
+  p = parent(a)
+
+  F = Raven.fieldindex(a)
+  nonfielddims = SVector((1:(F-1))..., ((F+1):ndims(p))...)
+  perm = insert(nonfielddims, ndims(p)-1, F)
+  p = permutedims(p, perm)
+
+  L = Raven.fieldslength(a)
+  p = reshape(p, Np, L, ncells)
+
+  return p
+end
 
 kernel_vgeo(::AbstractVolumeKernel, vgeo) = vgeo
 
-function geometric_factors(kernel, cell, grid)
-  met = metrics(grid)
-  _, J = components(met)
-  M = mass(cell)
-  MJ = M * J
-  MJ = reshape(MJ, size(MJ, 1), 1, size(MJ, 2))
+function geometric_factors(kernel, grid)
+  volmet = first(volumemetrics(grid))
 
   x⃗ = plainarray(points(grid))
-  vgeo = plainarray(met)
-  vgeo = cat(vgeo, MJ, x⃗, dims=2)
+  vgeo = plainarray(volmet)
+  vgeo = cat(vgeo, x⃗, dims=2)
   vgeo = kernel_vgeo(kernel, vgeo)
 
-  facemet = facemetrics(grid)
-  faceM = facemass(cell)
-  _, faceJ = components(facemetrics(grid))
-  faceMJ = faceM * faceJ
-  faceMJ = reshape(faceMJ, size(faceMJ, 1), 1, size(faceMJ, 2))
-
-  sgeo = plainarray(facemet)
-  sgeo = cat(sgeo, faceMJ, dims=2)
+  surfmet = first(surfacemetrics(grid))
+  sgeo = plainarray(surfmet)
 
   vgeo, sgeo
 end

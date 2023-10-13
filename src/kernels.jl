@@ -2,6 +2,7 @@ export VolumeKernel
 export initialize!
 export launch_volume
 export rhs!
+using LinearAlgebra
 
 abstract type AbstractVolumeKernel end
 @inline directionally_split(::AbstractVolumeKernel) = true
@@ -30,13 +31,13 @@ end
 function launch_face(dq, q, aux, vgeo, sgeo, cell, grid)
   Nq = size(cell)[1]
   Ne = length(grid)
-  faceoffsets = Bennu.connectivityoffsets(cell, Val(2))
-  faceix⁻, faceix⁺ = faceindices(grid)
-  bndfaces = boundaryfaces(grid)
+  fm = facemaps(grid)
+  faceix⁻, faceix⁺ = fm.vmapM, fm.vmapP
+  bndfaces = boundarycodes(grid)
 
   @cuda threads=Nq^2 blocks=Ne face_knl(dq, q, aux,
                                         faceix⁻, faceix⁺, sgeo, vgeo, bndfaces,
-                                        Val(Nq), Val(faceoffsets))
+                                        Val(Nq), Val(faceoffsets(cell)))
 end
 
 function initialize!(initf, q, aux, vgeo, t)
