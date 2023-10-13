@@ -5,7 +5,7 @@ using Printf
 using Logging
 using Test
 
-@inline function uniform!(q, aux, x⃗, t)
+@inline function uniform!(q, aux, _, _)
   FT = eltype(q)
   γ = _γ(FT)
 
@@ -77,8 +77,8 @@ function run(kernel, FT, N, K)
   norm(q)  = %.16e
   """ N K kernel en0
 
-  for step = 1:numberofsteps
-    for stage = 1:length(RKA)
+  for _ = 1:numberofsteps
+    for stage = eachindex(RKA, RKB)
       dq .*= RKA[stage]
       rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid)
       q .+= RKB[stage] * dt * dq
@@ -103,7 +103,6 @@ let
   FT = Float64
   N  = 4
   K = 10
-  nlevels = 2
 
   expected_error = 1.7457299184063730e-07
 
