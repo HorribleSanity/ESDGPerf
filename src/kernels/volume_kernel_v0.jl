@@ -16,8 +16,8 @@ function volume_knl(::VolumeKernel{0},
   l_aux1 = MVector{naux, FT}(undef)
   l_aux2 = MVector{naux, FT}(undef)
 
-  s_G = @cuStaticSharedMem(FT, (Nq3, 3))
-  s_D = @cuStaticSharedMem(FT, (Nq, Nq))
+  s_G = CuStaticSharedArray(FT, (Nq3, 3))
+  s_D = CuStaticSharedArray(FT, (Nq, Nq))
 
   ijk = i + Nq * (j - 1 + Nq * (k - 1))
 
