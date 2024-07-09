@@ -49,7 +49,7 @@ function run(kernel, FT, N, K)
   A = CuArray
   Nq = N + 1
 
-  cell = LobattoCell{Tuple{Nq, Nq, Nq}, FT, A}()
+  cell = LobattoCell{FT, A}(Nq, Nq, Nq)
 
   L = FT(2e3)
   H = FT(2e3)

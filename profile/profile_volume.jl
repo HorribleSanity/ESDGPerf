@@ -30,7 +30,7 @@ function profile(kernel, FT, N, K)
   A = CuArray
   Nq = N + 1
 
-  cell = LobattoCell{Tuple{Nq, Nq, Nq}, FT, A}()
+  cell = LobattoCell{FT, A}(Nq, Nq, Nq)
 
   vx = range(FT(-5), stop=FT(5), length=K+1)
   vy = range(FT(-5), stop=FT(5), length=K+1)

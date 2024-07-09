@@ -135,7 +135,7 @@ function run(kernel, FT, N, KX, KZ)
   A = CuArray
   Nq = N + 1
 
-  cell = LobattoCell{Tuple{Nq, Nq, Nq}, FT, A}()
+  cell = LobattoCell{FT, A}(Nq, Nq, Nq)
 
   vx = range(FT(0), stop=FT(300e3), length=KX+1)
   vy = range(-step(vx) / 2, stop=step(vx) / 2, length=2)
