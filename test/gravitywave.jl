@@ -1,3 +1,5 @@
+module GravityWaveTests
+
 using Raven
 using ESDGPerf
 using CUDA
@@ -219,7 +221,7 @@ function run(kernel, FT, N, KX, KZ)
     errf
 end
 
-let
+function runtests()
     FT = Float64
     N = 4
     nlevels = 2
@@ -245,4 +247,6 @@ let
             @test rates[1] ≈ 2.39 atol = 0.01
         end
     end
+end
+
 end

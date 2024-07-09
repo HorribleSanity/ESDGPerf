@@ -1,3 +1,5 @@
+module IsentropicVortexTests
+
 using Raven
 using ESDGPerf
 using CUDA
@@ -117,7 +119,7 @@ function run(kernel, FT, N, K)
     errf
 end
 
-let
+function runtests()
     FT = Float64
     N = 4
     nlevels = 3
@@ -142,4 +144,6 @@ let
             )
         end
     end
+end
+
 end

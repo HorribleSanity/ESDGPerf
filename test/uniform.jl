@@ -1,3 +1,5 @@
+module UniformTests
+
 using ESDGPerf
 using Raven
 using CUDA
@@ -103,7 +105,7 @@ function run(kernel, FT, N, K)
     errf
 end
 
-let
+function runtests()
     N = 4
     K = 10
 
@@ -115,4 +117,6 @@ let
             @test err ≈ expected_error atol = 10sqrt(eps(FT))
         end
     end
+end
+
 end

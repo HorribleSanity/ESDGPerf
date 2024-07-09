@@ -1,3 +1,6 @@
+module RisingBubbleTests
+
+using Raven
 using ESDGPerf
 using CUDA
 using StaticArrays
@@ -141,7 +144,7 @@ function run(kernel, FT, N, K)
     nothing
 end
 
-let
+function runtests()
     FT = Float64
     N = 4
 
@@ -151,4 +154,6 @@ let
     for kernel in all_kernels
         run(kernel, FT, N, K)
     end
+end
+
 end
