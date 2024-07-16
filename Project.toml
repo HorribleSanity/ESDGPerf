@@ -13,6 +13,7 @@ Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 Raven = "cfd3f2ab-0fb0-4d51-9553-03e53d33f144"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+WriteVTK = "64499a7a-5c06-52f2-abe2-ccb03c286192"
 
 [compat]
 CUDA = "5"
@@ -24,3 +25,4 @@ Printf = "1"
 Raven = "0.2"
 StaticArrays = "1"
 Test = "1"
+WriteVTK = "1"

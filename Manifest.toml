@@ -2,7 +2,7 @@
 
 julia_version = "1.10.4"
 manifest_format = "2.0"
-project_hash = "b0e1411293c807db61d4a4a8f601fb8b8f312f5d"
+project_hash = "95c12cd29447853ec98118a0e4ec8628ca8bc62b"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -94,6 +94,12 @@ git-tree-sha1 = "afea94249b821dc754a8ca6695d3daed851e1f5a"
 uuid = "76a88914-d11a-5bdc-97e0-2f5a05c973a2"
 version = "0.14.1+0"
 
+[[deps.CodecZlib]]
+deps = ["TranscodingStreams", "Zlib_jll"]
+git-tree-sha1 = "b8fe8546d52ca154ac556809e10c75e6e7430ac8"
+uuid = "944b1d66-785c-5afd-91f1-9de20f533193"
+version = "0.7.5"
+
 [[deps.ColorTypes]]
 deps = ["FixedPointNumbers", "Random"]
 git-tree-sha1 = "b10d0b65641d57b8b4d5e234446582de5047050d"
@@ -174,6 +180,22 @@ version = "0.1.10"
 
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
+
+[[deps.FillArrays]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "0653c0a2396a6da5bc4766c43041ef5fd3efbe57"
+uuid = "1a297f60-69ca-5386-bcde-b61e274b549b"
+version = "1.11.0"
+
+    [deps.FillArrays.extensions]
+    FillArraysPDMatsExt = "PDMats"
+    FillArraysSparseArraysExt = "SparseArrays"
+    FillArraysStatisticsExt = "Statistics"
+
+    [deps.FillArrays.weakdeps]
+    PDMats = "90014a1f-27ba-587c-ab20-58faa44d9150"
+    SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+    Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [[deps.FixedPointNumbers]]
 deps = ["Statistics"]
@@ -315,6 +337,18 @@ version = "1.11.0+1"
 
 [[deps.Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
+
+[[deps.Libiconv_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "f9557a255370125b405568f9767d6d195822a175"
+uuid = "94ce4f54-9a6c-5748-9c1c-f9c7231a4531"
+version = "1.17.0+0"
+
+[[deps.LightXML]]
+deps = ["Libdl", "XML2_jll"]
+git-tree-sha1 = "3a994404d3f6709610701c7dabfc03fed87a81f8"
+uuid = "9c8b4983-aa76-5018-a973-4c85ecc9e179"
+version = "0.9.1"
 
 [[deps.LinearAlgebra]]
 deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
@@ -512,14 +546,11 @@ deps = ["Adapt", "Compat", "GPUArraysCore", "KernelAbstractions", "LinearAlgebra
 git-tree-sha1 = "2d8e6c24821efb074f17f19d15534fc52ec1a6d5"
 uuid = "cfd3f2ab-0fb0-4d51-9553-03e53d33f144"
 version = "0.2.1"
+weakdeps = ["CUDA", "WriteVTK"]
 
     [deps.Raven.extensions]
     RavenCUDAExt = "CUDA"
     RavenWriteVTKExt = "WriteVTK"
-
-    [deps.Raven.weakdeps]
-    CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
-    WriteVTK = "64499a7a-5c06-52f2-abe2-ccb03c286192"
 
 [[deps.RecipesBase]]
 deps = ["PrecompileTools"]
@@ -638,6 +669,15 @@ git-tree-sha1 = "5a13ae8a41237cff5ecf34f73eb1b8f42fff6531"
 uuid = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
 version = "0.5.24"
 
+[[deps.TranscodingStreams]]
+git-tree-sha1 = "60df3f8126263c0d6b357b9a1017bb94f53e3582"
+uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
+version = "0.11.0"
+weakdeps = ["Random", "Test"]
+
+    [deps.TranscodingStreams.extensions]
+    TestExt = ["Test", "Random"]
+
 [[deps.UUIDs]]
 deps = ["Random", "SHA"]
 uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
@@ -655,6 +695,23 @@ deps = ["LLVM", "UnsafeAtomics"]
 git-tree-sha1 = "bf2c553f25e954a9b38c9c0593a59bb13113f9e5"
 uuid = "d80eeb9a-aca5-4d75-85e5-170c8b632249"
 version = "0.1.5"
+
+[[deps.VTKBase]]
+git-tree-sha1 = "c2d0db3ef09f1942d08ea455a9e252594be5f3b6"
+uuid = "4004b06d-e244-455f-a6ce-a5f9919cc534"
+version = "1.0.1"
+
+[[deps.WriteVTK]]
+deps = ["Base64", "CodecZlib", "FillArrays", "LightXML", "TranscodingStreams", "VTKBase"]
+git-tree-sha1 = "46664bb833f24e4fe561192e3753c9168c3b71b2"
+uuid = "64499a7a-5c06-52f2-abe2-ccb03c286192"
+version = "1.19.2"
+
+[[deps.XML2_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Libiconv_jll", "Zlib_jll"]
+git-tree-sha1 = "d9717ce3518dc68a99e6b96300813760d887a01d"
+uuid = "02c8fc9c-b97f-50b9-bbe4-9be30ff0a78a"
+version = "2.13.1+0"
 
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
