@@ -159,12 +159,12 @@ function run(kernel, FT, N, KX, KZ)
     vgeo, sgeo = geometric_factors(kernel, grid)
     MJ = view(vgeo, :, _MJ:_MJ, :)
 
-    ncells = length(grid)
+    ncells = numcells(grid, Val(true))
     np = length(cell)
     q = CuArray{FT}(undef, np, nstate, ncells)
     aux = CuArray{FT}(undef, np, naux, ncells)
 
-    initialize!(gravitywave!, q, aux, vgeo, FT(0))
+    initialize!(gravitywave!, q, aux, vgeo, FT(0), grid)
 
     dq = similar(q)
     fill!(dq, FT(0))
@@ -208,7 +208,7 @@ function run(kernel, FT, N, KX, KZ)
     end
 
     qexact = similar(q)
-    initialize!(gravitywave!, qexact, aux, vgeo, timeend)
+    initialize!(gravitywave!, qexact, aux, vgeo, timeend, grid)
 
     enf = sqrt(sum(@. MJ * q^2))
     errf = sqrt(sum(@. vgeo[:, _MJ:_MJ, :] * (q - qexact)^2))

@@ -11,6 +11,8 @@ const _sJ = 4
 const _sMJ = 5
 
 function plainarray(a::GridArray)
+    a = viewwithghosts(a)
+
     Np = prod(size(a)[1:end-1])
     ncells = last(size(a))
     p = parent(a)

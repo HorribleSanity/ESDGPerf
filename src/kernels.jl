@@ -84,9 +84,9 @@ function launch_face(dq, q, aux, vgeo, sgeo, cell, grid)
     )
 end
 
-function initialize!(initf, q, aux, vgeo, t)
+function initialize!(initf, q, aux, vgeo, t, grid)
     Nq = Int(cbrt(size(q, 1)))
-    Ne = size(q, 3)
+    Ne = length(grid)
     nvgeo = size(vgeo, 2)
     @cuda threads = Nq^3 blocks = Ne init_knl(initf, q, aux, vgeo, t, Val(Nq), Val(nvgeo))
 end

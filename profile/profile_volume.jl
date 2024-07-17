@@ -42,12 +42,12 @@ function profile(kernel, FT, N, K)
 
     vgeo, _ = geometric_factors(kernel, grid)
 
-    ncells = length(grid)
+    ncells = numcells(grid, Val(true))
     np = length(cell)
     q = CuArray{FT}(undef, np, nstate, ncells)
     aux = CuArray{FT}(undef, np, naux, ncells)
 
-    initialize!(init!, q, aux, vgeo, FT(0))
+    initialize!(init!, q, aux, vgeo, FT(0), grid)
 
     dq = similar(q)
     fill!(dq, FT(0))

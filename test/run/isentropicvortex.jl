@@ -61,12 +61,12 @@ function run(kernel, FT, N, K; outputvtk = false, vtkdir = "output", comm = MPI.
     vgeo, sgeo = geometric_factors(kernel, grid)
     MJ = view(vgeo, :, _MJ:_MJ, :)
 
-    ncells = length(grid)
+    ncells = numcells(grid, Val(true))
     np = length(cell)
     q = CuArray{FT}(undef, np, nstate, ncells)
     aux = CuArray{FT}(undef, np, naux, ncells)
 
-    initialize!(vortex!, q, aux, vgeo, FT(0))
+    initialize!(vortex!, q, aux, vgeo, FT(0), grid)
 
     dq = similar(q)
     fill!(dq, FT(0))
@@ -145,7 +145,7 @@ function run(kernel, FT, N, K; outputvtk = false, vtkdir = "output", comm = MPI.
     end
 
     qexact = similar(q)
-    initialize!(vortex!, qexact, aux, vgeo, timeend)
+    initialize!(vortex!, qexact, aux, vgeo, timeend, grid)
 
     enf = sqrt(sum(@. MJ * q^2))
     errf = sqrt(sum(@. vgeo[:, _MJ:_MJ, :] * (q - qexact)^2))
