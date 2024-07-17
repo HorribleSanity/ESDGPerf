@@ -7,6 +7,7 @@ using StaticArrays
 using Printf
 using Logging
 using Test
+using MPI
 
 @inline function uniform!(q, aux, _, _)
     FT = eltype(q)
@@ -27,9 +28,11 @@ using Test
     aux[_Φ] = Φ
 end
 
-function run(kernel, FT, N, K)
+function run(kernel, FT, N, K; comm = MPI.COMM_WORLD)
     A = CuArray
     Nq = N + 1
+
+    rank = MPI.Comm_rank(comm)
 
     cell = LobattoCell{FT,A}(Nq, Nq, Nq)
 
@@ -37,11 +40,12 @@ function run(kernel, FT, N, K)
     vy = range(FT(-5), stop = FT(5), length = K + 1)
     vz = range(FT(-5), stop = FT(5), length = 2)
     cg = brick((vx, vy, vz), (true, true, true))
-    gm = GridManager(cell, cg)
+    gm = GridManager(cell, cg; comm)
     grid = generate(gm)
+    nlocalcells = length(grid)
 
     vgeo, sgeo = geometric_factors(kernel, grid)
-    MJ = view(vgeo, :, _MJ:_MJ, :)
+    MJ = view(vgeo, :, _MJ:_MJ, 1:nlocalcells)
 
     ncells = numcells(grid, Val(true))
     np = length(cell)
@@ -74,14 +78,16 @@ function run(kernel, FT, N, K)
         FT(2277821191437 // 14882151754819),
     )
 
-    en0 = sqrt(sum(@. MJ * q^2))
-    @info @sprintf """Starting
-    FT       = %s
-    N        = %d
-    K        = %d
-    kernel   = %s
-    norm(q)  = %.16e
-    """ FT N K kernel en0
+    en0 = sqrt(MPI.Allreduce(sum(@. MJ * q[:, :, 1:nlocalcells]^2), +, comm))
+    if rank == 0
+        @info @sprintf """Starting
+        FT       = %s
+        N        = %d
+        K        = %d
+        kernel   = %s
+        norm(q)  = %.16e
+        """ FT N K kernel en0
+    end
 
     for _ = 1:numberofsteps
         for stage in eachindex(RKA, RKB)
@@ -94,18 +100,30 @@ function run(kernel, FT, N, K)
     qexact = similar(q)
     initialize!(uniform!, qexact, aux, vgeo, timeend, grid)
 
-    enf = sqrt(sum(@. MJ * q^2))
-    errf = sqrt(sum(@. vgeo[:, _MJ:_MJ, :] * (q - qexact)^2))
+    enf = sqrt(MPI.Allreduce(sum(@. MJ * q[:, :, 1:nlocalcells]^2), +, comm))
+    errf = sqrt(
+        MPI.Allreduce(
+            sum(@. MJ * (q[:, :, 1:nlocalcells] - qexact[:, :, 1:nlocalcells])^2),
+            +,
+            comm,
+        ),
+    )
 
-    @info @sprintf """Finished
-    norm(q)      = %.16e
-    norm(q - qe) = %.16e
-    """ enf errf
+    if rank == 0
+        @info @sprintf """Finished
+        norm(q)      = %.16e
+        norm(q - qe) = %.16e
+        """ enf errf
+    end
 
     errf
 end
 
 function runtests()
+    if !MPI.Initialized()
+        MPI.Init()
+    end
+
     N = 4
     K = 10
 

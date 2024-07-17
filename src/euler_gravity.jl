@@ -62,11 +62,12 @@ function entropy!(η, q, aux, ::Val{Nq}) where {Nq}
     nothing
 end
 
-function entropyintegral(q, aux, MJ)
+function entropyintegral(q, aux, MJ, grid)
     Nq3 = size(q, 1)
     Nq = Int(cbrt(Nq3))
-    Ne = size(q, 3)
+    Ne = length(grid)
     η = similar(q, (Nq3, 1, Ne))
     @cuda threads = Nq3 blocks = Ne entropy!(η, q, aux, Val(Nq))
-    sum(@. MJ * η)
+    s = sum(@. MJ * η)
+    MPI.Allreduce(s, +, Raven.comm(grid))
 end

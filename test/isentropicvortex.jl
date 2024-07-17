@@ -7,6 +7,7 @@ using StaticArrays
 using Printf
 using Logging
 using Test
+using MPI
 
 @inline function vortex!(state, aux, x⃗, t)
     FT = eltype(state)
@@ -34,9 +35,11 @@ using Test
     aux[_Φ] = Φ
 end
 
-function run(kernel, FT, N, K)
+function run(kernel, FT, N, K; comm = MPI.COMM_WORLD)
     A = CuArray
     Nq = N + 1
+
+    rank = MPI.Comm_rank(comm)
 
     cell = LobattoCell{FT,A}(Nq, Nq, Nq)
 
@@ -52,11 +55,12 @@ function run(kernel, FT, N, K)
         SVector(x̃₁, x̃₂, x̃₃)
     end
     cg = brick((vx, vy, vz), (true, true, true))
-    gm = GridManager(cell, cg)
+    gm = GridManager(cell, cg; comm)
     grid = generate(meshwarp, gm)
+    nlocalcells = length(grid)
 
     vgeo, sgeo = geometric_factors(kernel, grid)
-    MJ = view(vgeo, :, _MJ:_MJ, :)
+    MJ = view(vgeo, :, _MJ:_MJ, 1:nlocalcells)
 
     ncells = numcells(grid, Val(true))
     np = length(cell)
@@ -89,13 +93,15 @@ function run(kernel, FT, N, K)
         FT(2277821191437 // 14882151754819),
     )
 
-    en0 = sqrt(sum(@. MJ * q^2))
-    @info @sprintf """Starting
-    N        = %d
-    K        = %d
-    kernel   = %s
-    norm(q)  = %.16e
-    """ N K kernel en0
+    en0 = sqrt(MPI.Allreduce(sum(@. MJ * q[:, :, 1:nlocalcells]^2), +, comm))
+    if rank == 0
+        @info @sprintf """Starting
+        N        = %d
+        K        = %d
+        kernel   = %s
+        norm(q)  = %.16e
+        """ N K kernel en0
+    end
 
     for _ = 1:numberofsteps
         for stage in eachindex(RKA, RKB)
@@ -108,21 +114,36 @@ function run(kernel, FT, N, K)
     qexact = similar(q)
     initialize!(vortex!, qexact, aux, vgeo, timeend, grid)
 
-    enf = sqrt(sum(@. MJ * q^2))
-    errf = sqrt(sum(@. vgeo[:, _MJ:_MJ, :] * (q - qexact)^2))
+    enf = sqrt(MPI.Allreduce(sum(@. MJ * q[:, :, 1:nlocalcells]^2), +, comm))
+    errf = sqrt(
+        MPI.Allreduce(
+            sum(@. MJ * (q[:, :, 1:nlocalcells] - qexact[:, :, 1:nlocalcells])^2),
+            +,
+            comm,
+        ),
+    )
 
-    @info @sprintf """Finished
-    norm(q)      = %.16e
-    norm(q - qe) = %.16e
-    """ enf errf
+    if rank == 0
+        @info @sprintf """Finished
+        norm(q)      = %.16e
+        norm(q - qe) = %.16e
+        """ enf errf
+    end
 
     errf
 end
 
 function runtests()
+    if !MPI.Initialized()
+        MPI.Init()
+    end
+
     FT = Float64
     N = 4
     nlevels = 3
+
+    comm = MPI.COMM_WORLD
+    rank = MPI.Comm_rank(comm)
 
     expected_error = Dict()
     expected_error[1] = 1.3808132150048602e+01
@@ -133,15 +154,17 @@ function runtests()
         errs = zeros(FT, nlevels)
         for l = 1:nlevels
             K = 5 * 2^(l - 1)
-            errs[l] = run(kernel, FT, N, K)
+            errs[l] = run(kernel, FT, N, K; comm)
             @test errs[l] ≈ expected_error[l]
         end
         if nlevels > 1
             rates = log2.(errs[1:(nlevels-1)] ./ errs[2:nlevels])
-            @info "Convergence rates\n" * join(
-                ["rate for levels $l → $(l + 1) = $(rates[l])" for l = 1:(nlevels-1)],
-                "\n",
-            )
+            if rank == 0
+                @info "Convergence rates\n" * join(
+                    ["rate for levels $l → $(l + 1) = $(rates[l])" for l = 1:(nlevels-1)],
+                    "\n",
+                )
+            end
         end
     end
 end

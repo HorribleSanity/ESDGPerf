@@ -7,6 +7,7 @@ using Printf
 using Logging
 using WriteVTK
 using Test
+using MPI
 
 @inline function vortex!(state, aux, x⃗, t)
     FT = eltype(state)
@@ -55,11 +56,12 @@ function run(kernel, FT, N, K; outputvtk = false, vtkdir = "output", comm = MPI.
         SVector(x̃₁, x̃₂, x̃₃)
     end
     cg = brick((vx, vy, vz), (true, true, true))
-    gm = GridManager(cell, cg)
+    gm = GridManager(cell, cg; comm)
     grid = generate(meshwarp, gm)
+    nlocalcells = length(grid)
 
     vgeo, sgeo = geometric_factors(kernel, grid)
-    MJ = view(vgeo, :, _MJ:_MJ, :)
+    MJ = view(vgeo, :, _MJ:_MJ, 1:nlocalcells)
 
     ncells = numcells(grid, Val(true))
     np = length(cell)
@@ -120,7 +122,7 @@ function run(kernel, FT, N, K; outputvtk = false, vtkdir = "output", comm = MPI.
         end
     end
 
-    en0 = sqrt(sum(@. MJ * q^2))
+    en0 = sqrt(MPI.Allreduce(sum(@. MJ * q[:, :, 1:nlocalcells]^2), +, comm))
     if rank == 0
         @info @sprintf """Starting
         N        = %d
@@ -147,8 +149,14 @@ function run(kernel, FT, N, K; outputvtk = false, vtkdir = "output", comm = MPI.
     qexact = similar(q)
     initialize!(vortex!, qexact, aux, vgeo, timeend, grid)
 
-    enf = sqrt(sum(@. MJ * q^2))
-    errf = sqrt(sum(@. vgeo[:, _MJ:_MJ, :] * (q - qexact)^2))
+    enf = sqrt(MPI.Allreduce(sum(@. MJ * q[:, :, 1:nlocalcells]^2), +, comm))
+    errf = sqrt(
+        MPI.Allreduce(
+            sum(@. MJ * (q[:, :, 1:nlocalcells] - qexact[:, :, 1:nlocalcells])^2),
+            +,
+            comm,
+        ),
+    )
 
     if rank == 0
         @info @sprintf """Finished

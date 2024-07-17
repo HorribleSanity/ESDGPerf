@@ -7,6 +7,7 @@ using StaticArrays
 using Printf
 using Logging
 using Test
+using MPI
 
 _grav(FT) = FT(9.81)
 
@@ -48,9 +49,11 @@ _grav(FT) = FT(9.81)
     aux[_Φ] = Φ
 end
 
-function run(kernel, FT, N, K)
+function run(kernel, FT, N, K; comm = MPI.COMM_WORLD)
     A = CuArray
     Nq = N + 1
+
+    rank = MPI.Comm_rank(comm)
 
     cell = LobattoCell{FT,A}(Nq, Nq, Nq)
 
@@ -73,11 +76,12 @@ function run(kernel, FT, N, K)
     end
 
     cg = brick((vx, vy, vz), (true, true, false))
-    gm = GridManager(cell, cg)
+    gm = GridManager(cell, cg; comm)
     grid = generate(meshwarp, gm)
+    nlocalcells = length(grid)
 
     vgeo, sgeo = geometric_factors(kernel, grid)
-    MJ = view(vgeo, :, _MJ:_MJ, :)
+    MJ = view(vgeo, :, _MJ:_MJ, 1:nlocalcells)
 
     ncells = numcells(grid, Val(true))
     np = length(cell)
@@ -110,16 +114,18 @@ function run(kernel, FT, N, K)
         FT(2277821191437 // 14882151754819),
     )
 
-    en0 = sqrt(sum(@. MJ * q^2))
-    η0 = entropyintegral(q, aux, MJ)
+    en0 = sqrt(MPI.Allreduce(sum(@. MJ * q[:, :, 1:nlocalcells]^2), +, comm))
+    η0 = entropyintegral(q, aux, MJ, grid)
 
-    @info @sprintf """Starting
-    N        = %d
-    K        = %d
-    kernel   = %s
-    norm(q)  = %.16e
-    η0       = %.16e
-    """ N K kernel en0 η0
+    if rank == 0
+        @info @sprintf """Starting
+        N        = %d
+        K        = %d
+        kernel   = %s
+        norm(q)  = %.16e
+        η0       = %.16e
+        """ N K kernel en0 η0
+    end
 
     for step = 1:numberofsteps
         for stage = 1:length(RKA)
@@ -129,15 +135,17 @@ function run(kernel, FT, N, K)
         end
     end
 
-    enf = sqrt(sum(@. MJ * q^2))
-    ηf = entropyintegral(q, aux, MJ)
+    enf = sqrt(MPI.Allreduce(sum(@. MJ * q[:, :, 1:nlocalcells]^2), +, comm))
+    ηf = entropyintegral(q, aux, MJ, grid)
     Δη = (ηf - η0) / abs(η0)
 
-    @info @sprintf """Finished
-    norm(q)      = %.16e
-    ηf           = %.16e
-    Δη           = %.16e
-    """ enf ηf Δη
+    if rank == 0
+        @info @sprintf """Finished
+        norm(q)      = %.16e
+        ηf           = %.16e
+        Δη           = %.16e
+        """ enf ηf Δη
+    end
 
     @test abs(Δη) < 10eps(FT)
 
@@ -145,6 +153,10 @@ function run(kernel, FT, N, K)
 end
 
 function runtests()
+    if !MPI.Initialized()
+        MPI.Init()
+    end
+
     FT = Float64
     N = 4
 
