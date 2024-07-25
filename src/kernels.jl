@@ -91,7 +91,9 @@ function initialize!(initf, q, aux, vgeo, t, grid)
     @cuda threads = Nq^3 blocks = Ne init_knl(initf, q, aux, vgeo, t, Val(Nq), Val(nvgeo))
 end
 
-function rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid)
+function rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid, cm)
+    start!(q, cm)
     launch_volume(kernel, dq, q, aux, vgeo, cell, grid)
+    finish!(q, cm)
     launch_face(dq, q, aux, vgeo, sgeo, cell, grid)
 end

@@ -69,6 +69,10 @@ function run(kernel, FT, N, K; comm = MPI.COMM_WORLD)
 
     initialize!(vortex!, q, aux, vgeo, FT(0), grid)
 
+    cpaux = Raven.expand(nodecommpattern(grid), naux, np)
+    cmaux = commmanager(eltype(q), cpaux; comm)
+    share!(aux, cmaux)
+
     dq = similar(q)
     fill!(dq, FT(0))
 
@@ -103,10 +107,13 @@ function run(kernel, FT, N, K; comm = MPI.COMM_WORLD)
         """ N K kernel en0
     end
 
+    cp = Raven.expand(nodecommpattern(grid), nstate, np)
+    cm = commmanager(eltype(q), cp; comm)
+
     for _ = 1:numberofsteps
         for stage in eachindex(RKA, RKB)
             dq .*= RKA[stage]
-            rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid)
+            rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid, cm)
             q .+= RKB[stage] * dt * dq
         end
     end
