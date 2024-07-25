@@ -219,9 +219,8 @@ function run(kernel, FT, N, KX, KZ; comm = MPI.COMM_WORLD)
 
     for _ = 1:numberofsteps
         for stage in eachindex(RKA, RKB)
-            dq .*= RKA[stage]
             rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid, cm)
-            q .+= RKB[stage] * dt * dq
+            rkupdate!(dq, q, RKA[mod1(stage + 1, length(RKA))], RKB[stage], dt, grid)
         end
     end
 

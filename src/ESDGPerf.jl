@@ -14,6 +14,7 @@ include("geometry.jl")
 
 include("kernels/init_kernel.jl")
 include("kernels/face_kernel.jl")
+include("kernels/rkupdate_kernel.jl")
 include("kernels/volume_kernel_v0.jl")
 include("kernels/volume_kernel_vfinal.jl")
 

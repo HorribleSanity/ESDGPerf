@@ -2,6 +2,7 @@ export VolumeKernel
 export initialize!
 export launch_volume
 export rhs!
+export rkupdate!
 using LinearAlgebra
 
 abstract type AbstractVolumeKernel end
@@ -96,4 +97,10 @@ function rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid, cm)
     launch_volume(kernel, dq, q, aux, vgeo, cell, grid)
     finish!(q, cm)
     launch_face(dq, q, aux, vgeo, sgeo, cell, grid)
+end
+
+function rkupdate!(dq, q, rka_s1, rkb_s0, dt, grid)
+    Nq3 = size(q, 1)
+    Ne = length(grid)
+    @cuda threads = Nq3 blocks = Ne rkupdate_knl(dq, q, rka_s1, rkb_s0, dt, Val(Nq3))
 end
