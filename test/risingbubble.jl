@@ -88,6 +88,9 @@ function run(kernel, FT, N, K; comm = MPI.COMM_WORLD)
     q = CuArray{FT}(undef, np, nstate, ncells)
     aux = CuArray{FT}(undef, np, naux, ncells)
 
+    fill!(q, NaN)
+    fill!(aux, NaN)
+
     initialize!(risingbubble!, q, aux, vgeo, FT(0), grid)
 
     cpaux = Raven.expand(nodecommpattern(grid), naux, np)
@@ -96,6 +99,8 @@ function run(kernel, FT, N, K; comm = MPI.COMM_WORLD)
 
     dq = similar(q)
     fill!(dq, FT(0))
+
+    dq[:, :, (nlocalcells+1):end] .= NaN
 
     timeend = FT(100)
     cfl = FT(1 // 10)

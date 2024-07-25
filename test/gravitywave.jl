@@ -168,6 +168,9 @@ function run(kernel, FT, N, KX, KZ; comm = MPI.COMM_WORLD)
     q = CuArray{FT}(undef, np, nstate, ncells)
     aux = CuArray{FT}(undef, np, naux, ncells)
 
+    fill!(q, NaN)
+    fill!(aux, NaN)
+
     initialize!(gravitywave!, q, aux, vgeo, FT(0), grid)
 
     cpaux = Raven.expand(nodecommpattern(grid), naux, np)
@@ -176,6 +179,8 @@ function run(kernel, FT, N, KX, KZ; comm = MPI.COMM_WORLD)
 
     dq = similar(q)
     fill!(dq, FT(0))
+
+    dq[:, :, (nlocalcells+1):end] .= NaN
 
     timeend = FT(10 * 60)
     cfl = FT(1 // 4)
@@ -221,6 +226,7 @@ function run(kernel, FT, N, KX, KZ; comm = MPI.COMM_WORLD)
     end
 
     qexact = similar(q)
+    fill!(qexact, NaN)
     initialize!(gravitywave!, qexact, aux, vgeo, timeend, grid)
 
     enf = sqrt(MPI.Allreduce(sum(@. MJ * q[:, :, 1:nlocalcells]^2), +, comm))
