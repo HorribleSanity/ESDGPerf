@@ -8,6 +8,8 @@ using WriteVTK
 using Test
 using MPI
 
+import ProgressMeter
+
 _grav(FT) = FT(9.81)
 
 @inline function risingbubbleref!(state, aux, x⃗, t)
@@ -225,6 +227,14 @@ function run(
     time = FT(0)
     do_output(step, time, q)
 
+    if rank == 0
+        p = ProgressMeter.Progress(
+            numberofsteps;
+            showspeed = true,
+            dt = 1,
+            desc = "Timestepping...",
+        )
+    end
     for step = 1:numberofsteps
         @info "Step $(lpad(step, 6, '0'))"
         for stage = 1:length(RKA)
@@ -233,6 +243,12 @@ function run(
         end
         time = dt * step
         do_output(step, time, q)
+        if rank == 0
+            ProgressMeter.next!(p; showvalues = [(:step, step), (:time, time)])
+        end
+    end
+    if rank == 0
+        ProgressMeter.finish!(p)
     end
 
     enf = sqrt(MPI.Allreduce(sum(@. MJ * q[:, :, 1:nlocalcells]^2), +, comm))
