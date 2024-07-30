@@ -8,6 +8,7 @@ using WriteVTK
 using Test
 using MPI
 using NVTX
+using ArgParse
 
 import ProgressMeter
 
@@ -211,6 +212,7 @@ function run(
 
     if rank == 0
         @info @sprintf """Starting
+        FT       = %s
         N        = %d
         K        = %d
         level    = %d
@@ -219,7 +221,7 @@ function run(
         η0       = %.16e
         dt       = %.16e
         nsteps   = %d
-        """ N K level kernel en0 η0 dt numberofsteps
+        """ FT N K level kernel en0 η0 dt numberofsteps
     end
 
     cp = Raven.expand(nodecommpattern(grid), nstate, np)
@@ -291,7 +293,45 @@ function run(
     nothing
 end
 
-let
+function parse_commandline()
+    s = ArgParseSettings()
+
+    @add_arg_table! s begin
+        "--enable-vtk-output"
+        help = "enable vtk output"
+        action = :store_true
+        "--elements-per-direction", "-K"
+        help = "elements per direction in coarse grid"
+        arg_type = Int
+        default = 1
+        "--refinement-level", "-L"
+        help = "refinement level passed into p4est"
+        arg_type = Int
+        default = 4
+        "--polynomial-order", "-N"
+        help = "polynomial order"
+        arg_type = Int
+        default = 4
+        "--floating-point-type", "-F"
+        help = "floating-point type (Float32 or Float64)"
+        arg_type = Symbol
+        default = :Float64
+        "--number-of-steps", "-S"
+        help = "number of time steps to take"
+        arg_type = Int
+        default = 50
+    end
+
+    return parse_args(s)
+end
+
+function main()
+    parsed_args = parse_commandline()
+    println("Parsed args:")
+    for (arg, val) in parsed_args
+        println("  $arg  =>  $val")
+    end
+
     if !MPI.Initialized()
         MPI.Init()
     end
@@ -304,11 +344,25 @@ let
         CUDA.allowscalar(false)
     end
 
-    FT = Float64
-    N = 4
-    K = 1
-    level = 4
+    FT_symbol = parsed_args["floating-point-type"]
+
+    if FT_symbol == :Float64
+        FT = Float64
+    elseif FT_symbol == :Float32
+        FT = Float32
+    else
+        error("Unsupported floating-point type $(FT_symbol)")
+    end
+
+    N = parsed_args["polynomial-order"]
+    K = parsed_args["elements-per-direction"]
+    level = parsed_args["refinement-level"]
+    fixednumberofsteps = parsed_args["number-of-steps"]
+    outputvtk = parsed_args["enable-vtk-output"]
+
     kernel = VolumeKernel{:final}()
 
-    run(kernel, FT, N, K, level; outputvtk = false, fixednumberofsteps = 50)
+    run(kernel, FT, N, K, level; outputvtk, fixednumberofsteps)
 end
+
+main()
