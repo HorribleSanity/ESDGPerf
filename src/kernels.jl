@@ -10,7 +10,15 @@ abstract type AbstractVolumeKernel end
 
 struct VolumeKernel{V} <: AbstractVolumeKernel end
 
-function launch_volume(kernel::AbstractVolumeKernel, dq, q, aux, vgeo, cell, grid)
+NVTX.@annotate function launch_volume(
+    kernel::AbstractVolumeKernel,
+    dq,
+    q,
+    aux,
+    vgeo,
+    cell,
+    grid,
+)
     Nq = size(cell)[1]
     Ne = length(grid)
     D = derivatives_1d(cell)[1]
@@ -64,7 +72,7 @@ function launch_volume(kernel::AbstractVolumeKernel, dq, q, aux, vgeo, cell, gri
     end
 end
 
-function launch_face(dq, q, aux, vgeo, sgeo, cell, grid)
+NVTX.@annotate function launch_face(dq, q, aux, vgeo, sgeo, cell, grid)
     Nq = size(cell)[1]
     Ne = length(grid)
     fm = facemaps(grid)
@@ -85,21 +93,25 @@ function launch_face(dq, q, aux, vgeo, sgeo, cell, grid)
     )
 end
 
-function initialize!(initf, q, aux, vgeo, t, grid)
+NVTX.@annotate function initialize!(initf, q, aux, vgeo, t, grid)
     Nq = Int(cbrt(size(q, 1)))
     Ne = length(grid)
     nvgeo = size(vgeo, 2)
     @cuda threads = Nq^3 blocks = Ne init_knl(initf, q, aux, vgeo, t, Val(Nq), Val(nvgeo))
 end
 
-function rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid, cm)
-    start!(q, cm)
+NVTX.@annotate function rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid, cm)
+    NVTX.@range "Start rhs communication" begin
+        start!(q, cm)
+    end
     launch_volume(kernel, dq, q, aux, vgeo, cell, grid)
-    finish!(q, cm)
+    NVTX.@range "Finish rhs communication" begin
+        finish!(q, cm)
+    end
     launch_face(dq, q, aux, vgeo, sgeo, cell, grid)
 end
 
-function rkupdate!(dq, q, rka_s1, rkb_s0, dt, grid)
+NVTX.@annotate function rkupdate!(dq, q, rka_s1, rkb_s0, dt, grid)
     Nq3 = size(q, 1)
     Ne = length(grid)
     @cuda threads = Nq3 blocks = Ne rkupdate_knl(dq, q, rka_s1, rkb_s0, dt, Val(Nq3))

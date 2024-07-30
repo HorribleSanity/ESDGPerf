@@ -7,6 +7,7 @@ using Logging
 using WriteVTK
 using Test
 using MPI
+using NVTX
 
 import ProgressMeter
 
@@ -181,28 +182,29 @@ function run(
 
     do_output = function (step, time, q)
         if outputvtk && step % ceil(Int, timeend / 100 / dt) == 0
-            @info "Start outputing" step time
-            cd(vtkdir) do
-                filename = "$(outputid)_step$(lpad(step, 6, '0'))"
-                vtkfile = vtk_grid(filename, grid)
+            NVTX.@range "VTK output" begin
+                @info "Start outputing" step time
+                cd(vtkdir) do
+                    filename = "$(outputid)_step$(lpad(step, 6, '0'))"
+                    vtkfile = vtk_grid(filename, grid)
 
-                Pq = reshape(P * reshape(q - qref, np, :), np, nstate, :)
-                vtkfile["δρ"] = Array(@view Pq[:, _ρ, 1:nlocalcells])
-                vtkfile["δρu"] = Array(@view Pq[:, _ρu, 1:nlocalcells])
-                vtkfile["δρv"] = Array(@view Pq[:, _ρv, 1:nlocalcells])
-                vtkfile["δρw"] = Array(@view Pq[:, _ρw, 1:nlocalcells])
-                vtkfile["δρe"] = Array(@view Pq[:, _ρe, 1:nlocalcells])
+                    Pq = reshape(P * reshape(q - qref, np, :), np, nstate, :)
+                    vtkfile["δρ"] = Array(@view Pq[:, _ρ, 1:nlocalcells])
+                    vtkfile["δρu"] = Array(@view Pq[:, _ρu, 1:nlocalcells])
+                    vtkfile["δρv"] = Array(@view Pq[:, _ρv, 1:nlocalcells])
+                    vtkfile["δρw"] = Array(@view Pq[:, _ρw, 1:nlocalcells])
+                    vtkfile["δρe"] = Array(@view Pq[:, _ρe, 1:nlocalcells])
 
-                vtkfile["CellNumber"] = (1:length(grid)) .+ offset(grid)
-                vtk_save(vtkfile)
-                if rank == 0
-                    pvd[time] = vtkfile
+                    vtkfile["CellNumber"] = (1:length(grid)) .+ offset(grid)
+                    vtk_save(vtkfile)
+                    if rank == 0
+                        pvd[time] = vtkfile
+                    end
                 end
+                @info "Done outputing" step time
             end
-            @info "Done outputing" step time
         end
     end
-
 
     en0 = sqrt(MPI.Allreduce(sum(@. MJ * q[:, :, 1:nlocalcells]^2), +, comm))
     η0 = entropyintegral(q, aux, MJ, grid)
@@ -232,19 +234,32 @@ function run(
             numberofsteps;
             showspeed = true,
             dt = 1,
-            desc = "Timestepping...",
+            desc = "Time stepping...",
         )
     end
     for step = 1:numberofsteps
-        @info "Step $(lpad(step, 6, '0'))"
-        for stage = 1:length(RKA)
-            rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid, cm)
-            rkupdate!(dq, q, RKA[mod1(stage + 1, length(RKA))], RKB[stage], dt, grid)
-        end
-        time = dt * step
-        do_output(step, time, q)
-        if rank == 0
-            ProgressMeter.next!(p; showvalues = [(:step, step), (:time, time)])
+        NVTX.@mark "time step" payload = step
+
+        NVTX.@range "time step" begin
+            for stage = 1:length(RKA)
+                NVTX.@mark "stage" payload = stage
+                NVTX.@range "stage" begin
+                    rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid, cm)
+                    rkupdate!(
+                        dq,
+                        q,
+                        RKA[mod1(stage + 1, length(RKA))],
+                        RKB[stage],
+                        dt,
+                        grid,
+                    )
+                end
+            end
+            time = dt * step
+            do_output(step, time, q)
+            if rank == 0
+                ProgressMeter.next!(p; showvalues = [(:step, step), (:time, time)])
+            end
         end
     end
     if rank == 0

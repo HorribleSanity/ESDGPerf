@@ -4,6 +4,7 @@ using StaticArrays
 using CUDA
 using KernelAbstractions.Extras: @unroll
 using MPI
+using NVTX
 
 @inline logave_ϵ(FT) = FT(1e-4)
 
