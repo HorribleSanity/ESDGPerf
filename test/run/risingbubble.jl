@@ -9,6 +9,7 @@ using Test
 using MPI
 using NVTX
 using ArgParse
+import InteractiveUtils
 
 import ProgressMeter
 
@@ -342,6 +343,11 @@ function main()
     if CUDA.functional()
         CUDA.device!(MPI.Comm_rank(comm) % length(CUDA.devices()))
         CUDA.allowscalar(false)
+    end
+
+    if rank == 0
+        InteractiveUtils.versioninfo(verbose = true)
+        CUDA.versioninfo()
     end
 
     FT_symbol = parsed_args["floating-point-type"]
