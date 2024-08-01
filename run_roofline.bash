@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=roofline
+#SBATCH --job-name=roofline-a100
 #SBATCH --output=%x-%j.txt
 #SBATCH --time=4:10:00
 #SBATCH --mem=100G
