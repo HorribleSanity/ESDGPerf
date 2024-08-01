@@ -115,12 +115,12 @@ do
   do
     for F in Float64 Float32
     do
-      echo "Running N=$N L=$L"
+      echo "Running F=${F} N=$N L=$L"
       prefix="${SLURM_JOB_NAME}-${SLURM_JOB_ID}-${F}-N${N}-L${L}"
-      profilestr="${NCU} -k ${kernels} --metrics ${metrics} --csv --log-file ${prefix}.precsv"
+      profilestr="${NCU} -k ${kernels} --metrics ${metrics} -o ${prefix}"
       juliastr="${JULIA} --project=. test/run/risingbubble.jl --number-of-steps 1 --polynomial-order ${N} --refinement-level ${L} --floating-point-type ${F}"
       srun -n1 $profilestr ./launch.sh $juliastr 2>&1 | tee -a ${prefix}.log
-      sed '/^==/d' < ${prefix}.precsv > ${prefix}.csv
+      [ -f ${prefix}.ncu-rep ] && ncu --csv -i ${prefix}.ncu-rep > ${prefix}.csv
     done
   done
 done
