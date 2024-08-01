@@ -120,7 +120,7 @@ do
       profilestr="${NCU} -k ${kernels} --metrics ${metrics} -o ${prefix}"
       juliastr="${JULIA} --project=. test/run/risingbubble.jl --number-of-steps 1 --polynomial-order ${N} --refinement-level ${L} --floating-point-type ${F}"
       srun -n1 $profilestr ./launch.sh $juliastr 2>&1 | tee -a ${prefix}.log
-      [ -f ${prefix}.ncu-rep ] && ncu --csv -i ${prefix}.ncu-rep > ${prefix}.csv
+      [ -f ${prefix}.ncu-rep ] && ncu --csv --print-units base -i ${prefix}.ncu-rep > ${prefix}.csv
     done
   done
 done
