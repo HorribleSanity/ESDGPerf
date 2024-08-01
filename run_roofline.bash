@@ -89,7 +89,6 @@ l1tex__t_bytes.sum"
 
 kernels="regex:(rkupdate_knl|face_knl|volume_knl)"
 
-
 export TMPDIR=/tmp/lwilcox
 
 JULIA=/home/lwilcox/local/julia/1.10.4/bin/julia
@@ -114,10 +113,14 @@ for N in `seq 2 6`
 do
   for L in `seq 1 7`
   do
-    echo "Running N=$N L=$L"
-    log="${SLURM_JOB_NAME}-${SLURM_JOB_ID}-N${N}-L${L}.log"
-    profilestr="${NCU} -k ${kernels} --metrics ${metrics} --csv"
-    juliastr="${JULIA} --project=. test/run/risingbubble.jl --number-of-steps 1 --polynomial-order ${N} --refinement-level ${L}"
-    srun -n1 $profilestr ./launch.sh $juliastr 2>&1 | tee -a $log
+    for F in Float64 Float32
+    do
+      echo "Running N=$N L=$L"
+      prefix="${SLURM_JOB_NAME}-${SLURM_JOB_ID}-${F}-N${N}-L${L}"
+      profilestr="${NCU} -k ${kernels} --metrics ${metrics} --csv --log-file ${prefix}.precsv"
+      juliastr="${JULIA} --project=. test/run/risingbubble.jl --number-of-steps 1 --polynomial-order ${N} --refinement-level ${L} --floating-point-type ${F}"
+      srun -n1 $profilestr ./launch.sh $juliastr 2>&1 | tee -a ${prefix}.log
+      sed '/^==/d' < ${prefix}.precsv > ${prefix}.csv
+    done
   done
 done
