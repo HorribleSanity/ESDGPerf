@@ -114,5 +114,10 @@ end
 NVTX.@annotate function rkupdate!(dq, q, rka_s1, rkb_s0, dt, grid)
     Nq3 = size(q, 1)
     Ne = length(grid)
-    @cuda threads = Nq3 blocks = Ne rkupdate_knl(dq, q, rka_s1, rkb_s0, dt, Val(Nq3))
+    n = Ne * Nq3 * nstate
+
+    nthreads = CUDA.attribute(device(), CUDA.DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK)
+    nblocks = cld(n, nthreads)
+
+    @cuda threads = nthreads blocks = nblocks rkupdate_knl(n, dq, q, rka_s1, rkb_s0, dt)
 end

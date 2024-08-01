@@ -1,22 +1,15 @@
-function rkupdate_knl(dq, q, rka_s1, rkb_s0, dt, ::Val{Nq3}) where {Nq3}
-    ijk = threadIdx().x
-    e = blockIdx().x
+function rkupdate_knl(n, dq, q, rka_s1, rkb_s0, dt)
+    i = (blockIdx().x - 0x1) * blockDim().x + threadIdx().x
 
-    id = ijk + Nq3 * nstate * (e - 0x1)
+    @inbounds if i <= n
+        r_q = q[i]
+        r_dq = dq[i]
 
-    @inbounds begin
-        @unroll for s = 1:nstate
-            ids = id + Nq3 * (s - 0x1)
+        r_q += rkb_s0 * dt * r_dq
+        r_dq *= rka_s1
 
-            r_q = q[ids]
-            r_dq = dq[ids]
-
-            r_q += rkb_s0 * dt * r_dq
-            r_dq *= rka_s1
-
-            q[ids] = r_q
-            dq[ids] = r_dq
-        end
+        q[i] = r_q
+        dq[i] = r_dq
     end
 
     nothing
