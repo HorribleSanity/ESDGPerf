@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=roofline-a100
 #SBATCH --output=%x-%j.txt
-#SBATCH --time=4:10:00
+#SBATCH --time=8:10:00
 #SBATCH --mem=100G
 #SBATCH --partition=math,beards
 #SBATCH --gres=gpu:a100:1
@@ -65,17 +65,29 @@ chmod 755 launch.sh
 metrics="sm__cycles_elapsed.avg,\
 sm__cycles_elapsed.avg.per_second,"
 # DP
-metrics+="sm__sass_thread_inst_executed_op_dadd_pred_on.sum,\
-sm__sass_thread_inst_executed_op_dfma_pred_on.sum,\
-sm__sass_thread_inst_executed_op_dmul_pred_on.sum,"
+metrics+="smsp__sass_thread_inst_executed_op_dadd_pred_on.sum,\
+smsp__sass_thread_inst_executed_op_dfma_pred_on.sum,\
+smsp__sass_thread_inst_executed_op_dmul_pred_on.sum,"
 # SP
-metrics+="sm__sass_thread_inst_executed_op_fadd_pred_on.sum,\
-sm__sass_thread_inst_executed_op_ffma_pred_on.sum,\
-sm__sass_thread_inst_executed_op_fmul_pred_on.sum,"
+metrics+="smsp__sass_thread_inst_executed_op_fadd_pred_on.sum,\
+smsp__sass_thread_inst_executed_op_ffma_pred_on.sum,\
+smsp__sass_thread_inst_executed_op_fmul_pred_on.sum,"
 # HP
-metrics+="sm__sass_thread_inst_executed_op_hadd_pred_on.sum,\
-sm__sass_thread_inst_executed_op_hfma_pred_on.sum,\
-sm__sass_thread_inst_executed_op_hmul_pred_on.sum,"
+metrics+="smsp__sass_thread_inst_executed_op_hadd_pred_on.sum,\
+smsp__sass_thread_inst_executed_op_hfma_pred_on.sum,\
+smsp__sass_thread_inst_executed_op_hmul_pred_on.sum,"
+# DP
+metrics+="smsp__sass_thread_inst_executed_op_dadd_pred_on.sum.per_second,\
+smsp__sass_thread_inst_executed_op_dfma_pred_on.sum.per_second,\
+smsp__sass_thread_inst_executed_op_dmul_pred_on.sum.per_second,"
+# SP
+metrics+="smsp__sass_thread_inst_executed_op_fadd_pred_on.sum.per_second,\
+smsp__sass_thread_inst_executed_op_ffma_pred_on.sum.per_second,\
+smsp__sass_thread_inst_executed_op_fmul_pred_on.sum.per_second,"
+# HP
+metrics+="smsp__sass_thread_inst_executed_op_hadd_pred_on.sum.per_second,\
+smsp__sass_thread_inst_executed_op_hfma_pred_on.sum.per_second,\
+smsp__sass_thread_inst_executed_op_hmul_pred_on.sum.per_second,"
 # DP,SP,HP Efficiency
 metrics+="smsp__sass_thread_inst_executed_ops_dadd_dmul_dfma_pred_on.avg.pct_of_peak_sustained_elapsed,\
 smsp__sass_thread_inst_executed_ops_hadd_hmul_hfma_pred_on.avg.pct_of_peak_sustained_elapsed,\
@@ -86,6 +98,12 @@ metrics+="sm__inst_executed_pipe_tensor.sum,"
 metrics+="dram__bytes.sum,\
 lts__t_bytes.sum,\
 l1tex__t_bytes.sum"
+metrics+="dram__bytes.sum.per_second,\
+lts__t_bytes.sum.per_second,\
+l1tex__t_bytes.sum.per_second"
+# Local loads and stores
+metrics+="smsp__inst_executed_op_local_ld.sum,\
+smsp__inst_executed_op_local_st.sum"
 
 kernels="regex:(rkupdate_knl|face_knl|volume_knl)"
 
