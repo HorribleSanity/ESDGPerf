@@ -97,10 +97,10 @@ metrics+="sm__inst_executed_pipe_tensor.sum,"
 # DRAM, L2 and L1
 metrics+="dram__bytes.sum,\
 lts__t_bytes.sum,\
-l1tex__t_bytes.sum"
+l1tex__t_bytes.sum,"
 metrics+="dram__bytes.sum.per_second,\
 lts__t_bytes.sum.per_second,\
-l1tex__t_bytes.sum.per_second"
+l1tex__t_bytes.sum.per_second,"
 # Local loads and stores
 metrics+="smsp__inst_executed_op_local_ld.sum,\
 smsp__inst_executed_op_local_st.sum"
