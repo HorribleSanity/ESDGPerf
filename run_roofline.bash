@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=roofline-a100
+#SBATCH --job-name=roofline_no_clock_control-a100
 #SBATCH --output=%x-%j.txt
 #SBATCH --time=8:10:00
 #SBATCH --mem=100G
@@ -135,7 +135,7 @@ do
     do
       echo "Running F=${F} N=$N L=$L"
       prefix="${SLURM_JOB_NAME}-${SLURM_JOB_ID}-${F}-N${N}-L${L}"
-      profilestr="${NCU} -k ${kernels} --metrics ${metrics} -o ${prefix}"
+      profilestr="${NCU} --clock-control none -k ${kernels} --metrics ${metrics} -o ${prefix}"
       juliastr="${JULIA} --project=. test/run/risingbubble.jl --number-of-steps 1 --polynomial-order ${N} --refinement-level ${L} --floating-point-type ${F}"
       srun -n1 $profilestr ./launch.sh $juliastr 2>&1 | tee -a ${prefix}.log
       [ -f ${prefix}.ncu-rep ] && ncu --csv --print-units base -i ${prefix}.ncu-rep > ${prefix}.csv
