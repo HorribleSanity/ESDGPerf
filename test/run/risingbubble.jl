@@ -341,7 +341,12 @@ function main()
     rank = MPI.Comm_rank(comm)
 
     if CUDA.functional()
-        CUDA.device!(MPI.Comm_rank(comm) % length(CUDA.devices()))
+        local_comm = MPI.Comm_split_type(
+            MPI.COMM_WORLD,
+            MPI.COMM_TYPE_SHARED,
+            MPI.Comm_rank(MPI.COMM_WORLD),
+        )
+        CUDA.device!(MPI.Comm_rank(local_comm) % length(devices()))
         CUDA.allowscalar(false)
     end
 
