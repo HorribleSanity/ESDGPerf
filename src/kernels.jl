@@ -72,14 +72,19 @@ NVTX.@annotate function launch_volume(
     end
 end
 
-NVTX.@annotate function launch_face(dq, q, aux, vgeo, sgeo, cell, grid)
+NVTX.@annotate function launch_face(mask, dq, q, aux, vgeo, sgeo, cell, grid)
     Nq = size(cell)[1]
-    Ne = length(grid)
+    Ne = length(mask)
+    if Ne == 0
+        return
+    end
+
     fm = facemaps(grid)
     faceix⁻, faceix⁺ = fm.vmapM, fm.vmapP
     bndfaces = boundarycodes(grid)
 
     @cuda threads = Nq^2 blocks = Ne face_knl(
+        mask,
         dq,
         q,
         aux,
@@ -105,10 +110,11 @@ NVTX.@annotate function rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid, cm)
         start!(q, cm)
     end
     launch_volume(kernel, dq, q, aux, vgeo, cell, grid)
+    launch_face(noncommunicatingcells(grid), dq, q, aux, vgeo, sgeo, cell, grid)
     NVTX.@range "Finish rhs communication" begin
         finish!(q, cm)
     end
-    launch_face(dq, q, aux, vgeo, sgeo, cell, grid)
+    launch_face(communicatingcells(grid), dq, q, aux, vgeo, sgeo, cell, grid)
 end
 
 NVTX.@annotate function rkupdate!(dq, q, rka_s1, rkb_s0, dt, grid)

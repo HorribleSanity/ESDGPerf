@@ -1,4 +1,5 @@
 function face_knl(
+    mask,
     dq,
     q,
     aux,
@@ -14,7 +15,7 @@ function face_knl(
     Nq3 = Nq^3
     nfaces = 6
 
-    e⁻ = blockIdx().x
+    e⁻ = mask[blockIdx().x]
     i = threadIdx().x
 
     l_H = MMatrix{3,nstate,FT}(undef)
