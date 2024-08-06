@@ -115,9 +115,9 @@ function run(
 
     L = FT(2e3)
     H = FT(2e3)
-    vx = range(FT(-L / 2), stop = FT(L / 2), length = K + 1)
-    vy = range(FT(-L / 2), stop = FT(L / 2), length = K + 1)
-    vz = range(FT(0), stop = FT(H), length = K + 1)
+    vx = range(FT(-L / 2), stop = FT(L / 2), length = K[1] + 1)
+    vy = range(FT(-L / 2), stop = FT(L / 2), length = K[2] + 1)
+    vz = range(FT(0), stop = FT(H), length = K[3] + 1)
 
     function meshwarp(x)
         x₁, x₂, x₃ = x
@@ -184,7 +184,7 @@ function run(
         FT(2277821191437 // 14882151754819),
     )
 
-    outputid = "N$(N)_K$(lpad(K, 3, '0'))_level$(level)"
+    outputid = "N$(N)_Kx$(lpad(K[1], 2, '0'))_Ky$(lpad(K[2], 2, '0'))_Kz$(lpad(K[3], 2, '0'))_level$(level)"
     if outputvtk
         rank == 0 && mkpath(vtkdir)
         pvd = rank == 0 ? paraview_collection("$(outputid)_timesteps") : nothing
@@ -223,7 +223,7 @@ function run(
         @info @sprintf """Starting
         FT       = %s
         N        = %d
-        K        = %d
+        K        = %s
         level    = %d
         kernel   = %s
         norm(q)  = %.16e
@@ -351,6 +351,18 @@ function parse_commandline()
         help = "elements per direction in coarse grid"
         arg_type = Int
         default = 1
+        "--elements-in-direction-x"
+        help = "elements in direction x in coarse grid"
+        arg_type = Int
+        default = 1
+        "--elements-in-direction-y"
+        help = "elements in direction x in coarse grid"
+        arg_type = Int
+        default = 1
+        "--elements-in-direction-z"
+        help = "elements in direction x in coarse grid"
+        arg_type = Int
+        default = 1
         "--refinement-level", "-L"
         help = "refinement level passed into p4est"
         arg_type = Int
@@ -429,6 +441,9 @@ function main()
 
     N = parsed_args["polynomial-order"]
     K = parsed_args["elements-per-direction"]
+    Kx = max(parsed_args["elements-in-direction-x"], K)
+    Ky = max(parsed_args["elements-in-direction-y"], K)
+    Kz = max(parsed_args["elements-in-direction-z"], K)
     level = parsed_args["refinement-level"]
     fixednumberofsteps = parsed_args["number-of-steps"]
     enabletiming = parsed_args["enable-timing"]
@@ -451,7 +466,7 @@ function main()
         kernel,
         FT,
         N,
-        K,
+        (Kx, Ky, Kz),
         level;
         outputvtk,
         fixednumberofsteps,
