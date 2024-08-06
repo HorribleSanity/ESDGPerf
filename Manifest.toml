@@ -2,7 +2,7 @@
 
 julia_version = "1.10.4"
 manifest_format = "2.0"
-project_hash = "a84ee2989ba3ccf0411c4ec1af1eb7f2eea9bf83"
+project_hash = "7411d226e6da48474ea43049cf0dcc11d26d4175"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -83,10 +83,10 @@ version = "5.4.3"
     SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 
 [[deps.CUDA_Driver_jll]]
-deps = ["Artifacts", "JLLWrappers", "LazyArtifacts", "Libdl", "Pkg"]
-git-tree-sha1 = "97df9d4d6be8ac6270cb8fd3b8fc413690820cbd"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "325058b426c2b421e3d2df3d5fa646d72d2e3e7e"
 uuid = "4ee394cb-3365-5eb0-8335-949819d2adfc"
-version = "0.9.1+1"
+version = "0.9.2+0"
 
 [[deps.CUDA_Runtime_Discovery]]
 deps = ["Libdl"]
@@ -296,9 +296,9 @@ version = "0.9.22"
 
 [[deps.LLVM]]
 deps = ["CEnum", "LLVMExtra_jll", "Libdl", "Preferences", "Printf", "Requires", "Unicode"]
-git-tree-sha1 = "020abd49586480c1be84f57da0017b5d3db73f7c"
+git-tree-sha1 = "2470e69781ddd70b8878491233cd09bc1bd7fc96"
 uuid = "929cbde3-209d-540e-8aea-75f648917ca0"
-version = "8.0.0"
+version = "8.1.0"
 weakdeps = ["BFloat16s"]
 
     [deps.LLVM.extensions]
@@ -306,9 +306,9 @@ weakdeps = ["BFloat16s"]
 
 [[deps.LLVMExtra_jll]]
 deps = ["Artifacts", "JLLWrappers", "LazyArtifacts", "Libdl", "TOML"]
-git-tree-sha1 = "c2636c264861edc6d305e6b4d528f09566d24c5e"
+git-tree-sha1 = "597d1c758c9ae5d985ba4202386a607c675ee700"
 uuid = "dad2f222-ce93-54a1-a47d-0025e8a3acab"
-version = "0.0.30+0"
+version = "0.0.31+0"
 
 [[deps.LLVMLoopInfo]]
 git-tree-sha1 = "2e5c102cfc41f48ae4740c7eca7743cc7e7b75ea"
@@ -559,9 +559,9 @@ version = "1.5.3"
 
 [[deps.Raven]]
 deps = ["Adapt", "Compat", "GPUArraysCore", "KernelAbstractions", "LinearAlgebra", "MPI", "OneDimensionalNodes", "P4estTypes", "RecipesBase", "Requires", "SparseArrays", "StaticArrays"]
-git-tree-sha1 = "0a1ac4968551ac03635ddc4badc3a30b93cc3635"
+git-tree-sha1 = "a630dec3c3d292bda4ab57468fda5f832772fa0e"
 uuid = "cfd3f2ab-0fb0-4d51-9553-03e53d33f144"
-version = "0.2.2"
+version = "0.2.3"
 weakdeps = ["CUDA", "WriteVTK"]
 
     [deps.Raven.extensions]
