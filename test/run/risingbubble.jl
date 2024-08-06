@@ -9,6 +9,7 @@ using Test
 using MPI
 using NVTX
 using ArgParse
+using DelimitedFiles
 import InteractiveUtils
 
 import ProgressMeter
@@ -95,6 +96,8 @@ function run(
     comm = MPI.COMM_WORLD,
     timeend = 100,
     fixednumberofsteps = nothing,
+    enabletiming = false,
+    timingprefix = "timing",
     triplebuffer = nothing,
 )
     A = CuArray
@@ -230,6 +233,10 @@ function run(
         """ FT N K level kernel en0 η0 dt numberofsteps
     end
 
+    (begintimestep, endtimestep) = (CUDA.CuEvent(), CUDA.CuEvent())
+    (prevbegintimestep, prevendtimestep) = (CUDA.CuEvent(), CUDA.CuEvent())
+    timing = Vector{Float64}(undef, numberofsteps)
+
     cp = Raven.expand(nodecommpattern(grid), nstate, np)
     cm = commmanager(eltype(q), cp, triplebuffer; comm)
 
@@ -249,6 +256,7 @@ function run(
         NVTX.@mark "time step" payload = step
 
         NVTX.@range "time step" begin
+            CUDA.record(begintimestep)
             for stage = 1:length(RKA)
                 NVTX.@mark "stage" payload = stage
                 NVTX.@range "stage" begin
@@ -263,11 +271,25 @@ function run(
                     )
                 end
             end
+            CUDA.record(endtimestep)
             time = dt * step
             do_output(step, time, q)
             if rank == 0
                 ProgressMeter.next!(p; showvalues = [(:step, step), (:time, time)])
             end
+
+            if enabletiming && step > 1
+                CUDA.synchronize(prevendtimestep)
+                timing[step-1] = CUDA.elapsed(prevbegintimestep, prevendtimestep)
+            end
+
+            if enabletiming && step == numberofsteps
+                CUDA.synchronize(endtimestep)
+                timing[step] = CUDA.elapsed(begintimestep, endtimestep)
+            end
+
+            begintimestep, prevbegintimestep = prevbegintimestep, begintimestep
+            endtimestep, prevendtimestep = prevendtimestep, endtimestep
         end
     end
     if rank == 0
@@ -294,6 +316,25 @@ function run(
         cd(vtkdir) do
             vtk_save(pvd)
         end
+    end
+
+    if rank == 0
+        mpisize = MPI.Comm_size(comm)
+        alltiming = similar(timing, numberofsteps, mpisize)
+        MPI.Gatherv!(
+            timing,
+            VBuffer(alltiming, fill(numberofsteps, mpisize)),
+            comm;
+            root = 0,
+        )
+
+        alltiming = vec(alltiming)
+        ranks = repeat((0:(mpisize-1)); inner = numberofsteps)
+        steps = repeat((1:numberofsteps), mpisize)
+
+        writedlm("$(timingprefix).tsv", zip(steps, ranks, alltiming))
+    else
+        MPI.Gatherv!(timing, nothing, comm; root = 0)
     end
 
     nothing
@@ -326,6 +367,13 @@ function parse_commandline()
         help = "number of time steps to take"
         arg_type = Int
         default = 50
+        "--enable-timing"
+        help = "enable timing of timesteps"
+        action = :store_true
+        "--timing-prefix"
+        help = "prefix of timing output file"
+        arg_type = String
+        default = "timing"
         "--enable-triple-buffer-comm"
         help = "enable triple-buffer MPI communications"
         action = :store_true
@@ -383,6 +431,8 @@ function main()
     K = parsed_args["elements-per-direction"]
     level = parsed_args["refinement-level"]
     fixednumberofsteps = parsed_args["number-of-steps"]
+    enabletiming = parsed_args["enable-timing"]
+    timingprefix = parsed_args["timing-prefix"]
     outputvtk = parsed_args["enable-vtk-output"]
     enabletriplebuffercomm = parsed_args["enable-triple-buffer-comm"]
     enablesinglebuffercomm = parsed_args["enable-single-buffer-comm"]
@@ -405,6 +455,8 @@ function main()
         level;
         outputvtk,
         fixednumberofsteps,
+        enabletiming,
+        timingprefix,
         triplebuffer,
     )
 end
