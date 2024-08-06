@@ -95,9 +95,14 @@ function run(
     comm = MPI.COMM_WORLD,
     timeend = 100,
     fixednumberofsteps = nothing,
+    triplebuffer = nothing,
 )
     A = CuArray
     Nq = N + 1
+
+    if isnothing(triplebuffer)
+        triplebuffer = Val(Raven.usetriplebuffer(A))
+    end
 
     rank = MPI.Comm_rank(comm)
 
@@ -226,7 +231,7 @@ function run(
     end
 
     cp = Raven.expand(nodecommpattern(grid), nstate, np)
-    cm = commmanager(eltype(q), cp; comm)
+    cm = commmanager(eltype(q), cp, triplebuffer; comm)
 
     step = 0
     time = FT(0)
@@ -321,6 +326,12 @@ function parse_commandline()
         help = "number of time steps to take"
         arg_type = Int
         default = 50
+        "--enable-triple-buffer-comm"
+        help = "enable triple-buffer MPI communications"
+        action = :store_true
+        "--enable-single-buffer-comm"
+        help = "enable single-buffer MPI communications"
+        action = :store_true
     end
 
     return parse_args(s)
@@ -373,10 +384,29 @@ function main()
     level = parsed_args["refinement-level"]
     fixednumberofsteps = parsed_args["number-of-steps"]
     outputvtk = parsed_args["enable-vtk-output"]
+    enabletriplebuffercomm = parsed_args["enable-triple-buffer-comm"]
+    enablesinglebuffercomm = parsed_args["enable-single-buffer-comm"]
+
+    triplebuffer = if enabletriplebuffercomm
+        Val(true)
+    elseif enablesinglebuffercomm
+        Val(false)
+    else
+        nothing
+    end
 
     kernel = VolumeKernel{:final}()
 
-    run(kernel, FT, N, K, level; outputvtk, fixednumberofsteps)
+    run(
+        kernel,
+        FT,
+        N,
+        K,
+        level;
+        outputvtk,
+        fixednumberofsteps,
+        triplebuffer,
+    )
 end
 
 main()
