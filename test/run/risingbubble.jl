@@ -327,18 +327,21 @@ function parse_commandline()
 end
 
 function main()
-    parsed_args = parse_commandline()
-    println("Parsed args:")
-    for (arg, val) in parsed_args
-        println("  $arg  =>  $val")
-    end
-
     if !MPI.Initialized()
         MPI.Init()
     end
 
     comm = MPI.COMM_WORLD
     rank = MPI.Comm_rank(comm)
+
+    parsed_args = parse_commandline()
+    if rank == 0
+        println("Parsed args:")
+        for (arg, val) in parsed_args
+            println("  $arg  =>  $val")
+        end
+    end
+
 
     if CUDA.functional()
         local_comm = MPI.Comm_split_type(
