@@ -63,8 +63,8 @@ chmod 755 launch.sh
 
 JULIA=/home/lwilcox/local/julia/1.10.4/bin/julia
 
-export JULIA_NUM_THREADS=12
-export OPENBLAS_NUM_THREADS=12
+export JULIA_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
 
 $JULIA -e 'using Pkg; pkg"instantiate"'
 $JULIA -e 'using Pkg; pkg"precompile"'
