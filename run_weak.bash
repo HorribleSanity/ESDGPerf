@@ -79,7 +79,7 @@ do
       do
       echo "Running F=${F} N=$N L=$L P=$P"
       prefix="${SLURM_JOB_NAME}-${SLURM_JOB_ID}-${F}-N${N}-L${L}-P${P}-K1_1_${P}"
-      srun -n $P ./launch.sh ${JULIA} --project=. test/run/risingbubble.jl \
+      mpirun -n $P ./launch.sh ${JULIA} --project=. test/run/risingbubble.jl \
         --number-of-steps 1000 \
         --polynomial-order ${N} \
         --refinement-level ${L} \
