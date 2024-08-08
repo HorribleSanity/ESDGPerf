@@ -235,7 +235,7 @@ function run(
 
     (begintimestep, endtimestep) = (CUDA.CuEvent(), CUDA.CuEvent())
     (prevbegintimestep, prevendtimestep) = (CUDA.CuEvent(), CUDA.CuEvent())
-    timing = Vector{Float64}(undef, numberofsteps)
+    timing = Vector{Float64}(undef, enabletiming ? numberofsteps : 0)
 
     cp = Raven.expand(nodecommpattern(grid), nstate, np)
     cm = commmanager(eltype(q), cp, triplebuffer; comm)
@@ -318,23 +318,25 @@ function run(
         end
     end
 
-    if rank == 0
-        mpisize = MPI.Comm_size(comm)
-        alltiming = similar(timing, numberofsteps, mpisize)
-        MPI.Gatherv!(
-            timing,
-            VBuffer(alltiming, fill(numberofsteps, mpisize)),
-            comm;
-            root = 0,
-        )
+    if enabletiming
+        if rank == 0
+            mpisize = MPI.Comm_size(comm)
+            alltiming = similar(timing, numberofsteps, mpisize)
+            MPI.Gatherv!(
+                timing,
+                VBuffer(alltiming, fill(numberofsteps, mpisize)),
+                comm;
+                root = 0,
+            )
 
-        alltiming = vec(alltiming)
-        ranks = repeat((0:(mpisize-1)); inner = numberofsteps)
-        steps = repeat((1:numberofsteps), mpisize)
+            alltiming = vec(alltiming)
+            ranks = repeat((0:(mpisize-1)); inner = numberofsteps)
+            steps = repeat((1:numberofsteps), mpisize)
 
-        writedlm("$(timingprefix).tsv", zip(steps, ranks, alltiming))
-    else
-        MPI.Gatherv!(timing, nothing, comm; root = 0)
+            writedlm("$(timingprefix).tsv", zip(steps, ranks, alltiming))
+        else
+            MPI.Gatherv!(timing, nothing, comm; root = 0)
+        end
     end
 
     nothing
