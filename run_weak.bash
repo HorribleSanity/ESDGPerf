@@ -63,18 +63,18 @@ chmod 755 launch.sh
 
 JULIA=/home/lwilcox/local/julia/1.10.4/bin/julia
 
-export JULIA_NUM_THREADS=1
-export OPENBLAS_NUM_THREADS=1
+export JULIA_NUM_THREADS=12
+export OPENBLAS_NUM_THREADS=12
 export UCX_ERROR_SIGNALS="SIGILL,SIGBUS,SIGFPE"
 
 $JULIA -e 'using Pkg; pkg"instantiate"'
 $JULIA -e 'using Pkg; pkg"precompile"'
 
-for N in `seq 2 6`
+for F in Float64 Float32
 do
-  for L in `seq 4 7`
+  for N in `seq 4 4`
   do
-    for F in Float64 Float32
+  for L in `seq 4 7`
     do
       for P in `seq 1 8`
       do
