@@ -115,6 +115,7 @@ NCU=/home/lwilcox/local/NVIDIA-Nsight-Compute-2024.2/ncu
 # Have julia only use one thread.
  export JULIA_NUM_THREADS=12
  export OPENBLAS_NUM_THREADS=12
+ export UCX_ERROR_SIGNALS="SIGILL,SIGBUS,SIGFPE"
 
 # MPI implementations will pin CUDA buffers which is a problem when
 # using a memory pools.
