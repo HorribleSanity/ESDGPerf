@@ -165,7 +165,7 @@ end
 
 function runtests()
     if !MPI.Initialized()
-        MPI.Init()
+        MPI.Init(threadlevel=:multiple)
     end
 
     FT = Float64

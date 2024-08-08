@@ -401,7 +401,7 @@ end
 
 function main()
     if !MPI.Initialized()
-        MPI.Init()
+        MPI.Init(threadlevel=:multiple)
     end
 
     comm = MPI.COMM_WORLD
