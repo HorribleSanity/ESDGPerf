@@ -95,7 +95,7 @@ function run(
     nsaves = 100,
     vtkdir = "rboutput",
     comm = MPI.COMM_WORLD,
-    timeend = 100,
+    timeend = 10.0,
     fixednumberofsteps = nothing,
     enabletiming = false,
     timingprefix = "timing",
@@ -161,14 +161,17 @@ function run(
 
     dq[:, :, (nlocalcells+1):end] .= NaN
 
-    timeend = FT(timeend)
-    cfl = FT(1 // 10)
-    dt = cfl * min_node_distance(grid) / FT(330)
+    # Here we minimize the differences between Float32
+    # and Float64.
+    cfl = 12 / 10
+    dt = cfl * min_node_distance(grid) / 330.0
     numberofsteps = ceil(Int, timeend / dt)
     dt = timeend / numberofsteps
     if !isnothing(fixednumberofsteps)
         numberofsteps = fixednumberofsteps
     end
+    outputstep = ceil(Int, timeend / nsaves / dt)
+    dt = FT(dt)
 
     RKA = (
         FT(0),
@@ -350,7 +353,7 @@ function parse_commandline()
         "--time-end", "-T"
         help = "End time of the simulation"
         arg_type = Float64
-        default = 100.0
+        default = 10.0
         "--enable-vtk-output"
         help = "enable vtk output"
         action = :store_true
