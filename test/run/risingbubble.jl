@@ -450,7 +450,7 @@ function parse_commandline()
         "--number-of-steps", "-S"
         help = "number of time steps to take"
         arg_type = Int
-        default = 50
+        default = -1
         "--enable-timing"
         help = "enable timing of timesteps"
         action = :store_true
@@ -526,6 +526,10 @@ function main()
     nsaves = parsed_args["vtk-output-number-of-saves"]
     enabletriplebuffercomm = parsed_args["enable-triple-buffer-comm"]
     enablesinglebuffercomm = parsed_args["enable-single-buffer-comm"]
+
+    if fixednumberofsteps < 0
+        fixednumberofsteps = nothing
+    end
 
     triplebuffer = if enabletriplebuffercomm
         Val(true)
