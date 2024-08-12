@@ -276,16 +276,19 @@ function run(
 
     if rank == 0
         @info @sprintf """Starting
-        FT       = %s
-        N        = %d
-        K        = %s
-        level    = %d
-        kernel   = %s
-        norm(q)  = %.16e
-        η0       = %.16e
-        dt       = %.16e
-        nsteps   = %d
-        """ FT N K level kernel en0 η0 dt numberofsteps
+        FT         = %s
+        N          = %d
+        K          = %s
+        level      = %d
+        kernel     = %s
+        norm(q)    = %.16e
+        η0         = %.16e
+        dt         = %.16e
+        nsteps     = %d
+        outputvtk  = %s
+        outputstep = %d
+        timeend    = %.16e
+        """ FT N K level kernel en0 η0 dt numberofsteps outputvtk outputstep timeend
     end
 
     (begintimestep, endtimestep) = (CUDA.CuEvent(), CUDA.CuEvent())
