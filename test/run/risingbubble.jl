@@ -246,7 +246,7 @@ function run(
     end
 
     do_output = function (step, time, q)
-        if outputvtk && step % ceil(Int, timeend / nsaves / dt) == 0
+        if outputvtk && step % outputstep == 0
             NVTX.@range "VTK output" begin
                 @info "Start outputing" step time
                 cd(vtkdir) do
