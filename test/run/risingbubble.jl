@@ -92,6 +92,7 @@ function run(
     K,
     level;
     outputvtk = false,
+    nsaves = 100,
     vtkdir = "rboutput",
     comm = MPI.COMM_WORLD,
     timeend = 100,
@@ -191,7 +192,7 @@ function run(
     end
 
     do_output = function (step, time, q)
-        if outputvtk && step % ceil(Int, timeend / 100 / dt) == 0
+        if outputvtk && step % ceil(Int, timeend / nsaves / dt) == 0
             NVTX.@range "VTK output" begin
                 @info "Start outputing" step time
                 cd(vtkdir) do
@@ -346,9 +347,21 @@ function parse_commandline()
     s = ArgParseSettings()
 
     @add_arg_table! s begin
+        "--time-end", "-T"
+        help = "End time of the simulation"
+        arg_type = Float64
+        default = 100.0
         "--enable-vtk-output"
         help = "enable vtk output"
         action = :store_true
+        "--vtk-output-directory"
+        help = "directory for vtk output"
+        arg_type = String
+        default = "rboutput"
+        "--vtk-output-number-of-saves"
+        help = "Roughly the number of vtk output files"
+        arg_type = Int
+        default = 100
         "--elements-per-direction", "-K"
         help = "elements per direction in coarse grid"
         arg_type = Int
@@ -441,6 +454,7 @@ function main()
         error("Unsupported floating-point type $(FT_symbol)")
     end
 
+    timeend = parsed_args["time-end"]
     N = parsed_args["polynomial-order"]
     K = parsed_args["elements-per-direction"]
     Kx = max(parsed_args["elements-in-direction-x"], K)
@@ -451,6 +465,8 @@ function main()
     enabletiming = parsed_args["enable-timing"]
     timingprefix = parsed_args["timing-prefix"]
     outputvtk = parsed_args["enable-vtk-output"]
+    vtkdir = parsed_args["vtk-output-directory"]
+    nsaves = parsed_args["vtk-output-number-of-saves"]
     enabletriplebuffercomm = parsed_args["enable-triple-buffer-comm"]
     enablesinglebuffercomm = parsed_args["enable-single-buffer-comm"]
 
@@ -470,7 +486,10 @@ function main()
         N,
         (Kx, Ky, Kz),
         level;
+        timeend,
         outputvtk,
+        vtkdir,
+        nsaves,
         fixednumberofsteps,
         enabletiming,
         timingprefix,
