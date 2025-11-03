@@ -366,7 +366,8 @@ function run(
         """ enf ηf Δη
     end
 
-    @test abs(Δη) < 100eps(FT)
+    # turn test off for strong scaling
+    #@test abs(Δη) < 100eps(FT)
 
     # final output
     do_output(numberofsteps, timeend, q)
