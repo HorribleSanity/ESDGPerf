@@ -3,11 +3,11 @@
 #SBATCH --job-name=strong-test
 #SBATCH --output=strong_%j.txt
 #SBATCH --partition=gpuA100x4
-#SBATCH --nodes=1
+#SBATCH --nodes=3
 #SBATCH --gpus-per-node=4
 #SBATCH --mem-per-gpu=32G
 #SBATCH --ntasks-per-node=4
-#SBATCH --time=12:00:00
+#SBATCH --time=04:00:00
 #SBATCH --exclusive
 
 echo 'Job is running on nodes:'
@@ -23,7 +23,11 @@ echo SLURM: PATH:                   $PATH
 echo ------------------------------------------------------
 
 module load julia/1.10.2
-module load cuda/12.4.0
+#module load openmpi
+#module load cuda/12.4.0
+export CUDA_VISIBLE_DEVICES=""  # No GPUs visible during startup
+
+
 
 # ===== ADD DIAGNOSTIC CHECKS HERE =====
 echo "=== GPU Check ==="
@@ -44,6 +48,7 @@ echo ""
 
 JULIA=$(which julia)
 MPI=/u/hwaterhouse/.julia/bin/mpiexecjl
+#MPI=mpirun
 
 echo "Using JULIA: $JULIA"
 echo "Job ID: $SLURM_JOBID"
@@ -62,21 +67,30 @@ chmod 755 launch.sh
 # Instantiate once
 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
-mkdir -p ./strong-scaling-results
-
 # Fixed problem size for strong scaling
-N=3
-L=4
+N=4
+L=6
 F=Float64
 
+# Create unique directory for this run using timestamp and job ID
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+RUN_DIR="./strong-scaling-results/run_${TIMESTAMP}_job${SLURM_JOBID}_N${N}_L${L}"
+mkdir -p ${RUN_DIR}
+
+echo "Results will be saved to: ${RUN_DIR}"
+
+
+
 # Loop through GPU counts
-for P in 4; do
-  prefix="./strong-scaling-results/strong-${SLURM_JOBID}-${F}-N${N}-L${L}-P${P}"
+for P in 2 4 8 12; do
+  VTK_DIR="${RUN_DIR}/vtk-out-P${P}"
+  mkdir -p ${VTK_DIR}
+  prefix="${RUN_DIR}/strong-${SLURM_JOBID}-${F}-N${N}-L${L}-P${P}"
 
   echo "Running N=${N} L=${L} F=${F} with ${P} GPUs..."
 
-  ${MPI} -n $P ./launch.sh ${JULIA} --project=. test/run/risingbubble.jl \
-    --number-of-steps 1000 \
+  time ${MPI} -n $P ./launch.sh ${JULIA} --project=. test/run/risingbubble.jl \
+    --time-end 500\
     --polynomial-order ${N} \
     --refinement-level ${L} \
     --floating-point-type ${F} \
@@ -86,11 +100,12 @@ for P in 4; do
     --timing-prefix ${prefix} \
     --enable-timing \
     --enable-vtk-output\
-    --vtk-output-directory "./vtk-out"\
+    --vtk-output-directory "${VTK_DIR}"\
+    --vtk-output-number-of-saves 50\
     2>&1 | tee -a ${prefix}.log
 
   echo "Completed ${P} GPU run"
 done
 
 echo "All strong scaling tests complete!"
-ls -lh ./strong-scaling-results/strong-*.log
+ls -lh ${RUN_DIR}/*.log
