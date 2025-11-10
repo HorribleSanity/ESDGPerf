@@ -3,7 +3,7 @@
 #SBATCH --job-name=strong-test
 #SBATCH --output=strong_%j.txt
 #SBATCH --partition=gpuA100x4
-#SBATCH --nodes=3
+#SBATCH --nodes=1
 #SBATCH --gpus-per-node=4
 #SBATCH --mem-per-gpu=32G
 #SBATCH --ntasks-per-node=4
@@ -82,7 +82,7 @@ echo "Results will be saved to: ${RUN_DIR}"
 
 
 # Loop through GPU counts
-for P in 2 4 8 12; do
+for P in 4; do
   VTK_DIR="${RUN_DIR}/vtk-out-P${P}"
   mkdir -p ${VTK_DIR}
   prefix="${RUN_DIR}/strong-${SLURM_JOBID}-${F}-N${N}-L${L}-P${P}"

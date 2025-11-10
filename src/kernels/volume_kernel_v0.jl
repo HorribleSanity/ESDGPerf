@@ -127,6 +127,193 @@ end
     (_γ(FT) - 1) * (ρe - (ρu * ρu + ρv * ρv + ρw * ρw) / 2ρ - ρ * Φ)
 end
 
+@inline function volume_flux(H, q1, aux1, q2, aux2, n⃗)
+    FT = eltype(H)
+
+    @inbounds begin
+        ρ1 = q1[_ρ]
+        ρu1 = q1[_ρu]
+        ρv1 = q1[_ρv]
+        ρw1 = q1[_ρw]
+        ρe1 = q1[_ρe]
+        Φ1 = aux1[_Φ]
+
+        u1 = ρu1 / ρ1
+        v1 = ρv1 / ρ1
+        w1 = ρw1 / ρ1
+        p1 = pressure(ρ1, ρu1, ρv1, ρw1, ρe1, Φ1)
+        b1 = ρ1 / (2 * p1)
+        usq1 = u1 * u1 + v1 * v1 + w1 * w1
+
+        ρ2 = q2[_ρ]
+        ρu2 = q2[_ρu]
+        ρv2 = q2[_ρv]
+        ρw2 = q2[_ρw]
+        ρe2 = q2[_ρe]
+        Φ2 = aux2[_Φ]
+
+        u2 = ρu2 / ρ2
+        v2 = ρv2 / ρ2
+        w2 = ρw2 / ρ2
+        p2 = pressure(ρ2, ρu2, ρv2, ρw2, ρe2, Φ2)
+        b2 = ρ2 / (2 * p2)
+        usq2 = u2 * u2 + v2 * v2 + w2 * w2
+
+        r_avg = ave(ρ1, ρ2)
+        u_avg = ave(u1, u2)
+        v_avg = ave(v1, v2)
+        w_avg = ave(w1, w2)
+        b_avg = ave(b1, b2)
+        Φ_avg = ave(Φ1, Φ2)
+        usq_avg = ave(usq1, usq2)
+
+        r_log = logave(ρ1, ρ2)
+        b_log = logave(b1, b2)
+        alpha = b_avg * r_log / (2 * b1)
+
+        H[1, _ρ] = u_avg * r_log
+        H[2, _ρ] = v_avg * r_log
+        H[3, _ρ] = w_avg * r_log
+
+        p = r_avg / (2 * b_avg)
+        D = -alpha * (Φ1 - Φ2)
+
+        H[1, _ρu] = u_avg * H[1, _ρ] + p
+        H[2, _ρu] = v_avg * H[1, _ρ]
+        H[3, _ρu] = w_avg * H[1, _ρ]
+
+        H[1, _ρv] = u_avg * H[2, _ρ]
+        H[2, _ρv] = v_avg * H[2, _ρ] + p
+        H[3, _ρv] = w_avg * H[2, _ρ]
+
+        H[1, _ρw] = u_avg * H[3, _ρ]
+        H[2, _ρw] = v_avg * H[3, _ρ]
+        H[3, _ρw] = w_avg * H[3, _ρ] + p
+
+        c = (1 / (2 * (_γ(FT) - 1) * b_log) - usq_avg / 2 + Φ_avg)
+
+        c1 = H[1, _ρu] * u_avg + H[1, _ρv] * v_avg + H[1, _ρw] * w_avg
+        c2 = H[2, _ρu] * u_avg + H[2, _ρv] * v_avg + H[2, _ρw] * w_avg
+        c3 = H[3, _ρu] * u_avg + H[3, _ρv] * v_avg + H[3, _ρw] * w_avg
+        H[1, _ρe] = c * H[1, _ρ] + c1
+        H[2, _ρe] = c * H[2, _ρ] + c2
+        H[3, _ρe] = c * H[3, _ρ] + c3
+
+        H[1, _ρu] += D
+        H[2, _ρv] += D
+        H[3, _ρw] += D
+
+
+        # Compute entropy variables for state 1 eq (18)
+        s1 = log((p1) / (ρ1^_γ(FT)))
+        b1 = ρ1 / (2 * p1)
+        v1_ρ = ((_γ(FT) - s1) / ((_γ(FT) - 1))) - (u1^2 + v1^2 + w1^2) * b1
+        v1_ρu = 2 * b1 * u1
+        v1_ρv = 2 * b1 * v1
+        v1_ρw = 2 * b1 * w1
+        v1_ρe = -2 * b1
+
+        # Compute entropy variables for state 2 eq (18)
+        s2 = log((p2) / (ρ2^_γ(FT)))
+        b2 = ρ2 / (2 * p2)
+        v2_ρ = ((_γ(FT) - s2) / ((_γ(FT) - 1))) - (u2^2 + v2^2 + w2^2) * b2
+        v2_ρu = 2 * b2 * u2
+        v2_ρv = 2 * b2 * v2
+        v2_ρw = 2 * b2 * w2
+        v2_ρe = -2 * b2
+
+        Δv_ρ = v2_ρ - v1_ρ
+        Δv_ρu = v2_ρu - v1_ρu
+        Δv_ρv = v2_ρv - v1_ρv
+        Δv_ρw = v2_ρw - v1_ρw
+        Δv_ρe = v2_ρe - v1_ρe
+
+        u_avg_n = u_avg * n⃗[1] + v_avg * n⃗[2] + w_avg * n⃗[3]
+        p_avg = r_avg / (2 * b_avg)
+        u²_bar = 2 * (u_avg * u_avg + v_avg * v_avg + w_avg * w_avg) - usq_avg
+        h_bar = _γ(FT) / (2 * b_log * (_γ(FT) - 1)) + u²_bar / 2 + Φ_avg
+        c_bar = sqrt(_γ(FT) * p_avg / r_log)
+
+        u_t1 = u_avg - u_avg_n * n⃗[1]
+        u_t2 = v_avg - u_avg_n * n⃗[2]
+        u_t3 = w_avg - u_avg_n * n⃗[3]
+
+        λ1 = abs(u_avg_n - c_bar) * r_log / (2 * _γ(FT))
+        λ2 = abs(u_avg_n) * r_log * (_γ(FT) - 1) / _γ(FT)
+        λ3 = abs(u_avg_n + c_bar) * r_log / (2 * _γ(FT))
+        λ4 = abs(u_avg_n) * p_avg
+
+        umc1 = u_avg - c_bar * n⃗[1]
+        umc2 = v_avg - c_bar * n⃗[2]
+        umc3 = w_avg - c_bar * n⃗[3]
+
+        upc1 = u_avg + c_bar * n⃗[1]
+        upc2 = v_avg + c_bar * n⃗[2]
+        upc3 = w_avg + c_bar * n⃗[3]
+
+        Δv_ρu_n = Δv_ρu * n⃗[1] + Δv_ρv * n⃗[2] + Δv_ρw * n⃗[3]
+
+        w1 =
+            λ1 * (
+                Δv_ρ +
+                (umc1 * Δv_ρu + umc2 * Δv_ρv + umc3 * Δv_ρw) +
+                (h_bar - c_bar * u_avg_n) * Δv_ρe
+            )
+        w2 =
+            λ2 * (
+                Δv_ρ +
+                (u_avg * Δv_ρu + v_avg * Δv_ρv + w_avg * Δv_ρw) +
+                (u²_bar / 2 + Φ_avg) * Δv_ρe
+            )
+        w3 =
+            λ3 * (
+                Δv_ρ +
+                (upc1 * Δv_ρu + upc2 * Δv_ρv + upc3 * Δv_ρw) +
+                (h_bar + c_bar * u_avg_n) * Δv_ρe
+            )
+
+        Dρ = w1 + w2 + w3
+
+        Dρu =
+            w1 * umc1 + w2 * u_avg + w3 * upc1 + λ4 * (Δv_ρu - Δv_ρu_n * n⃗[1] + Δv_ρe * u_t1)
+        Dρv =
+            w1 * umc2 + w2 * v_avg + w3 * upc2 + λ4 * (Δv_ρv - Δv_ρu_n * n⃗[2] + Δv_ρe * u_t2)
+        Dρw =
+            w1 * umc3 + w2 * w_avg + w3 * upc3 + λ4 * (Δv_ρw - Δv_ρu_n * n⃗[3] + Δv_ρe * u_t3)
+        Dρe = (
+            w1 * (h_bar - c_bar * u_avg_n) +
+            w2 * (u²_bar / 2 + Φ_avg) +
+            w3 * (h_bar + c_bar * u_avg_n) +
+            λ4 * (
+                (u_t1 * Δv_ρu + u_t2 * Δv_ρv + u_t3 * Δv_ρw) +
+                Δv_ρe * ((u_avg*u_avg + v_avg*v_avg + w_avg*w_avg) - u_avg_n * u_avg_n)
+            )
+        )
+
+        half = FT(1) / FT(2)
+        H[1, _ρ] -= Dρ * n⃗[1] * half
+        H[2, _ρ] -= Dρ * n⃗[2] * half
+        H[3, _ρ] -= Dρ * n⃗[3] * half
+
+        H[1, _ρu] -= Dρu * n⃗[1] * half
+        H[2, _ρu] -= Dρu * n⃗[2] * half
+        H[3, _ρu] -= Dρu * n⃗[3] * half
+
+        H[1, _ρv] -= Dρv * n⃗[1] * half
+        H[2, _ρv] -= Dρv * n⃗[2] * half
+        H[3, _ρv] -= Dρv * n⃗[3] * half
+
+        H[1, _ρw] -= Dρw * n⃗[1] * half
+        H[2, _ρw] -= Dρw * n⃗[2] * half
+        H[3, _ρw] -= Dρw * n⃗[3] * half
+
+        H[1, _ρe] -= Dρe * n⃗[1] * half
+        H[2, _ρe] -= Dρe * n⃗[2] * half
+        H[3, _ρe] -= Dρe * n⃗[3] * half
+
+    end
+end
+
 @inline function volume_flux(H, q1, aux1, q2, aux2)
     FT = eltype(H)
 

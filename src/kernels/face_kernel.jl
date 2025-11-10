@@ -60,7 +60,8 @@ function face_knl(
                 boundarystate!(l_q⁺, l_aux⁺, n⃗, l_q⁻, l_aux⁻)
             end
 
-            volume_flux(l_H, l_q⁻, l_aux⁻, l_q⁺, l_aux⁺)
+            volume_flux(l_H, l_q⁻, l_aux⁻, l_q⁺, l_aux⁺, n⃗) 
+
 
             @unroll for s = 1:nstate
                 dq[ijk⁻+Nq3*(s-1)+Nq3*nstate*(e⁻-1)] -=
