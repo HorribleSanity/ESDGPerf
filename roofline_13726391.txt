@@ -1,0 +1,1136 @@
+Job is running on nodes:
+gpua044
+------------------------------------------------------
+SLURM: submission node: dt-login01.delta.ncsa.illinois.edu
+SLURM: partition: gpuA100x4
+SLURM: submission directory: /u/hwaterhouse/ESDGPerf.jl
+SLURM: job identifier: 13726391
+SLURM: job name: roofline-profile
+SLURM: current home directory: /u/hwaterhouse
+SLURM: PATH: /u/hwaterhouse/.local/bin:/u/hwaterhouse/bin:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-11.8.0-vfixfmc/bin:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/bin:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/bin:/sw/user/scripts:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ddn/ime/bin:/opt/puppetlabs/bin
+------------------------------------------------------
+
+The following have been reloaded with a version change:
+  1) cuda/11.8.0 => cuda/12.4.0
+
+Using NCU: /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/bin/ncu
+Using JULIA: /sw/external/julia/julia-1.10.2/bin/julia
+Job ID: 13726391
+Profiling N=2 L=1 F=Float64...
+==WARNING== Note: Running with unmodified GPU clocks. If not controlled otherwise, profiling results may be inconsistent.
+==PROF== Connected to process 2739197 (/sw/external/julia/julia-1.10.2/bin/julia)
+┌ Warning: CUDA runtime library `libcublasLt.so.12` was loaded from a system path, `/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64/libcublasLt.so.12`.
+│ 
+│ This may cause errors. Ensure that you have not set the LD_LIBRARY_PATH
+│ environment variable, or that it does not contain paths to CUDA libraries.
+│ 
+│ In any other case, please file an issue.
+└ @ CUDA ~/.julia/packages/CUDA/Tl08O/src/initialization.jl:219
+┌ Warning: CUDA runtime library `libnvJitLink.so.12` was loaded from a system path, `/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64/libnvJitLink.so.12`.
+│ 
+│ This may cause errors. Ensure that you have not set the LD_LIBRARY_PATH
+│ environment variable, or that it does not contain paths to CUDA libraries.
+│ 
+│ In any other case, please file an issue.
+└ @ CUDA ~/.julia/packages/CUDA/Tl08O/src/initialization.jl:219
+┌ Warning: CUDA runtime library `libcusparse.so.12` was loaded from a system path, `/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64/libcusparse.so.12`.
+│ 
+│ This may cause errors. Ensure that you have not set the LD_LIBRARY_PATH
+│ environment variable, or that it does not contain paths to CUDA libraries.
+│ 
+│ In any other case, please file an issue.
+└ @ CUDA ~/.julia/packages/CUDA/Tl08O/src/initialization.jl:219
+Parsed args:
+  vtk-output-number-of-saves  =>  100
+  time-end  =>  10.0
+  elements-in-direction-z  =>  1
+  number-of-steps  =>  1
+  timing-prefix  =>  timing
+  enable-triple-buffer-comm  =>  false
+  enable-single-buffer-comm  =>  false
+  elements-per-direction  =>  1
+  elements-in-direction-y  =>  1
+  polynomial-order  =>  2
+  enable-timing  =>  false
+  elements-in-direction-x  =>  1
+  enable-vtk-output  =>  false
+  refinement-level  =>  1
+  vtk-output-directory  =>  rboutput
+  floating-point-type  =>  Float64
+Julia Version 1.10.2
+Commit bd47eca2c8a (2024-03-01 10:14 UTC)
+Build Info:
+  Official https://julialang.org/ release
+Platform Info:
+  OS: Linux (x86_64-linux-gnu)
+      "Red Hat Enterprise Linux release 8.8 (Ootpa)"
+  uname: Linux 4.18.0-477.95.1.el8_8.x86_64 #1 SMP Fri Apr 11 09:50:48 EDT 2025 x86_64 x86_64
+  CPU: AMD EPYC 7763 64-Core Processor: 
+                 speed         user         nice          sys         idle          irq
+       #1-64  2445 MHz  1348965359 s     401687 s  136416168 s  6984470599 s    7740127 s
+  Memory: 251.61994552612305 GB (230780.03515625 MB free)
+  Uptime: 1.326133559e7 sec
+  Load Avg:  1.39  1.31  1.18
+  WORD_SIZE: 64
+  LIBM: libopenlibm
+  LLVM: libLLVM-15.0.7 (ORCJIT, znver3)
+Threads: 1 default, 0 interactive, 1 GC (on 64 virtual cores)
+Environment:
+  LD_LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/nsight-compute-2024.1.0/target/linux-desktop-glibc_2_11_3-x64/.:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:/sw/external/julia/julia-1.10.2/lib:/opt/cray/libfabric/1.15.2.0/lib64:/opt/cray/libfabric/1.15.2.0/lib
+  __LMOD_REF_COUNT_CMAKE_PREFIX_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4:2;/sw/external/julia/julia-1.10.2:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku:2
+  __LMOD_REF_COUNT_LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4/lib:1;/sw/external/julia/julia-1.10.2/lib:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib:1
+  NVHPC_CUDA_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x
+  LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4/lib:/sw/external/julia/julia-1.10.2/lib:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib
+  HOME = /u/hwaterhouse
+  CMAKE_PREFIX_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4:/sw/external/julia/julia-1.10.2:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku
+  GCC_RUNTIME_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4
+  __LMOD_REF_COUNT_MODULEPATH = /sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lo6xae6/gcc/11.4.0:1;/sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lranp74/gcc/11.4.0:1;/sw/spack/deltas11-2023-03/modules/lmod/gcc/11.4.0:1;/sw/user/modules:1;/sw/spack/deltas11-2023-03/modules/lmod/Core:1;/opt/cray/pe/lmod/modulefiles/craype-targets/default:1;/opt/cray/pe/lmod/modulefiles/core:1;/opt/cray/modulefiles:1;/sw/external/lmod/modulefiles/core:1;/usr/share/lmod/lmod/modulefiles/Core:1
+  MODULEPATH = /sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lo6xae6/gcc/11.4.0:/sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lranp74/gcc/11.4.0:/sw/spack/deltas11-2023-03/modules/lmod/gcc/11.4.0:/sw/user/modules:/sw/spack/deltas11-2023-03/modules/lmod/Core:/opt/cray/pe/lmod/modulefiles/craype-targets/default:/opt/cray/pe/lmod/modulefiles/core:/opt/cray/modulefiles:/sw/external/lmod/modulefiles/core:/usr/share/lmod/lmod/modulefiles/Core
+  TERM = xterm-256color
+  CUE_CLUSTER_HOME = /u/hwaterhouse
+  GCC_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku
+  NVCC_PREPEND_FLAGS = -gencode arch=compute_80,code=sm_80
+  MODULEPATH_ROOT = /
+  C_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:/sw/external/julia/julia-1.10.2/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include
+  __LMOD_REF_COUNT_MANPATH = /sw/external/julia/julia-1.10.2/share/man:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/share/man:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/share/man:2;/usr/share/lmod/lmod/share/man:1;/usr/local/share/man:1;/usr/share/man:1;/opt/ddn/ime/share/man:1;/opt/puppetlabs/puppet/share/man:1;:2
+  FPATH = /usr/share/lmod/lmod/init/ksh_funcs
+  CPLUS_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:/sw/external/julia/julia-1.10.2/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include
+  CUDA_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x
+  CUE_HOME_TYPE = lustre-2.14
+  PKG_CONFIG_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib/pkgconfig
+  MODULESHOME = /usr/share/lmod/lmod
+  PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/bin:/sw/external/julia/julia-1.10.2/bin:/u/hwaterhouse/.local/bin:/u/hwaterhouse/bin:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/bin:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/bin:/sw/user/scripts:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ddn/ime/bin:/opt/puppetlabs/bin
+  OPENMPI_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74
+  CUE_HOME = /u/hwaterhouse
+  __LMOD_REF_COUNT_LD_LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:1;/sw/external/julia/julia-1.10.2/lib:1;/opt/cray/libfabric/1.15.2.0/lib64:1;/opt/cray/libfabric/1.15.2.0/lib:1
+  MANPATH = /sw/external/julia/julia-1.10.2/share/man:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/share/man:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/share/man:/usr/share/lmod/lmod/share/man:/usr/local/share/man:/usr/share/man:/opt/ddn/ime/share/man:/opt/puppetlabs/puppet/share/man::
+  __LMOD_REF_COUNT_C_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:1;/sw/external/julia/julia-1.10.2/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include:1
+  __LMOD_REF_COUNT_PKG_CONFIG_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib/pkgconfig:2
+  __LMOD_REF_COUNT_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/bin:2;/sw/external/julia/julia-1.10.2/bin:1;/u/hwaterhouse/.local/bin:1;/u/hwaterhouse/bin:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/bin:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/bin:2;/sw/user/scripts:1;/usr/local/bin:1;/usr/bin:1;/usr/local/sbin:1;/usr/sbin:1;/opt/ddn/ime/bin:1;/opt/puppetlabs/bin:1
+  __LMOD_REF_COUNT_CPLUS_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:1;/sw/external/julia/julia-1.10.2/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include:1
+  NVTX_INJECTION64_PATH = /u/hwaterhouse/.julia/artifacts/74e3c7e5f0b5006452babe4ab528317a86249582/lib/libcupti.so
+CUDA runtime 12.5, artifact installation
+CUDA driver 12.4
+NVIDIA driver 550.163.1
+
+CUDA libraries: 
+- CUBLAS: 12.4.2
+- CURAND: 10.3.6
+- CUFFT: 11.2.3
+- CUSOLVER: 11.6.3
+- CUSPARSE: 12.5.1
+- CUPTI: 2024.2.1 (API 23.0.0)
+- NVML: 12.0.0+550.163.1
+
+Julia packages: 
+- CUDA: 5.4.3
+- CUDA_Driver_jll: 0.9.2+0
+- CUDA_Runtime_jll: 0.14.1+0
+
+Toolchain:
+- Julia: 1.10.2
+- LLVM: 15.0.7
+
+Preferences:
+- nonblocking_synchronization: false
+
+4 devices:
+  0: NVIDIA A100-SXM4-40GB (sm_80, 38.856 GiB / 40.000 GiB available)
+  1: NVIDIA A100-SXM4-40GB (sm_80, 39.377 GiB / 40.000 GiB available)
+  2: NVIDIA A100-SXM4-40GB (sm_80, 39.377 GiB / 40.000 GiB available)
+  3: NVIDIA A100-SXM4-40GB (sm_80, 39.377 GiB / 40.000 GiB available)
+┌ Info: Starting
+│ FT         = Float64
+│ N          = 2
+│ K          = (1, 1, 1)
+│ level      = 1
+│ kernel     = VolumeKernel{:final}()
+│ norm(q)    = 2.0881001350768959e+10
+│ η0         = -2.4148211177436032e+11
+│ dt         = 1.6666666666666667e+00
+│ nsteps     = 1
+│ outputvtk  = false
+│ outputstep = 1
+└ timeend    = 1.0000000000000000e+01
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 49 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 49 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 49 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+┌ Info: Finished
+│ norm(q)      = 2.0881000888414246e+10
+│ ηf           = -2.4148211177454193e+11
+└ Δη           = -7.5206443279562904e-13
+==PROF== Disconnected from process 2739197
+==PROF== Report: /u/hwaterhouse/ESDGPerf.jl/./ncu-profiles/profile-13726391-Float64-N2-L1.ncu-rep
+SUCCESS: ./ncu-profiles/profile-13726391-Float64-N2-L1.csv created
+Profiling N=2 L=2 F=Float64...
+==WARNING== Note: Running with unmodified GPU clocks. If not controlled otherwise, profiling results may be inconsistent.
+==PROF== Connected to process 2742513 (/sw/external/julia/julia-1.10.2/bin/julia)
+┌ Warning: CUDA runtime library `libcublasLt.so.12` was loaded from a system path, `/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64/libcublasLt.so.12`.
+│ 
+│ This may cause errors. Ensure that you have not set the LD_LIBRARY_PATH
+│ environment variable, or that it does not contain paths to CUDA libraries.
+│ 
+│ In any other case, please file an issue.
+└ @ CUDA ~/.julia/packages/CUDA/Tl08O/src/initialization.jl:219
+┌ Warning: CUDA runtime library `libnvJitLink.so.12` was loaded from a system path, `/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64/libnvJitLink.so.12`.
+│ 
+│ This may cause errors. Ensure that you have not set the LD_LIBRARY_PATH
+│ environment variable, or that it does not contain paths to CUDA libraries.
+│ 
+│ In any other case, please file an issue.
+└ @ CUDA ~/.julia/packages/CUDA/Tl08O/src/initialization.jl:219
+┌ Warning: CUDA runtime library `libcusparse.so.12` was loaded from a system path, `/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64/libcusparse.so.12`.
+│ 
+│ This may cause errors. Ensure that you have not set the LD_LIBRARY_PATH
+│ environment variable, or that it does not contain paths to CUDA libraries.
+│ 
+│ In any other case, please file an issue.
+└ @ CUDA ~/.julia/packages/CUDA/Tl08O/src/initialization.jl:219
+Parsed args:
+  vtk-output-number-of-saves  =>  100
+  time-end  =>  10.0
+  elements-in-direction-z  =>  1
+  number-of-steps  =>  1
+  timing-prefix  =>  timing
+  enable-triple-buffer-comm  =>  false
+  enable-single-buffer-comm  =>  false
+  elements-per-direction  =>  1
+  elements-in-direction-y  =>  1
+  polynomial-order  =>  2
+  enable-timing  =>  false
+  elements-in-direction-x  =>  1
+  enable-vtk-output  =>  false
+  refinement-level  =>  2
+  vtk-output-directory  =>  rboutput
+  floating-point-type  =>  Float64
+Julia Version 1.10.2
+Commit bd47eca2c8a (2024-03-01 10:14 UTC)
+Build Info:
+  Official https://julialang.org/ release
+Platform Info:
+  OS: Linux (x86_64-linux-gnu)
+      "Red Hat Enterprise Linux release 8.8 (Ootpa)"
+  uname: Linux 4.18.0-477.95.1.el8_8.x86_64 #1 SMP Fri Apr 11 09:50:48 EDT 2025 x86_64 x86_64
+  CPU: AMD EPYC 7763 64-Core Processor: 
+                 speed         user         nice          sys         idle          irq
+       #1-64  2445 MHz  1348966091 s     401687 s  136417494 s  6984594546 s    7740174 s
+  Memory: 251.61994552612305 GB (230792.1953125 MB free)
+  Uptime: 1.326153268e7 sec
+  Load Avg:  1.23  1.25  1.18
+  WORD_SIZE: 64
+  LIBM: libopenlibm
+  LLVM: libLLVM-15.0.7 (ORCJIT, znver3)
+Threads: 1 default, 0 interactive, 1 GC (on 64 virtual cores)
+Environment:
+  LD_LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/nsight-compute-2024.1.0/target/linux-desktop-glibc_2_11_3-x64/.:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:/sw/external/julia/julia-1.10.2/lib:/opt/cray/libfabric/1.15.2.0/lib64:/opt/cray/libfabric/1.15.2.0/lib
+  __LMOD_REF_COUNT_CMAKE_PREFIX_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4:2;/sw/external/julia/julia-1.10.2:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku:2
+  __LMOD_REF_COUNT_LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4/lib:1;/sw/external/julia/julia-1.10.2/lib:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib:1
+  NVHPC_CUDA_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x
+  LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4/lib:/sw/external/julia/julia-1.10.2/lib:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib
+  HOME = /u/hwaterhouse
+  CMAKE_PREFIX_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4:/sw/external/julia/julia-1.10.2:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku
+  GCC_RUNTIME_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4
+  __LMOD_REF_COUNT_MODULEPATH = /sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lo6xae6/gcc/11.4.0:1;/sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lranp74/gcc/11.4.0:1;/sw/spack/deltas11-2023-03/modules/lmod/gcc/11.4.0:1;/sw/user/modules:1;/sw/spack/deltas11-2023-03/modules/lmod/Core:1;/opt/cray/pe/lmod/modulefiles/craype-targets/default:1;/opt/cray/pe/lmod/modulefiles/core:1;/opt/cray/modulefiles:1;/sw/external/lmod/modulefiles/core:1;/usr/share/lmod/lmod/modulefiles/Core:1
+  MODULEPATH = /sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lo6xae6/gcc/11.4.0:/sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lranp74/gcc/11.4.0:/sw/spack/deltas11-2023-03/modules/lmod/gcc/11.4.0:/sw/user/modules:/sw/spack/deltas11-2023-03/modules/lmod/Core:/opt/cray/pe/lmod/modulefiles/craype-targets/default:/opt/cray/pe/lmod/modulefiles/core:/opt/cray/modulefiles:/sw/external/lmod/modulefiles/core:/usr/share/lmod/lmod/modulefiles/Core
+  TERM = xterm-256color
+  CUE_CLUSTER_HOME = /u/hwaterhouse
+  GCC_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku
+  NVCC_PREPEND_FLAGS = -gencode arch=compute_80,code=sm_80
+  MODULEPATH_ROOT = /
+  C_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:/sw/external/julia/julia-1.10.2/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include
+  __LMOD_REF_COUNT_MANPATH = /sw/external/julia/julia-1.10.2/share/man:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/share/man:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/share/man:2;/usr/share/lmod/lmod/share/man:1;/usr/local/share/man:1;/usr/share/man:1;/opt/ddn/ime/share/man:1;/opt/puppetlabs/puppet/share/man:1;:2
+  FPATH = /usr/share/lmod/lmod/init/ksh_funcs
+  CPLUS_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:/sw/external/julia/julia-1.10.2/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include
+  CUDA_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x
+  CUE_HOME_TYPE = lustre-2.14
+  PKG_CONFIG_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib/pkgconfig
+  MODULESHOME = /usr/share/lmod/lmod
+  PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/bin:/sw/external/julia/julia-1.10.2/bin:/u/hwaterhouse/.local/bin:/u/hwaterhouse/bin:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/bin:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/bin:/sw/user/scripts:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ddn/ime/bin:/opt/puppetlabs/bin
+  OPENMPI_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74
+  CUE_HOME = /u/hwaterhouse
+  __LMOD_REF_COUNT_LD_LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:1;/sw/external/julia/julia-1.10.2/lib:1;/opt/cray/libfabric/1.15.2.0/lib64:1;/opt/cray/libfabric/1.15.2.0/lib:1
+  MANPATH = /sw/external/julia/julia-1.10.2/share/man:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/share/man:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/share/man:/usr/share/lmod/lmod/share/man:/usr/local/share/man:/usr/share/man:/opt/ddn/ime/share/man:/opt/puppetlabs/puppet/share/man::
+  __LMOD_REF_COUNT_C_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:1;/sw/external/julia/julia-1.10.2/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include:1
+  __LMOD_REF_COUNT_PKG_CONFIG_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib/pkgconfig:2
+  __LMOD_REF_COUNT_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/bin:2;/sw/external/julia/julia-1.10.2/bin:1;/u/hwaterhouse/.local/bin:1;/u/hwaterhouse/bin:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/bin:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/bin:2;/sw/user/scripts:1;/usr/local/bin:1;/usr/bin:1;/usr/local/sbin:1;/usr/sbin:1;/opt/ddn/ime/bin:1;/opt/puppetlabs/bin:1
+  __LMOD_REF_COUNT_CPLUS_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:1;/sw/external/julia/julia-1.10.2/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include:1
+  NVTX_INJECTION64_PATH = /u/hwaterhouse/.julia/artifacts/74e3c7e5f0b5006452babe4ab528317a86249582/lib/libcupti.so
+CUDA runtime 12.5, artifact installation
+CUDA driver 12.4
+NVIDIA driver 550.163.1
+
+CUDA libraries: 
+- CUBLAS: 12.4.2
+- CURAND: 10.3.6
+- CUFFT: 11.2.3
+- CUSOLVER: 11.6.3
+- CUSPARSE: 12.5.1
+- CUPTI: 2024.2.1 (API 23.0.0)
+- NVML: 12.0.0+550.163.1
+
+Julia packages: 
+- CUDA: 5.4.3
+- CUDA_Driver_jll: 0.9.2+0
+- CUDA_Runtime_jll: 0.14.1+0
+
+Toolchain:
+- Julia: 1.10.2
+- LLVM: 15.0.7
+
+Preferences:
+- nonblocking_synchronization: false
+
+4 devices:
+  0: NVIDIA A100-SXM4-40GB (sm_80, 38.856 GiB / 40.000 GiB available)
+  1: NVIDIA A100-SXM4-40GB (sm_80, 39.377 GiB / 40.000 GiB available)
+  2: NVIDIA A100-SXM4-40GB (sm_80, 39.377 GiB / 40.000 GiB available)
+  3: NVIDIA A100-SXM4-40GB (sm_80, 39.377 GiB / 40.000 GiB available)
+┌ Info: Starting
+│ FT         = Float64
+│ N          = 2
+│ K          = (1, 1, 1)
+│ level      = 2
+│ kernel     = VolumeKernel{:final}()
+│ norm(q)    = 2.0880990999122681e+10
+│ η0         = -2.4148472287858368e+11
+│ dt         = 9.0909090909090906e-01
+│ nsteps     = 1
+│ outputvtk  = false
+│ outputstep = 1
+└ timeend    = 1.0000000000000000e+01
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 49 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+┌ Info: Finished
+│ norm(q)      = 2.0880990972991215e+10
+│ ηf           = -2.4148472287859885e+11
+└ Δη           = -6.2808264420730870e-14
+==PROF== Disconnected from process 2742513
+==PROF== Report: /u/hwaterhouse/ESDGPerf.jl/./ncu-profiles/profile-13726391-Float64-N2-L2.ncu-rep
+SUCCESS: ./ncu-profiles/profile-13726391-Float64-N2-L2.csv created
+Profiling N=2 L=3 F=Float64...
+==WARNING== Note: Running with unmodified GPU clocks. If not controlled otherwise, profiling results may be inconsistent.
+==PROF== Connected to process 2746155 (/sw/external/julia/julia-1.10.2/bin/julia)
+┌ Warning: CUDA runtime library `libcublasLt.so.12` was loaded from a system path, `/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64/libcublasLt.so.12`.
+│ 
+│ This may cause errors. Ensure that you have not set the LD_LIBRARY_PATH
+│ environment variable, or that it does not contain paths to CUDA libraries.
+│ 
+│ In any other case, please file an issue.
+└ @ CUDA ~/.julia/packages/CUDA/Tl08O/src/initialization.jl:219
+┌ Warning: CUDA runtime library `libnvJitLink.so.12` was loaded from a system path, `/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64/libnvJitLink.so.12`.
+│ 
+│ This may cause errors. Ensure that you have not set the LD_LIBRARY_PATH
+│ environment variable, or that it does not contain paths to CUDA libraries.
+│ 
+│ In any other case, please file an issue.
+└ @ CUDA ~/.julia/packages/CUDA/Tl08O/src/initialization.jl:219
+┌ Warning: CUDA runtime library `libcusparse.so.12` was loaded from a system path, `/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64/libcusparse.so.12`.
+│ 
+│ This may cause errors. Ensure that you have not set the LD_LIBRARY_PATH
+│ environment variable, or that it does not contain paths to CUDA libraries.
+│ 
+│ In any other case, please file an issue.
+└ @ CUDA ~/.julia/packages/CUDA/Tl08O/src/initialization.jl:219
+Parsed args:
+  vtk-output-number-of-saves  =>  100
+  time-end  =>  10.0
+  elements-in-direction-z  =>  1
+  number-of-steps  =>  1
+  timing-prefix  =>  timing
+  enable-triple-buffer-comm  =>  false
+  enable-single-buffer-comm  =>  false
+  elements-per-direction  =>  1
+  elements-in-direction-y  =>  1
+  polynomial-order  =>  2
+  enable-timing  =>  false
+  elements-in-direction-x  =>  1
+  enable-vtk-output  =>  false
+  refinement-level  =>  3
+  vtk-output-directory  =>  rboutput
+  floating-point-type  =>  Float64
+Julia Version 1.10.2
+Commit bd47eca2c8a (2024-03-01 10:14 UTC)
+Build Info:
+  Official https://julialang.org/ release
+Platform Info:
+  OS: Linux (x86_64-linux-gnu)
+      "Red Hat Enterprise Linux release 8.8 (Ootpa)"
+  uname: Linux 4.18.0-477.95.1.el8_8.x86_64 #1 SMP Fri Apr 11 09:50:48 EDT 2025 x86_64 x86_64
+  CPU: AMD EPYC 7763 64-Core Processor: 
+                 speed         user         nice          sys         idle          irq
+       #1-64  2445 MHz  1348966844 s     401687 s  136418813 s  6984718419 s    7740216 s
+  Memory: 251.61994552612305 GB (230807.53125 MB free)
+  Uptime: 1.326172964e7 sec
+  Load Avg:  1.1  1.18  1.17
+  WORD_SIZE: 64
+  LIBM: libopenlibm
+  LLVM: libLLVM-15.0.7 (ORCJIT, znver3)
+Threads: 1 default, 0 interactive, 1 GC (on 64 virtual cores)
+Environment:
+  LD_LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/nsight-compute-2024.1.0/target/linux-desktop-glibc_2_11_3-x64/.:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:/sw/external/julia/julia-1.10.2/lib:/opt/cray/libfabric/1.15.2.0/lib64:/opt/cray/libfabric/1.15.2.0/lib
+  __LMOD_REF_COUNT_CMAKE_PREFIX_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4:2;/sw/external/julia/julia-1.10.2:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku:2
+  __LMOD_REF_COUNT_LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4/lib:1;/sw/external/julia/julia-1.10.2/lib:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib:1
+  NVHPC_CUDA_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x
+  LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4/lib:/sw/external/julia/julia-1.10.2/lib:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib
+  HOME = /u/hwaterhouse
+  CMAKE_PREFIX_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4:/sw/external/julia/julia-1.10.2:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku
+  GCC_RUNTIME_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4
+  __LMOD_REF_COUNT_MODULEPATH = /sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lo6xae6/gcc/11.4.0:1;/sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lranp74/gcc/11.4.0:1;/sw/spack/deltas11-2023-03/modules/lmod/gcc/11.4.0:1;/sw/user/modules:1;/sw/spack/deltas11-2023-03/modules/lmod/Core:1;/opt/cray/pe/lmod/modulefiles/craype-targets/default:1;/opt/cray/pe/lmod/modulefiles/core:1;/opt/cray/modulefiles:1;/sw/external/lmod/modulefiles/core:1;/usr/share/lmod/lmod/modulefiles/Core:1
+  MODULEPATH = /sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lo6xae6/gcc/11.4.0:/sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lranp74/gcc/11.4.0:/sw/spack/deltas11-2023-03/modules/lmod/gcc/11.4.0:/sw/user/modules:/sw/spack/deltas11-2023-03/modules/lmod/Core:/opt/cray/pe/lmod/modulefiles/craype-targets/default:/opt/cray/pe/lmod/modulefiles/core:/opt/cray/modulefiles:/sw/external/lmod/modulefiles/core:/usr/share/lmod/lmod/modulefiles/Core
+  TERM = xterm-256color
+  CUE_CLUSTER_HOME = /u/hwaterhouse
+  GCC_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku
+  NVCC_PREPEND_FLAGS = -gencode arch=compute_80,code=sm_80
+  MODULEPATH_ROOT = /
+  C_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:/sw/external/julia/julia-1.10.2/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include
+  __LMOD_REF_COUNT_MANPATH = /sw/external/julia/julia-1.10.2/share/man:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/share/man:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/share/man:2;/usr/share/lmod/lmod/share/man:1;/usr/local/share/man:1;/usr/share/man:1;/opt/ddn/ime/share/man:1;/opt/puppetlabs/puppet/share/man:1;:2
+  FPATH = /usr/share/lmod/lmod/init/ksh_funcs
+  CPLUS_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:/sw/external/julia/julia-1.10.2/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include
+  CUDA_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x
+  CUE_HOME_TYPE = lustre-2.14
+  PKG_CONFIG_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib/pkgconfig
+  MODULESHOME = /usr/share/lmod/lmod
+  PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/bin:/sw/external/julia/julia-1.10.2/bin:/u/hwaterhouse/.local/bin:/u/hwaterhouse/bin:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/bin:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/bin:/sw/user/scripts:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ddn/ime/bin:/opt/puppetlabs/bin
+  OPENMPI_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74
+  CUE_HOME = /u/hwaterhouse
+  __LMOD_REF_COUNT_LD_LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:1;/sw/external/julia/julia-1.10.2/lib:1;/opt/cray/libfabric/1.15.2.0/lib64:1;/opt/cray/libfabric/1.15.2.0/lib:1
+  MANPATH = /sw/external/julia/julia-1.10.2/share/man:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/share/man:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/share/man:/usr/share/lmod/lmod/share/man:/usr/local/share/man:/usr/share/man:/opt/ddn/ime/share/man:/opt/puppetlabs/puppet/share/man::
+  __LMOD_REF_COUNT_C_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:1;/sw/external/julia/julia-1.10.2/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include:1
+  __LMOD_REF_COUNT_PKG_CONFIG_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib/pkgconfig:2
+  __LMOD_REF_COUNT_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/bin:2;/sw/external/julia/julia-1.10.2/bin:1;/u/hwaterhouse/.local/bin:1;/u/hwaterhouse/bin:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/bin:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/bin:2;/sw/user/scripts:1;/usr/local/bin:1;/usr/bin:1;/usr/local/sbin:1;/usr/sbin:1;/opt/ddn/ime/bin:1;/opt/puppetlabs/bin:1
+  __LMOD_REF_COUNT_CPLUS_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:1;/sw/external/julia/julia-1.10.2/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include:1
+  NVTX_INJECTION64_PATH = /u/hwaterhouse/.julia/artifacts/74e3c7e5f0b5006452babe4ab528317a86249582/lib/libcupti.so
+CUDA runtime 12.5, artifact installation
+CUDA driver 12.4
+NVIDIA driver 550.163.1
+
+CUDA libraries: 
+- CUBLAS: 12.4.2
+- CURAND: 10.3.6
+- CUFFT: 11.2.3
+- CUSOLVER: 11.6.3
+- CUSPARSE: 12.5.1
+- CUPTI: 2024.2.1 (API 23.0.0)
+- NVML: 12.0.0+550.163.1
+
+Julia packages: 
+- CUDA: 5.4.3
+- CUDA_Driver_jll: 0.9.2+0
+- CUDA_Runtime_jll: 0.14.1+0
+
+Toolchain:
+- Julia: 1.10.2
+- LLVM: 15.0.7
+
+Preferences:
+- nonblocking_synchronization: false
+
+4 devices:
+  0: NVIDIA A100-SXM4-40GB (sm_80, 38.856 GiB / 40.000 GiB available)
+  1: NVIDIA A100-SXM4-40GB (sm_80, 39.377 GiB / 40.000 GiB available)
+  2: NVIDIA A100-SXM4-40GB (sm_80, 39.377 GiB / 40.000 GiB available)
+  3: NVIDIA A100-SXM4-40GB (sm_80, 39.377 GiB / 40.000 GiB available)
+┌ Info: Starting
+│ FT         = Float64
+│ N          = 2
+│ K          = (1, 1, 1)
+│ level      = 3
+│ kernel     = VolumeKernel{:final}()
+│ norm(q)    = 2.0880995553222363e+10
+│ η0         = -2.4148201625189246e+11
+│ dt         = 4.5454545454545453e-01
+│ nsteps     = 1
+│ outputvtk  = false
+│ outputstep = 1
+└ timeend    = 1.0000000000000000e+01
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 49 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 49 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 49 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 48 passes
+┌ Info: Finished
+│ norm(q)      = 2.0880995518128536e+10
+│ ηf           = -2.4148201625190494e+11
+└ Δη           = -5.1687863331840068e-14
+==PROF== Disconnected from process 2746155
+==PROF== Report: /u/hwaterhouse/ESDGPerf.jl/./ncu-profiles/profile-13726391-Float64-N2-L3.ncu-rep
+SUCCESS: ./ncu-profiles/profile-13726391-Float64-N2-L3.csv created
+Profiling N=3 L=1 F=Float64...
+==WARNING== Note: Running with unmodified GPU clocks. If not controlled otherwise, profiling results may be inconsistent.
+==PROF== Connected to process 2749492 (/sw/external/julia/julia-1.10.2/bin/julia)
+┌ Warning: CUDA runtime library `libcublasLt.so.12` was loaded from a system path, `/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64/libcublasLt.so.12`.
+│ 
+│ This may cause errors. Ensure that you have not set the LD_LIBRARY_PATH
+│ environment variable, or that it does not contain paths to CUDA libraries.
+│ 
+│ In any other case, please file an issue.
+└ @ CUDA ~/.julia/packages/CUDA/Tl08O/src/initialization.jl:219
+┌ Warning: CUDA runtime library `libnvJitLink.so.12` was loaded from a system path, `/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64/libnvJitLink.so.12`.
+│ 
+│ This may cause errors. Ensure that you have not set the LD_LIBRARY_PATH
+│ environment variable, or that it does not contain paths to CUDA libraries.
+│ 
+│ In any other case, please file an issue.
+└ @ CUDA ~/.julia/packages/CUDA/Tl08O/src/initialization.jl:219
+┌ Warning: CUDA runtime library `libcusparse.so.12` was loaded from a system path, `/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64/libcusparse.so.12`.
+│ 
+│ This may cause errors. Ensure that you have not set the LD_LIBRARY_PATH
+│ environment variable, or that it does not contain paths to CUDA libraries.
+│ 
+│ In any other case, please file an issue.
+└ @ CUDA ~/.julia/packages/CUDA/Tl08O/src/initialization.jl:219
+Parsed args:
+  vtk-output-number-of-saves  =>  100
+  time-end  =>  10.0
+  elements-in-direction-z  =>  1
+  number-of-steps  =>  1
+  timing-prefix  =>  timing
+  enable-triple-buffer-comm  =>  false
+  enable-single-buffer-comm  =>  false
+  elements-per-direction  =>  1
+  elements-in-direction-y  =>  1
+  polynomial-order  =>  3
+  enable-timing  =>  false
+  elements-in-direction-x  =>  1
+  enable-vtk-output  =>  false
+  refinement-level  =>  1
+  vtk-output-directory  =>  rboutput
+  floating-point-type  =>  Float64
+Julia Version 1.10.2
+Commit bd47eca2c8a (2024-03-01 10:14 UTC)
+Build Info:
+  Official https://julialang.org/ release
+Platform Info:
+  OS: Linux (x86_64-linux-gnu)
+      "Red Hat Enterprise Linux release 8.8 (Ootpa)"
+  uname: Linux 4.18.0-477.95.1.el8_8.x86_64 #1 SMP Fri Apr 11 09:50:48 EDT 2025 x86_64 x86_64
+  CPU: AMD EPYC 7763 64-Core Processor: 
+                 speed         user         nice          sys         idle          irq
+       #1-64  2658 MHz  1348967618 s     401687 s  136420138 s  6984843710 s    7740260 s
+  Memory: 251.61994552612305 GB (230822.76953125 MB free)
+  Uptime: 1.326192885e7 sec
+  Load Avg:  1.17  1.16  1.16
+  WORD_SIZE: 64
+  LIBM: libopenlibm
+  LLVM: libLLVM-15.0.7 (ORCJIT, znver3)
+Threads: 1 default, 0 interactive, 1 GC (on 64 virtual cores)
+Environment:
+  LD_LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/nsight-compute-2024.1.0/target/linux-desktop-glibc_2_11_3-x64/.:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:/sw/external/julia/julia-1.10.2/lib:/opt/cray/libfabric/1.15.2.0/lib64:/opt/cray/libfabric/1.15.2.0/lib
+  __LMOD_REF_COUNT_CMAKE_PREFIX_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4:2;/sw/external/julia/julia-1.10.2:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku:2
+  __LMOD_REF_COUNT_LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4/lib:1;/sw/external/julia/julia-1.10.2/lib:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib:1
+  NVHPC_CUDA_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x
+  LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4/lib:/sw/external/julia/julia-1.10.2/lib:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib
+  HOME = /u/hwaterhouse
+  CMAKE_PREFIX_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4:/sw/external/julia/julia-1.10.2:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku
+  GCC_RUNTIME_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4
+  __LMOD_REF_COUNT_MODULEPATH = /sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lo6xae6/gcc/11.4.0:1;/sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lranp74/gcc/11.4.0:1;/sw/spack/deltas11-2023-03/modules/lmod/gcc/11.4.0:1;/sw/user/modules:1;/sw/spack/deltas11-2023-03/modules/lmod/Core:1;/opt/cray/pe/lmod/modulefiles/craype-targets/default:1;/opt/cray/pe/lmod/modulefiles/core:1;/opt/cray/modulefiles:1;/sw/external/lmod/modulefiles/core:1;/usr/share/lmod/lmod/modulefiles/Core:1
+  MODULEPATH = /sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lo6xae6/gcc/11.4.0:/sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lranp74/gcc/11.4.0:/sw/spack/deltas11-2023-03/modules/lmod/gcc/11.4.0:/sw/user/modules:/sw/spack/deltas11-2023-03/modules/lmod/Core:/opt/cray/pe/lmod/modulefiles/craype-targets/default:/opt/cray/pe/lmod/modulefiles/core:/opt/cray/modulefiles:/sw/external/lmod/modulefiles/core:/usr/share/lmod/lmod/modulefiles/Core
+  TERM = xterm-256color
+  CUE_CLUSTER_HOME = /u/hwaterhouse
+  GCC_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku
+  NVCC_PREPEND_FLAGS = -gencode arch=compute_80,code=sm_80
+  MODULEPATH_ROOT = /
+  C_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:/sw/external/julia/julia-1.10.2/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include
+  __LMOD_REF_COUNT_MANPATH = /sw/external/julia/julia-1.10.2/share/man:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/share/man:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/share/man:2;/usr/share/lmod/lmod/share/man:1;/usr/local/share/man:1;/usr/share/man:1;/opt/ddn/ime/share/man:1;/opt/puppetlabs/puppet/share/man:1;:2
+  FPATH = /usr/share/lmod/lmod/init/ksh_funcs
+  CPLUS_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:/sw/external/julia/julia-1.10.2/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include
+  CUDA_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x
+  CUE_HOME_TYPE = lustre-2.14
+  PKG_CONFIG_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib/pkgconfig
+  MODULESHOME = /usr/share/lmod/lmod
+  PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/bin:/sw/external/julia/julia-1.10.2/bin:/u/hwaterhouse/.local/bin:/u/hwaterhouse/bin:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/bin:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/bin:/sw/user/scripts:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ddn/ime/bin:/opt/puppetlabs/bin
+  OPENMPI_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74
+  CUE_HOME = /u/hwaterhouse
+  __LMOD_REF_COUNT_LD_LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:1;/sw/external/julia/julia-1.10.2/lib:1;/opt/cray/libfabric/1.15.2.0/lib64:1;/opt/cray/libfabric/1.15.2.0/lib:1
+  MANPATH = /sw/external/julia/julia-1.10.2/share/man:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/share/man:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/share/man:/usr/share/lmod/lmod/share/man:/usr/local/share/man:/usr/share/man:/opt/ddn/ime/share/man:/opt/puppetlabs/puppet/share/man::
+  __LMOD_REF_COUNT_C_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:1;/sw/external/julia/julia-1.10.2/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include:1
+  __LMOD_REF_COUNT_PKG_CONFIG_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib/pkgconfig:2
+  __LMOD_REF_COUNT_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/bin:2;/sw/external/julia/julia-1.10.2/bin:1;/u/hwaterhouse/.local/bin:1;/u/hwaterhouse/bin:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/bin:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/bin:2;/sw/user/scripts:1;/usr/local/bin:1;/usr/bin:1;/usr/local/sbin:1;/usr/sbin:1;/opt/ddn/ime/bin:1;/opt/puppetlabs/bin:1
+  __LMOD_REF_COUNT_CPLUS_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:1;/sw/external/julia/julia-1.10.2/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include:1
+  NVTX_INJECTION64_PATH = /u/hwaterhouse/.julia/artifacts/74e3c7e5f0b5006452babe4ab528317a86249582/lib/libcupti.so
+CUDA runtime 12.5, artifact installation
+CUDA driver 12.4
+NVIDIA driver 550.163.1
+
+CUDA libraries: 
+- CUBLAS: 12.4.2
+- CURAND: 10.3.6
+- CUFFT: 11.2.3
+- CUSOLVER: 11.6.3
+- CUSPARSE: 12.5.1
+- CUPTI: 2024.2.1 (API 23.0.0)
+- NVML: 12.0.0+550.163.1
+
+Julia packages: 
+- CUDA: 5.4.3
+- CUDA_Driver_jll: 0.9.2+0
+- CUDA_Runtime_jll: 0.14.1+0
+
+Toolchain:
+- Julia: 1.10.2
+- LLVM: 15.0.7
+
+Preferences:
+- nonblocking_synchronization: false
+
+4 devices:
+  0: NVIDIA A100-SXM4-40GB (sm_80, 38.856 GiB / 40.000 GiB available)
+  1: NVIDIA A100-SXM4-40GB (sm_80, 39.377 GiB / 40.000 GiB available)
+  2: NVIDIA A100-SXM4-40GB (sm_80, 39.377 GiB / 40.000 GiB available)
+  3: NVIDIA A100-SXM4-40GB (sm_80, 39.377 GiB / 40.000 GiB available)
+┌ Info: Starting
+│ FT         = Float64
+│ N          = 3
+│ K          = (1, 1, 1)
+│ level      = 1
+│ kernel     = VolumeKernel{:final}()
+│ norm(q)    = 2.0880990548416595e+10
+│ η0         = -2.4148482184313147e+11
+│ dt         = 1.0000000000000000e+00
+│ nsteps     = 1
+│ outputvtk  = false
+│ outputstep = 1
+└ timeend    = 1.0000000000000000e+01
+==PROF== Profiling "volume_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 49 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 48 passes
+┌ Info: Finished
+│ norm(q)      = 2.3361381160965340e+10
+│ ηf           = -2.4032276887516235e+11
+└ Δη           = 4.8121159710981165e-03
+==PROF== Disconnected from process 2749492
+==PROF== Report: /u/hwaterhouse/ESDGPerf.jl/./ncu-profiles/profile-13726391-Float64-N3-L1.ncu-rep
+SUCCESS: ./ncu-profiles/profile-13726391-Float64-N3-L1.csv created
+Profiling N=3 L=2 F=Float64...
+==WARNING== Note: Running with unmodified GPU clocks. If not controlled otherwise, profiling results may be inconsistent.
+==PROF== Connected to process 2752799 (/sw/external/julia/julia-1.10.2/bin/julia)
+┌ Warning: CUDA runtime library `libcublasLt.so.12` was loaded from a system path, `/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64/libcublasLt.so.12`.
+│ 
+│ This may cause errors. Ensure that you have not set the LD_LIBRARY_PATH
+│ environment variable, or that it does not contain paths to CUDA libraries.
+│ 
+│ In any other case, please file an issue.
+└ @ CUDA ~/.julia/packages/CUDA/Tl08O/src/initialization.jl:219
+┌ Warning: CUDA runtime library `libnvJitLink.so.12` was loaded from a system path, `/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64/libnvJitLink.so.12`.
+│ 
+│ This may cause errors. Ensure that you have not set the LD_LIBRARY_PATH
+│ environment variable, or that it does not contain paths to CUDA libraries.
+│ 
+│ In any other case, please file an issue.
+└ @ CUDA ~/.julia/packages/CUDA/Tl08O/src/initialization.jl:219
+┌ Warning: CUDA runtime library `libcusparse.so.12` was loaded from a system path, `/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64/libcusparse.so.12`.
+│ 
+│ This may cause errors. Ensure that you have not set the LD_LIBRARY_PATH
+│ environment variable, or that it does not contain paths to CUDA libraries.
+│ 
+│ In any other case, please file an issue.
+└ @ CUDA ~/.julia/packages/CUDA/Tl08O/src/initialization.jl:219
+Parsed args:
+  vtk-output-number-of-saves  =>  100
+  time-end  =>  10.0
+  elements-in-direction-z  =>  1
+  number-of-steps  =>  1
+  timing-prefix  =>  timing
+  enable-triple-buffer-comm  =>  false
+  enable-single-buffer-comm  =>  false
+  elements-per-direction  =>  1
+  elements-in-direction-y  =>  1
+  polynomial-order  =>  3
+  enable-timing  =>  false
+  elements-in-direction-x  =>  1
+  enable-vtk-output  =>  false
+  refinement-level  =>  2
+  vtk-output-directory  =>  rboutput
+  floating-point-type  =>  Float64
+Julia Version 1.10.2
+Commit bd47eca2c8a (2024-03-01 10:14 UTC)
+Build Info:
+  Official https://julialang.org/ release
+Platform Info:
+  OS: Linux (x86_64-linux-gnu)
+      "Red Hat Enterprise Linux release 8.8 (Ootpa)"
+  uname: Linux 4.18.0-477.95.1.el8_8.x86_64 #1 SMP Fri Apr 11 09:50:48 EDT 2025 x86_64 x86_64
+  CPU: AMD EPYC 7763 64-Core Processor: 
+                 speed         user         nice          sys         idle          irq
+       #1-64  2445 MHz  1348968346 s     401687 s  136421443 s  6984965598 s    7740306 s
+  Memory: 251.61994552612305 GB (230809.93359375 MB free)
+  Uptime: 1.326212265e7 sec
+  Load Avg:  1.11  1.14  1.16
+  WORD_SIZE: 64
+  LIBM: libopenlibm
+  LLVM: libLLVM-15.0.7 (ORCJIT, znver3)
+Threads: 1 default, 0 interactive, 1 GC (on 64 virtual cores)
+Environment:
+  LD_LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/nsight-compute-2024.1.0/target/linux-desktop-glibc_2_11_3-x64/.:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:/sw/external/julia/julia-1.10.2/lib:/opt/cray/libfabric/1.15.2.0/lib64:/opt/cray/libfabric/1.15.2.0/lib
+  __LMOD_REF_COUNT_CMAKE_PREFIX_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4:2;/sw/external/julia/julia-1.10.2:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku:2
+  __LMOD_REF_COUNT_LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4/lib:1;/sw/external/julia/julia-1.10.2/lib:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib:1
+  NVHPC_CUDA_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x
+  LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4/lib:/sw/external/julia/julia-1.10.2/lib:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib
+  HOME = /u/hwaterhouse
+  CMAKE_PREFIX_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4:/sw/external/julia/julia-1.10.2:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku
+  GCC_RUNTIME_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4
+  __LMOD_REF_COUNT_MODULEPATH = /sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lo6xae6/gcc/11.4.0:1;/sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lranp74/gcc/11.4.0:1;/sw/spack/deltas11-2023-03/modules/lmod/gcc/11.4.0:1;/sw/user/modules:1;/sw/spack/deltas11-2023-03/modules/lmod/Core:1;/opt/cray/pe/lmod/modulefiles/craype-targets/default:1;/opt/cray/pe/lmod/modulefiles/core:1;/opt/cray/modulefiles:1;/sw/external/lmod/modulefiles/core:1;/usr/share/lmod/lmod/modulefiles/Core:1
+  MODULEPATH = /sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lo6xae6/gcc/11.4.0:/sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lranp74/gcc/11.4.0:/sw/spack/deltas11-2023-03/modules/lmod/gcc/11.4.0:/sw/user/modules:/sw/spack/deltas11-2023-03/modules/lmod/Core:/opt/cray/pe/lmod/modulefiles/craype-targets/default:/opt/cray/pe/lmod/modulefiles/core:/opt/cray/modulefiles:/sw/external/lmod/modulefiles/core:/usr/share/lmod/lmod/modulefiles/Core
+  TERM = xterm-256color
+  CUE_CLUSTER_HOME = /u/hwaterhouse
+  GCC_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku
+  NVCC_PREPEND_FLAGS = -gencode arch=compute_80,code=sm_80
+  MODULEPATH_ROOT = /
+  C_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:/sw/external/julia/julia-1.10.2/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include
+  __LMOD_REF_COUNT_MANPATH = /sw/external/julia/julia-1.10.2/share/man:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/share/man:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/share/man:2;/usr/share/lmod/lmod/share/man:1;/usr/local/share/man:1;/usr/share/man:1;/opt/ddn/ime/share/man:1;/opt/puppetlabs/puppet/share/man:1;:2
+  FPATH = /usr/share/lmod/lmod/init/ksh_funcs
+  CPLUS_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:/sw/external/julia/julia-1.10.2/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include
+  CUDA_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x
+  CUE_HOME_TYPE = lustre-2.14
+  PKG_CONFIG_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib/pkgconfig
+  MODULESHOME = /usr/share/lmod/lmod
+  PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/bin:/sw/external/julia/julia-1.10.2/bin:/u/hwaterhouse/.local/bin:/u/hwaterhouse/bin:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/bin:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/bin:/sw/user/scripts:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ddn/ime/bin:/opt/puppetlabs/bin
+  OPENMPI_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74
+  CUE_HOME = /u/hwaterhouse
+  __LMOD_REF_COUNT_LD_LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:1;/sw/external/julia/julia-1.10.2/lib:1;/opt/cray/libfabric/1.15.2.0/lib64:1;/opt/cray/libfabric/1.15.2.0/lib:1
+  MANPATH = /sw/external/julia/julia-1.10.2/share/man:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/share/man:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/share/man:/usr/share/lmod/lmod/share/man:/usr/local/share/man:/usr/share/man:/opt/ddn/ime/share/man:/opt/puppetlabs/puppet/share/man::
+  __LMOD_REF_COUNT_C_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:1;/sw/external/julia/julia-1.10.2/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include:1
+  __LMOD_REF_COUNT_PKG_CONFIG_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib/pkgconfig:2
+  __LMOD_REF_COUNT_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/bin:2;/sw/external/julia/julia-1.10.2/bin:1;/u/hwaterhouse/.local/bin:1;/u/hwaterhouse/bin:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/bin:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/bin:2;/sw/user/scripts:1;/usr/local/bin:1;/usr/bin:1;/usr/local/sbin:1;/usr/sbin:1;/opt/ddn/ime/bin:1;/opt/puppetlabs/bin:1
+  __LMOD_REF_COUNT_CPLUS_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:1;/sw/external/julia/julia-1.10.2/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include:1
+  NVTX_INJECTION64_PATH = /u/hwaterhouse/.julia/artifacts/74e3c7e5f0b5006452babe4ab528317a86249582/lib/libcupti.so
+CUDA runtime 12.5, artifact installation
+CUDA driver 12.4
+NVIDIA driver 550.163.1
+
+CUDA libraries: 
+- CUBLAS: 12.4.2
+- CURAND: 10.3.6
+- CUFFT: 11.2.3
+- CUSOLVER: 11.6.3
+- CUSPARSE: 12.5.1
+- CUPTI: 2024.2.1 (API 23.0.0)
+- NVML: 12.0.0+550.163.1
+
+Julia packages: 
+- CUDA: 5.4.3
+- CUDA_Driver_jll: 0.9.2+0
+- CUDA_Runtime_jll: 0.14.1+0
+
+Toolchain:
+- Julia: 1.10.2
+- LLVM: 15.0.7
+
+Preferences:
+- nonblocking_synchronization: false
+
+4 devices:
+  0: NVIDIA A100-SXM4-40GB (sm_80, 38.856 GiB / 40.000 GiB available)
+  1: NVIDIA A100-SXM4-40GB (sm_80, 39.377 GiB / 40.000 GiB available)
+  2: NVIDIA A100-SXM4-40GB (sm_80, 39.377 GiB / 40.000 GiB available)
+  3: NVIDIA A100-SXM4-40GB (sm_80, 39.377 GiB / 40.000 GiB available)
+┌ Info: Starting
+│ FT         = Float64
+│ N          = 3
+│ K          = (1, 1, 1)
+│ level      = 2
+│ kernel     = VolumeKernel{:final}()
+│ norm(q)    = 2.0880998180565823e+10
+│ η0         = -2.4148056122723413e+11
+│ dt         = 5.0000000000000000e-01
+│ nsteps     = 1
+│ outputvtk  = false
+│ outputstep = 1
+└ timeend    = 1.0000000000000000e+01
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 49 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+┌ Info: Finished
+│ norm(q)      = 2.3363060919486988e+10
+│ ηf           = -2.4031864727389166e+11
+└ Δη           = 4.8116251984734407e-03
+==PROF== Disconnected from process 2752799
+==PROF== Report: /u/hwaterhouse/ESDGPerf.jl/./ncu-profiles/profile-13726391-Float64-N3-L2.ncu-rep
+SUCCESS: ./ncu-profiles/profile-13726391-Float64-N3-L2.csv created
+Profiling N=3 L=3 F=Float64...
+==WARNING== Note: Running with unmodified GPU clocks. If not controlled otherwise, profiling results may be inconsistent.
+==PROF== Connected to process 2756432 (/sw/external/julia/julia-1.10.2/bin/julia)
+┌ Warning: CUDA runtime library `libcublasLt.so.12` was loaded from a system path, `/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64/libcublasLt.so.12`.
+│ 
+│ This may cause errors. Ensure that you have not set the LD_LIBRARY_PATH
+│ environment variable, or that it does not contain paths to CUDA libraries.
+│ 
+│ In any other case, please file an issue.
+└ @ CUDA ~/.julia/packages/CUDA/Tl08O/src/initialization.jl:219
+┌ Warning: CUDA runtime library `libnvJitLink.so.12` was loaded from a system path, `/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64/libnvJitLink.so.12`.
+│ 
+│ This may cause errors. Ensure that you have not set the LD_LIBRARY_PATH
+│ environment variable, or that it does not contain paths to CUDA libraries.
+│ 
+│ In any other case, please file an issue.
+└ @ CUDA ~/.julia/packages/CUDA/Tl08O/src/initialization.jl:219
+┌ Warning: CUDA runtime library `libcusparse.so.12` was loaded from a system path, `/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64/libcusparse.so.12`.
+│ 
+│ This may cause errors. Ensure that you have not set the LD_LIBRARY_PATH
+│ environment variable, or that it does not contain paths to CUDA libraries.
+│ 
+│ In any other case, please file an issue.
+└ @ CUDA ~/.julia/packages/CUDA/Tl08O/src/initialization.jl:219
+Parsed args:
+  vtk-output-number-of-saves  =>  100
+  time-end  =>  10.0
+  elements-in-direction-z  =>  1
+  number-of-steps  =>  1
+  timing-prefix  =>  timing
+  enable-triple-buffer-comm  =>  false
+  enable-single-buffer-comm  =>  false
+  elements-per-direction  =>  1
+  elements-in-direction-y  =>  1
+  polynomial-order  =>  3
+  enable-timing  =>  false
+  elements-in-direction-x  =>  1
+  enable-vtk-output  =>  false
+  refinement-level  =>  3
+  vtk-output-directory  =>  rboutput
+  floating-point-type  =>  Float64
+Julia Version 1.10.2
+Commit bd47eca2c8a (2024-03-01 10:14 UTC)
+Build Info:
+  Official https://julialang.org/ release
+Platform Info:
+  OS: Linux (x86_64-linux-gnu)
+      "Red Hat Enterprise Linux release 8.8 (Ootpa)"
+  uname: Linux 4.18.0-477.95.1.el8_8.x86_64 #1 SMP Fri Apr 11 09:50:48 EDT 2025 x86_64 x86_64
+  CPU: AMD EPYC 7763 64-Core Processor: 
+                 speed         user         nice          sys         idle          irq
+       #1-64  2445 MHz  1348969106 s     401687 s  136422744 s  6985089128 s    7740348 s
+  Memory: 251.61994552612305 GB (230804.546875 MB free)
+  Uptime: 1.326231906e7 sec
+  Load Avg:  1.09  1.1  1.14
+  WORD_SIZE: 64
+  LIBM: libopenlibm
+  LLVM: libLLVM-15.0.7 (ORCJIT, znver3)
+Threads: 1 default, 0 interactive, 1 GC (on 64 virtual cores)
+Environment:
+  LD_LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/nsight-compute-2024.1.0/target/linux-desktop-glibc_2_11_3-x64/.:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:/sw/external/julia/julia-1.10.2/lib:/opt/cray/libfabric/1.15.2.0/lib64:/opt/cray/libfabric/1.15.2.0/lib
+  __LMOD_REF_COUNT_CMAKE_PREFIX_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4:2;/sw/external/julia/julia-1.10.2:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku:2
+  __LMOD_REF_COUNT_LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4/lib:1;/sw/external/julia/julia-1.10.2/lib:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib:1
+  NVHPC_CUDA_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x
+  LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4/lib:/sw/external/julia/julia-1.10.2/lib:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib
+  HOME = /u/hwaterhouse
+  CMAKE_PREFIX_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4:/sw/external/julia/julia-1.10.2:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku
+  GCC_RUNTIME_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gcc-runtime-11.4.0-zz3o2s4
+  __LMOD_REF_COUNT_MODULEPATH = /sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lo6xae6/gcc/11.4.0:1;/sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lranp74/gcc/11.4.0:1;/sw/spack/deltas11-2023-03/modules/lmod/gcc/11.4.0:1;/sw/user/modules:1;/sw/spack/deltas11-2023-03/modules/lmod/Core:1;/opt/cray/pe/lmod/modulefiles/craype-targets/default:1;/opt/cray/pe/lmod/modulefiles/core:1;/opt/cray/modulefiles:1;/sw/external/lmod/modulefiles/core:1;/usr/share/lmod/lmod/modulefiles/Core:1
+  MODULEPATH = /sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lo6xae6/gcc/11.4.0:/sw/spack/deltas11-2023-03/modules/lmod/openmpi/4.1.6-lranp74/gcc/11.4.0:/sw/spack/deltas11-2023-03/modules/lmod/gcc/11.4.0:/sw/user/modules:/sw/spack/deltas11-2023-03/modules/lmod/Core:/opt/cray/pe/lmod/modulefiles/craype-targets/default:/opt/cray/pe/lmod/modulefiles/core:/opt/cray/modulefiles:/sw/external/lmod/modulefiles/core:/usr/share/lmod/lmod/modulefiles/Core
+  TERM = xterm-256color
+  CUE_CLUSTER_HOME = /u/hwaterhouse
+  GCC_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku
+  NVCC_PREPEND_FLAGS = -gencode arch=compute_80,code=sm_80
+  MODULEPATH_ROOT = /
+  C_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:/sw/external/julia/julia-1.10.2/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include
+  __LMOD_REF_COUNT_MANPATH = /sw/external/julia/julia-1.10.2/share/man:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/share/man:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/share/man:2;/usr/share/lmod/lmod/share/man:1;/usr/local/share/man:1;/usr/share/man:1;/opt/ddn/ime/share/man:1;/opt/puppetlabs/puppet/share/man:1;:2
+  FPATH = /usr/share/lmod/lmod/init/ksh_funcs
+  CPLUS_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:/sw/external/julia/julia-1.10.2/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include
+  CUDA_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x
+  CUE_HOME_TYPE = lustre-2.14
+  PKG_CONFIG_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib/pkgconfig
+  MODULESHOME = /usr/share/lmod/lmod
+  PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/bin:/sw/external/julia/julia-1.10.2/bin:/u/hwaterhouse/.local/bin:/u/hwaterhouse/bin:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/bin:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/bin:/sw/user/scripts:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ddn/ime/bin:/opt/puppetlabs/bin
+  OPENMPI_HOME = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74
+  CUE_HOME = /u/hwaterhouse
+  __LMOD_REF_COUNT_LD_LIBRARY_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/lib64:1;/sw/external/julia/julia-1.10.2/lib:1;/opt/cray/libfabric/1.15.2.0/lib64:1;/opt/cray/libfabric/1.15.2.0/lib:1
+  MANPATH = /sw/external/julia/julia-1.10.2/share/man:/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/share/man:/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/share/man:/usr/share/lmod/lmod/share/man:/usr/local/share/man:/usr/share/man:/opt/ddn/ime/share/man:/opt/puppetlabs/puppet/share/man::
+  __LMOD_REF_COUNT_C_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:1;/sw/external/julia/julia-1.10.2/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include:1
+  __LMOD_REF_COUNT_PKG_CONFIG_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib/pkgconfig:2
+  __LMOD_REF_COUNT_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/bin:2;/sw/external/julia/julia-1.10.2/bin:1;/u/hwaterhouse/.local/bin:1;/u/hwaterhouse/bin:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/bin:2;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/bin:2;/sw/user/scripts:1;/usr/local/bin:1;/usr/bin:1;/usr/local/sbin:1;/usr/sbin:1;/opt/ddn/ime/bin:1;/opt/puppetlabs/bin:1
+  __LMOD_REF_COUNT_CPLUS_INCLUDE_PATH = /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-12.4.0-6bzpo2x/include:1;/sw/external/julia/julia-1.10.2/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/include:1;/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/include:1
+  NVTX_INJECTION64_PATH = /u/hwaterhouse/.julia/artifacts/74e3c7e5f0b5006452babe4ab528317a86249582/lib/libcupti.so
+CUDA runtime 12.5, artifact installation
+CUDA driver 12.4
+NVIDIA driver 550.163.1
+
+CUDA libraries: 
+- CUBLAS: 12.4.2
+- CURAND: 10.3.6
+- CUFFT: 11.2.3
+- CUSOLVER: 11.6.3
+- CUSPARSE: 12.5.1
+- CUPTI: 2024.2.1 (API 23.0.0)
+- NVML: 12.0.0+550.163.1
+
+Julia packages: 
+- CUDA: 5.4.3
+- CUDA_Driver_jll: 0.9.2+0
+- CUDA_Runtime_jll: 0.14.1+0
+
+Toolchain:
+- Julia: 1.10.2
+- LLVM: 15.0.7
+
+Preferences:
+- nonblocking_synchronization: false
+
+4 devices:
+  0: NVIDIA A100-SXM4-40GB (sm_80, 38.856 GiB / 40.000 GiB available)
+  1: NVIDIA A100-SXM4-40GB (sm_80, 39.377 GiB / 40.000 GiB available)
+  2: NVIDIA A100-SXM4-40GB (sm_80, 39.377 GiB / 40.000 GiB available)
+  3: NVIDIA A100-SXM4-40GB (sm_80, 39.377 GiB / 40.000 GiB available)
+┌ Info: Starting
+│ FT         = Float64
+│ N          = 3
+│ K          = (1, 1, 1)
+│ level      = 3
+│ kernel     = VolumeKernel{:final}()
+│ norm(q)    = 2.0880994389079388e+10
+│ η0         = -2.4148273365765237e+11
+│ dt         = 2.5000000000000000e-01
+│ nsteps     = 1
+│ outputvtk  = false
+│ outputstep = 1
+└ timeend    = 1.0000000000000000e+01
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 49 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 48 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "volume_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "face_knl": 0%....50%....100% - 47 passes
+==PROF== Profiling "rkupdate_knl": 0%....50%....100% - 47 passes
+┌ Info: Finished
+│ norm(q)      = 2.3363482455359020e+10
+│ ηf           = -2.4032084871851746e+11
+└ Δη           = 4.8114617618256333e-03
+==PROF== Disconnected from process 2756432
+==PROF== Report: /u/hwaterhouse/ESDGPerf.jl/./ncu-profiles/profile-13726391-Float64-N3-L3.ncu-rep
+SUCCESS: ./ncu-profiles/profile-13726391-Float64-N3-L3.csv created
+All profiling complete!
+Results in current directory
+-rw------- 1 hwaterhouse grp_202 394K Nov 19 22:25 ./ncu-profiles/profile-13726391-Float64-N2-L1.csv
+-rw------- 1 hwaterhouse grp_202 399K Nov 19 22:29 ./ncu-profiles/profile-13726391-Float64-N2-L2.csv
+-rw------- 1 hwaterhouse grp_202 413K Nov 19 22:32 ./ncu-profiles/profile-13726391-Float64-N2-L3.csv
+-rw------- 1 hwaterhouse grp_202 396K Nov 19 22:35 ./ncu-profiles/profile-13726391-Float64-N3-L1.csv
+-rw------- 1 hwaterhouse grp_202 402K Nov 19 22:39 ./ncu-profiles/profile-13726391-Float64-N3-L2.csv
+-rw------- 1 hwaterhouse grp_202 418K Nov 19 22:42 ./ncu-profiles/profile-13726391-Float64-N3-L3.csv

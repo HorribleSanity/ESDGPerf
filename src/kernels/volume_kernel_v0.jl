@@ -253,6 +253,7 @@ end
 
         Δv_ρu_n = Δv_ρu * n⃗[1] + Δv_ρv * n⃗[2] + Δv_ρw * n⃗[3]
 
+        # A.13 - A.16
         w1 =
             λ1 * (
                 Δv_ρ +
@@ -275,17 +276,17 @@ end
         Dρ = w1 + w2 + w3
 
         Dρu =
-            w1 * umc1 + w2 * u_avg + w3 * upc1 + λ4 * (Δv_ρu - Δv_ρu_n * n⃗[1] + Δv_ρe * u_t1)
+            w1 * umc1 + w2 * u_avg + w3 * upc1 + λ4 * (Δv_ρu - Δv_ρu_n * n⃗[1] - Δv_ρe * u_t1)
         Dρv =
-            w1 * umc2 + w2 * v_avg + w3 * upc2 + λ4 * (Δv_ρv - Δv_ρu_n * n⃗[2] + Δv_ρe * u_t2)
+            w1 * umc2 + w2 * v_avg + w3 * upc2 + λ4 * (Δv_ρv - Δv_ρu_n * n⃗[2] - Δv_ρe * u_t2)
         Dρw =
-            w1 * umc3 + w2 * w_avg + w3 * upc3 + λ4 * (Δv_ρw - Δv_ρu_n * n⃗[3] + Δv_ρe * u_t3)
+            w1 * umc3 + w2 * w_avg + w3 * upc3 + λ4 * (Δv_ρw - Δv_ρu_n * n⃗[3] - Δv_ρe * u_t3)
         Dρe = (
             w1 * (h_bar - c_bar * u_avg_n) +
             w2 * (u²_bar / 2 + Φ_avg) +
             w3 * (h_bar + c_bar * u_avg_n) +
             λ4 * (
-                (u_t1 * Δv_ρu + u_t2 * Δv_ρv + u_t3 * Δv_ρw) +
+                (u_t1 * Δv_ρu + u_t2 * Δv_ρv + u_t3 * Δv_ρw) -
                 Δv_ρe * ((u_avg*u_avg + v_avg*v_avg + w_avg*w_avg) - u_avg_n * u_avg_n)
             )
         )

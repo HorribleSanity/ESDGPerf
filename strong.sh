@@ -69,7 +69,7 @@ $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 # Fixed problem size for strong scaling
 N=4
-L=6
+L=4
 F=Float64
 
 # Create unique directory for this run using timestamp and job ID
@@ -90,7 +90,7 @@ for P in 4; do
   echo "Running N=${N} L=${L} F=${F} with ${P} GPUs..."
 
   time ${MPI} -n $P ./launch.sh ${JULIA} --project=. test/run/risingbubble.jl \
-    --time-end 500\
+    --time-end 1500\
     --polynomial-order ${N} \
     --refinement-level ${L} \
     --floating-point-type ${F} \
@@ -101,7 +101,7 @@ for P in 4; do
     --enable-timing \
     --enable-vtk-output\
     --vtk-output-directory "${VTK_DIR}"\
-    --vtk-output-number-of-saves 50\
+    --vtk-output-number-of-saves 75\
     2>&1 | tee -a ${prefix}.log
 
   echo "Completed ${P} GPU run"

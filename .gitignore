@@ -1,1 +1,5 @@
 vtk*
+.vscode
+ncu-profiles
+strong-scaling*
+notes*
