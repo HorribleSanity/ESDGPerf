@@ -150,31 +150,11 @@ function volume_knl(
 end
 
 ave_fast(a::FT, b::FT) where {FT} = muladd(b, FT(1) / FT(2), a)
-# @inline function inv_logave_fast(a::FT, b::FT, loga::FT, logb::FT) where {FT}
-#     a *= 2
-#     amb = a - b
-#     apb = a + b
-#     if abs(amb) < sqrt(logave_ϵ(FT)) * abs(apb)
-#         c1 = FT(2) / FT(3)
-#         c2 = FT(2) / FT(5)
-#         c3 = FT(2) / FT(7)
-#         c4 = FT(2) / FT(9)
-
-#         iapb = FT(1) / apb
-#         u = amb^2 * iapb^2
-
-#         F = 2 + u * (c1 + u * (c2 + u * (c3 + u * c4)))
-#         return iapb * F
-#     else
-#         iamb = FT(1) / amb
-#         return iamb * (loga - logb)
-#     end
-# end
 @inline function inv_logave_fast(a::FT, b::FT, loga::FT, logb::FT) where {FT}
     a *= 2
     amb = a - b
     apb = a + b
-    if abs(amb) < sqrt(logave_ϵ(FT)) * apb # Get rid of abs
+    if abs(amb) < sqrt(logave_ϵ(FT)) * abs(apb)
         c1 = FT(2) / FT(3)
         c2 = FT(2) / FT(5)
         c3 = FT(2) / FT(7)
@@ -183,43 +163,40 @@ ave_fast(a::FT, b::FT) where {FT} = muladd(b, FT(1) / FT(2), a)
         iapb = FT(1) / apb
         u = amb^2 * iapb^2
 
-        F = 2 + u * (c1 + u * (c2 + u * c3)) # Get rid of c4
+        F = 2 + u * (c1 + u * (c2 + u * (c3 + u * c4)))
         return iapb * F
     else
         iamb = FT(1) / amb
         return iamb * (loga - logb)
     end
 end
-
-
-# @inline function logave_fast(a::FT, b::FT, loga::FT, logb::FT) where {FT}
+@inline function inv_logave_fast(a::FT, b::FT, loga::FT, logb::FT) where {FT}
 #     a *= 2
 #     amb = a - b
 #     apb = a + b
-#     if abs(amb) < sqrt(logave_ϵ(FT)) * abs(apb)
+#     if abs(amb) < sqrt(logave_ϵ(FT)) * apb # Get rid of abs
 #         c1 = FT(2) / FT(3)
 #         c2 = FT(2) / FT(5)
 #         c3 = FT(2) / FT(7)
 #         c4 = FT(2) / FT(9)
-
+# 
 #         iapb = FT(1) / apb
 #         u = amb^2 * iapb^2
-
-#         F = 2 + u * (c1 + u * (c2 + u * (c3 + u * c4)))
-#         iF = FT(1) / F
-#         return apb * iF
+# 
+#         F = 2 + u * (c1 + u * (c2 + u * c3)) # Get rid of c4
+#         return iapb * F
 #     else
-#         ilog = FT(1) / (loga - logb)
-#         return amb * ilog
+#         iamb = FT(1) / amb
+#         return iamb * (loga - logb)
 #     end
 # end
 
-# Modified
+
 @inline function logave_fast(a::FT, b::FT, loga::FT, logb::FT) where {FT}
-    a *= 2 # Possibly not necessary
+    a *= 2
     amb = a - b
     apb = a + b
-    if abs(amb) < sqrt(logave_ϵ(FT)) * apb # Remove absolute value
+    if abs(amb) < sqrt(logave_ϵ(FT)) * abs(apb)
         c1 = FT(2) / FT(3)
         c2 = FT(2) / FT(5)
         c3 = FT(2) / FT(7)
@@ -228,7 +205,7 @@ end
         iapb = FT(1) / apb
         u = amb^2 * iapb^2
 
-        F = 2 + u * (c1 + u * (c2 + u * c3)) # Taking out c4
+        F = 2 + u * (c1 + u * (c2 + u * (c3 + u * c4)))
         iF = FT(1) / F
         return apb * iF
     else
@@ -236,6 +213,29 @@ end
         return amb * ilog
     end
 end
+
+# Modified
+# @inline function logave_fast(a::FT, b::FT, loga::FT, logb::FT) where {FT}
+#     a *= 2 # Possibly not necessary
+#     amb = a - b
+#     apb = a + b
+#     if abs(amb) < sqrt(logave_ϵ(FT)) * apb # Remove absolute value
+#         c1 = FT(2) / FT(3)
+#         c2 = FT(2) / FT(5)
+#         c3 = FT(2) / FT(7)
+#         c4 = FT(2) / FT(9)
+# 
+#         iapb = FT(1) / apb
+#         u = amb^2 * iapb^2
+# 
+#         F = 2 + u * (c1 + u * (c2 + u * c3)) # Taking out c4
+#         iF = FT(1) / F
+#         return apb * iF
+#     else
+#         ilog = FT(1) / (loga - logb)
+#         return amb * ilog
+#     end
+# end
 
 
 @inline function pressure_prim(ρ, u, v, w, e, Φ)
