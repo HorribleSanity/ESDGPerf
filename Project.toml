@@ -1,7 +1,27 @@
+authors = ["Maciej Waruszewski <mwarusz@igf.fuw.edu.pl>"]
 name = "ESDGPerf"
 uuid = "28cfb2e1-5512-4720-bc88-c394053c54d2"
-authors = ["Maciej Waruszewski <mwarusz@igf.fuw.edu.pl>"]
 version = "0.1.0"
+
+[compat]
+ArgParse = "1"
+CUDA = "5"
+DelimitedFiles = "1"
+KernelAbstractions = "0.9"
+LinearAlgebra = "1"
+Logging = "1"
+MPI = "0.20"
+MPIPreferences = "0.1"
+NVTX = "0.3"
+P4est = "0.4"
+P4estTypes = "0.2"
+Preferences = "1"
+Printf = "1"
+ProgressMeter = "1"
+Raven = "0.2.3"
+StaticArrays = "1"
+Test = "1"
+WriteVTK = "1"
 
 [deps]
 ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
@@ -23,22 +43,5 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 WriteVTK = "64499a7a-5c06-52f2-abe2-ccb03c286192"
 
-[compat]
-ArgParse = "1"
-CUDA = "5"
-DelimitedFiles = "1"
-KernelAbstractions = "0.9"
-LinearAlgebra = "1"
-Logging = "1"
-MPI = "0.20"
-MPIPreferences = "0.1"
-NVTX = "0.3"
-P4est = "0.4"
-P4estTypes = "0.2"
-Preferences = "1"
-Printf = "1"
-ProgressMeter = "1"
-Raven = "0.2.3"
-StaticArrays = "1"
-Test = "1"
-WriteVTK = "1"
+[extras]
+CUDA_Runtime_jll = "76a88914-d11a-5bdc-97e0-2f5a05c973a2"

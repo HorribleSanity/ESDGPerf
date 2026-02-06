@@ -25,9 +25,6 @@ echo SLURM: current home directory: $HOME
 echo SLURM: PATH:                   $PATH
 echo ------------------------------------------------------
 
-module load julia/1.10.2
-module load cuda/12.4.0
-
 JULIA=$(which julia)
 NCU=$(which ncu)
 
@@ -44,8 +41,8 @@ kernels="regex:(rkupdate_knl|face_knl|volume_knl)"
 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 # Loop through configurations
-for N in 2 3 4 5 6; do
-  for L in 1 2 3 4 5 6; do
+for N in 6 7; do
+  for L in 2; do
     for F in Float64; do
       prefix="./ncu-profiles/profile-${SLURM_JOBID}-${F}-N${N}-L${L}"
       

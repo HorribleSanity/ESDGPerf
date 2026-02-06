@@ -1,3 +1,6 @@
+using MPI
+MPI.Init(threadlevel=:multiple)
+
 using Raven
 using ESDGPerf
 using CUDA
@@ -6,7 +9,6 @@ using Printf
 using Logging
 using WriteVTK
 using Test
-using MPI
 using NVTX
 using ArgParse
 using DelimitedFiles
@@ -163,7 +165,7 @@ function run(
 
     # Here we minimize the differences between Float32
     # and Float64.
-    cfl = 12 / 10
+    cfl = FT(0.25)
     dt = cfl * min_node_distance(grid) / 330.0
     numberofsteps = ceil(Int, timeend / dt)
     dt = timeend / numberofsteps

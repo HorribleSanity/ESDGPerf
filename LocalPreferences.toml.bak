@@ -1,0 +1,19 @@
+[CUDA]
+nonblocking_synchronization = false
+
+[MPIPreferences]
+__clear__ = ["preloads_env_switch"]
+_format = "1.0"
+abi = "MPICH"
+binary = "system"
+cclibs = []
+libmpi = "libmpi_gnu_112"
+mpiexec = "srun"
+preloads = []
+
+[P4est]
+libp4est = "/u/hwaterhouse/local/p4est/lib/libp4est.so"
+libsc = "/u/hwaterhouse/local/p4est/lib/libsc.so"
+
+[P4estTypes]
+precompile_workload = false

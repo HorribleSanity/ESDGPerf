@@ -170,7 +170,7 @@ ave_fast(a::FT, b::FT) where {FT} = muladd(b, FT(1) / FT(2), a)
         return iamb * (loga - logb)
     end
 end
-@inline function inv_logave_fast(a::FT, b::FT, loga::FT, logb::FT) where {FT}
+# @inline function inv_logave_fast(a::FT, b::FT, loga::FT, logb::FT) where {FT}
 #     a *= 2
 #     amb = a - b
 #     apb = a + b

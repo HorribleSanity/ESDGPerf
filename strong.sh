@@ -3,11 +3,11 @@
 #SBATCH --job-name=strong-test
 #SBATCH --output=strong_%j.txt
 #SBATCH --partition=gpuA100x4
-#SBATCH --nodes=1
+#SBATCH --nodes=4
 #SBATCH --gpus-per-node=4
 #SBATCH --mem-per-gpu=32G
 #SBATCH --ntasks-per-node=4
-#SBATCH --time=04:00:00
+#SBATCH --time=02:00:00
 #SBATCH --exclusive
 
 echo 'Job is running on nodes:'
@@ -22,10 +22,10 @@ echo SLURM: current home directory: $HOME
 echo SLURM: PATH:                   $PATH
 echo ------------------------------------------------------
 
-module load julia/1.10.2
+#module load julia/1.10.2
 #module load openmpi
 #module load cuda/12.4.0
-export CUDA_VISIBLE_DEVICES=""  # No GPUs visible during startup
+export JULIA_CUDA_MEMORY_POOL=none
 
 
 
@@ -46,8 +46,9 @@ echo "=== CUDA Environment ==="
 printenv | grep -i cuda
 echo ""
 
-JULIA=$(which julia)
-MPI=/u/hwaterhouse/.julia/bin/mpiexecjl
+#JULIA=$(which julia)
+JULIA="julia +1.10"
+#MPI=/u/hwaterhouse/.julia/bin/mpiexecjl
 #MPI=mpirun
 
 echo "Using JULIA: $JULIA"
@@ -57,7 +58,7 @@ echo "Job ID: $SLURM_JOBID"
 cat > launch.sh <<'EOFA'
 #!/bin/bash
 ngpu=$(nvidia-smi -L | grep -c UUID)
-rank="${OMPI_COMM_WORLD_LOCAL_RANK:-0}"
+rank="${SLURM_LOCALID:-${OMPI_COMM_WORLD_LOCAL_RANK:-0}}"
 device=$((rank % ngpu))
 export CUDA_VISIBLE_DEVICES=$device
 exec "$@"
@@ -69,7 +70,7 @@ $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 # Fixed problem size for strong scaling
 N=4
-L=4
+L=6
 F=Float64
 
 # Create unique directory for this run using timestamp and job ID
@@ -82,15 +83,15 @@ echo "Results will be saved to: ${RUN_DIR}"
 
 
 # Loop through GPU counts
-for P in 4; do
+for P in 4 8 12 16; do
   VTK_DIR="${RUN_DIR}/vtk-out-P${P}"
   mkdir -p ${VTK_DIR}
   prefix="${RUN_DIR}/strong-${SLURM_JOBID}-${F}-N${N}-L${L}-P${P}"
 
   echo "Running N=${N} L=${L} F=${F} with ${P} GPUs..."
 
-  time ${MPI} -n $P ./launch.sh ${JULIA} --project=. test/run/risingbubble.jl \
-    --time-end 1500\
+  time srun -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/risingbubble.jl \
+    --number-of-steps 1000 \
     --polynomial-order ${N} \
     --refinement-level ${L} \
     --floating-point-type ${F} \
@@ -101,7 +102,7 @@ for P in 4; do
     --enable-timing \
     --enable-vtk-output\
     --vtk-output-directory "${VTK_DIR}"\
-    --vtk-output-number-of-saves 75\
+    --vtk-output-number-of-saves 5\
     2>&1 | tee -a ${prefix}.log
 
   echo "Completed ${P} GPU run"
