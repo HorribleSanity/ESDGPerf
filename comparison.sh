@@ -3,11 +3,11 @@
 #SBATCH --job-name=logavg-compare
 #SBATCH --output=comparison_%j.txt
 #SBATCH --partition=gpuA100x4
-#SBATCH --nodes=1
+#SBATCH --nodes=2
 #SBATCH --gpus-per-node=4
 #SBATCH --mem-per-gpu=32G
 #SBATCH --ntasks-per-node=4
-#SBATCH --time=02:00:00
+#SBATCH --time=12:00:00
 #SBATCH --exclusive
 
 # ============================================================
@@ -15,11 +15,11 @@
 #   "baseline"  = original logavg
 #   "optimized" = modified logavg
 # ============================================================
-TAG="baseline"
+TAG="visual"
 
 N=4
 L=6
-P=4
+P=8
 NSTEPS=1000
 
 echo "=== Comparison run: TAG=${TAG} ==="
@@ -60,7 +60,7 @@ for F in Float64 Float32; do
   echo ">>> Running ${TAG} ${F} N=${N} L=${L} P=${P} ..."
 
   time srun -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/risingbubble.jl \
-    --number-of-steps ${NSTEPS} \
+    --time-end 1000 \
     --polynomial-order ${N} \
     --refinement-level ${L} \
     --floating-point-type ${F} \
