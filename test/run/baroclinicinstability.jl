@@ -16,13 +16,14 @@ import InteractiveUtils
 
 import ProgressMeter
 
-_grav(FT) = FT(9.81)
+_grav(FT) = FT(9.80616)
 _omega(FT) = FT(7.29212e-5)
 
 # Compute geopotential and temperature at a given eta-level (pressure coordinate).
 # Translated from Fortran subroutine baroclinic_instability_functions
 # (initial_conditions.F90, lines 6343-6376).
 # Uses f-plane approximation (beta0 = 0).
+# Look at Ulrich et al eq (8)
 @inline function baroclinic_functions(y, eta, f0, u0, T0, gamma_lapse, b, Ly, R_d, g)
     b2 = b * b
     twopi = 2 * oftype(y, pi)
@@ -53,7 +54,7 @@ end
     γ = _γ(FT)
     _, y, z = x⃗
 
-    cv_d = FT(719)
+    cv_d = FT(717.5)
     cp_d = γ * cv_d
     R_d = cp_d - cv_d
 
@@ -114,7 +115,7 @@ end
     γ = _γ(FT)
     x, y, z = x⃗
 
-    cv_d = FT(719)
+    cv_d = FT(717.5)
     cp_d = γ * cv_d
     R_d = cp_d - cv_d
 
