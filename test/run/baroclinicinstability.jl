@@ -17,6 +17,7 @@ import InteractiveUtils
 import ProgressMeter
 
 _grav(FT) = FT(9.81)
+_omega(FT) = FT(7.29212e-5)
 
 # Compute geopotential and temperature at a given eta-level (pressure coordinate).
 # Translated from Fortran subroutine baroclinic_instability_functions
@@ -68,7 +69,7 @@ end
     b = FT(2)
     b2 = b * b
     Ly = FT(6e6)
-    f0 = FT(1e-4)
+    f0 = 2 * _omega(FT) / sqrt(FT(2))
 
     # Newton iteration to find eta (= p/p0) from geometric height z.
     # Solves: geo_phi(eta) = g * z
@@ -129,7 +130,7 @@ end
     b = FT(2)
     b2 = b * b
     Ly = FT(6e6)
-    f0 = FT(1e-4)
+    f0 = 2 * _omega(FT) / sqrt(FT(2))
 
     # Perturbation parameters (from Fortran code)
     up = FT(1)
@@ -240,6 +241,9 @@ function run(
     fill!(dq, FT(0))
 
     dq[:, :, (nlocalcells+1):end] .= NaN
+
+    # Coriolis parameter for f-plane (from Fortran: 2*omega/sqrt(2))
+    f0 = 2 * _omega(FT) / sqrt(FT(2))
 
     # Sound speed at T0=288K is ~340 m/s
     cfl = FT(0.25)
@@ -382,7 +386,7 @@ function run(
             for stage = 1:length(RKA)
                 NVTX.@mark "stage" payload = stage
                 NVTX.@range "stage" begin
-                    rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid, cm)
+                    rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid, cm; f_coriolis = f0)
                     rkupdate!(
                         dq,
                         q,
