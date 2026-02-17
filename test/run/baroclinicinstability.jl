@@ -329,6 +329,25 @@ function run(
                     vtkfile["δρw"] = Array(@view Pq[:, _ρw, 1:nlocalcells])
                     vtkfile["δρe"] = Array(@view Pq[:, _ρe, 1:nlocalcells])
 
+                    # Derived fields: pressure and temperature
+                    Pq_full = reshape(P * reshape(q, np, :), np, nstate, :)
+                    Paux_full = reshape(P * reshape(aux, np, :), np, naux, :)
+
+                    ρ_a = Array(@view Pq_full[:, _ρ, 1:nlocalcells])
+                    ρu_a = Array(@view Pq_full[:, _ρu, 1:nlocalcells])
+                    ρv_a = Array(@view Pq_full[:, _ρv, 1:nlocalcells])
+                    ρw_a = Array(@view Pq_full[:, _ρw, 1:nlocalcells])
+                    ρe_a = Array(@view Pq_full[:, _ρe, 1:nlocalcells])
+                    Φ_a = Array(@view Paux_full[:, _Φ, 1:nlocalcells])
+
+                    γ_val = _γ(FT)
+                    R_d_val = (γ_val - 1) * FT(717.5)
+                    pressure = @. (γ_val - 1) * (ρe_a - (ρu_a^2 + ρv_a^2 + ρw_a^2) / (2 * ρ_a) - ρ_a * Φ_a)
+                    temperature = @. pressure / (ρ_a * R_d_val)
+
+                    vtkfile["pressure"] = pressure
+                    vtkfile["temperature"] = temperature
+
                     vtkfile["CellNumber"] = (1:length(grid)) .+ offset(grid)
                     vtk_save(vtkfile)
                     if rank == 0

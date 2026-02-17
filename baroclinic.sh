@@ -38,24 +38,31 @@ chmod 755 launch.sh
 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 N=4
-L=4
+L=3
 F=Float64
 P=4
+Kx=12
+Ky=2
+Kz=1
 # 10 days in seconds
 TIMEEND=864000
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-RUN_DIR="./baroclinic-results/run_${TIMESTAMP}_job${SLURM_JOBID}"
+RUN_DIR="./baroclinic-results/run_${TIMESTAMP}_job${SLURM_JOBID}_Kx${Kx}_Ky${Ky}_Kz${Kz}_L${L}"
 VTK_DIR="${RUN_DIR}/vtk"
 mkdir -p ${VTK_DIR}
 
 echo "Results will be saved to: ${RUN_DIR}"
+echo "Resolution: Kx=${Kx} Ky=${Ky} Kz=${Kz} L=${L} N=${N} => $(( Kx * 2**L )) x $(( Ky * 2**L )) x $(( Kz * 2**L )) elements"
 
 time srun -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/baroclinicinstability.jl \
   --polynomial-order ${N} \
   --refinement-level ${L} \
   --floating-point-type ${F} \
   --time-end ${TIMEEND} \
+  --elements-in-direction-x ${Kx} \
+  --elements-in-direction-y ${Ky} \
+  --elements-in-direction-z ${Kz} \
   --enable-vtk-output \
   --vtk-output-directory "${VTK_DIR}" \
   --vtk-output-number-of-saves 100 \
