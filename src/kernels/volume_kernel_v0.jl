@@ -207,7 +207,7 @@ end
         # Compute entropy variables for state 1 eq (18)
         s1 = log((p1) / (ρ1^_γ(FT)))
         b1 = ρ1 / (2 * p1)
-        v1_ρ = ((_γ(FT) - s1) / ((_γ(FT) - 1))) - (u1^2 + v1^2 + w1^2) * b1
+        v1_ρ = ((_γ(FT) - s1) / ((_γ(FT) - 1))) - (u1^2 + v1^2 + w1^2 - 2 * Φ1) * b1
         v1_ρu = 2 * b1 * u1
         v1_ρv = 2 * b1 * v1
         v1_ρw = 2 * b1 * w1
@@ -216,7 +216,7 @@ end
         # Compute entropy variables for state 2 eq (18)
         s2 = log((p2) / (ρ2^_γ(FT)))
         b2 = ρ2 / (2 * p2)
-        v2_ρ = ((_γ(FT) - s2) / ((_γ(FT) - 1))) - (u2^2 + v2^2 + w2^2) * b2
+        v2_ρ = ((_γ(FT) - s2) / ((_γ(FT) - 1))) - (u2^2 + v2^2 + w2^2 - 2 * Φ2) * b2
         v2_ρu = 2 * b2 * u2
         v2_ρv = 2 * b2 * v2
         v2_ρw = 2 * b2 * w2
