@@ -2,6 +2,7 @@ export VolumeKernel
 export initialize!
 export launch_volume
 export launch_coriolis!
+export launch_sponge!
 export rhs!
 export rkupdate!
 using LinearAlgebra
@@ -112,7 +113,13 @@ NVTX.@annotate function launch_coriolis!(dq, q, f0, cell, grid)
     @cuda threads = Nq^3 blocks = Ne coriolis_knl!(dq, q, f0, Val(Nq))
 end
 
-NVTX.@annotate function rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid, cm; f_coriolis = nothing)
+NVTX.@annotate function launch_sponge!(dq, q, aux, α_max, z_s, z_top, g, cell, grid)
+    Nq = size(cell)[1]
+    Ne = length(grid)
+    @cuda threads = Nq^3 blocks = Ne sponge_knl!(dq, q, aux, α_max, z_s, z_top, g, Val(Nq))
+end
+
+NVTX.@annotate function rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid, cm; f_coriolis = nothing, sponge = nothing)
     NVTX.@range "Start rhs communication" begin
         start!(q, cm)
     end
@@ -124,6 +131,9 @@ NVTX.@annotate function rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid, cm; f_c
     launch_face(communicatingcells(grid), dq, q, aux, vgeo, sgeo, cell, grid)
     if !isnothing(f_coriolis)
         launch_coriolis!(dq, q, f_coriolis, cell, grid)
+    end
+    if !isnothing(sponge)
+        launch_sponge!(dq, q, aux, sponge..., cell, grid)
     end
 end
 

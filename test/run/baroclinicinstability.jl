@@ -246,6 +246,13 @@ function run(
     # Coriolis parameter for f-plane (from Fortran: 2*omega/sqrt(2))
     f0 = 2 * _omega(FT) / sqrt(FT(2))
 
+    # Sponge layer (Klemp et al. MWR 2008, NUMA ugwal_sponge_weight)
+    g = _grav(FT)
+    sponge_thickness = FT(7000)
+    z_sponge_start = H - sponge_thickness
+    α_sponge_max = FT(0.4)
+    sponge_params = (α_sponge_max, z_sponge_start, H, g)
+
     # Sound speed at T0=288K is ~340 m/s
     cfl = FT(0.25)
     dt = cfl * min_node_distance(grid) / 340.0
@@ -406,7 +413,7 @@ function run(
             for stage = 1:length(RKA)
                 NVTX.@mark "stage" payload = stage
                 NVTX.@range "stage" begin
-                    rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid, cm; f_coriolis = f0)
+                    rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid, cm; f_coriolis = f0, sponge = sponge_params)
                     rkupdate!(
                         dq,
                         q,

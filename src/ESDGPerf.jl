@@ -19,6 +19,7 @@ include("kernels/rkupdate_kernel.jl")
 include("kernels/volume_kernel_v0.jl")
 include("kernels/volume_kernel_vfinal.jl")
 include("kernels/coriolis_kernel.jl")
+include("kernels/sponge_kernel.jl")
 
 const all_kernels = (VolumeKernel{0}(), VolumeKernel{:final}())
 export all_kernels
