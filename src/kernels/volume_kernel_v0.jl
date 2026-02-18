@@ -286,8 +286,8 @@ end
             w2 * (u²_bar / 2 + Φ_avg) +
             w3 * (h_bar + c_bar * u_avg_n) +
             λ4 * (
-                (u_t1 * Δv_ρu + u_t2 * Δv_ρv + u_t3 * Δv_ρw) -
-                Δv_ρe * ((u_avg*u_avg + v_avg*v_avg + w_avg*w_avg) + u_avg_n * u_avg_n)
+                (u_t1 * Δv_ρu + u_t2 * Δv_ρv + u_t3 * Δv_ρw) +
+                Δv_ρe * ((u_avg*u_avg + v_avg*v_avg + w_avg*w_avg) - u_avg_n * u_avg_n)
             )
         )
 
