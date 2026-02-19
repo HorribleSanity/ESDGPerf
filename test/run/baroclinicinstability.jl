@@ -74,7 +74,6 @@ end
 
     # Newton iteration to find eta (= p/p0) from geometric height z.
     # Solves: geo_phi(eta) = g * z
-    # Uses hydrostatic relation: d(geo_phi)/d(eta) = -R_d * T / eta
     eta = FT(1e-14)
     local temp
     for _ = 1:100
@@ -413,7 +412,7 @@ function run(
             for stage = 1:length(RKA)
                 NVTX.@mark "stage" payload = stage
                 NVTX.@range "stage" begin
-                    rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid, cm; f_coriolis = f0, sponge = sponge_params)
+                    rhs!(kernel, dq, q, aux, vgeo, sgeo, cell, grid, cm; f_coriolis = f0, sponge = nothing)
                     rkupdate!(
                         dq,
                         q,
