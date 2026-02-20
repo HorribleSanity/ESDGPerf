@@ -44,8 +44,8 @@ P=4
 Kx=12
 Ky=2
 Kz=1
-# 15 days in seconds
-TIMEEND=1296000
+# 30 days in seconds
+TIMEEND=2592000
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 RUN_DIR="./baroclinic-results/run_${TIMESTAMP}_job${SLURM_JOBID}_Kx${Kx}_Ky${Ky}_Kz${Kz}_L${L}"
@@ -65,9 +65,6 @@ time srun -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/ba
   --elements-in-direction-z ${Kz} \
   --enable-vtk-output \
   --vtk-output-directory "${VTK_DIR}" \
-  --vtk-output-number-of-saves 20 \
-  --enable-timing \
-  --timing-prefix "${RUN_DIR}/timing" \
   2>&1 | tee -a ${RUN_DIR}/baroclinic.log
 
 echo ""

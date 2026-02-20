@@ -254,14 +254,19 @@ function run(
 
     # Sound speed at T0=288K is ~340 m/s
     cfl = FT(0.25)
-    dt = cfl * min_node_distance(grid) / 340.0
-    numberofsteps = ceil(Int, timeend / dt)
-    dt = timeend / numberofsteps
+    dt_cfl = cfl * min_node_distance(grid) / 340.0
+    # Reduce dt slightly so it divides evenly into half a day (43200s)
+    steps_per_halfday = ceil(Int, 43200 / dt_cfl)
+    dt = FT(43200.0 / steps_per_halfday)
+    numberofsteps = round(Int, timeend / 43200) * steps_per_halfday
     if !isnothing(fixednumberofsteps)
         numberofsteps = fixednumberofsteps
     end
-    outputstep = ceil(Int, timeend / nsaves / dt)
-    dt = FT(dt)
+    outputstep = steps_per_halfday
+    # numberofsteps = ceil(Int, timeend / dt)
+    # dt = timeend / numberofsteps
+    # outputstep = ceil(Int, timeend / nsaves / dt)
+    # dt = FT(dt)
 
     RKA = (
         FT(0.0),
@@ -321,6 +326,8 @@ function run(
     end
 
     do_output = function (step, time, q)
+        # Ad or condition here
+        # (step * dt == 86400 * 12)
         if outputvtk && step % outputstep == 0
             NVTX.@range "VTK output" begin
                 @info "Start outputing" step time
