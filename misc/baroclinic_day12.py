@@ -48,8 +48,7 @@ for ax, (label, field, unit, fill_lev, line_lev, bold_lev, vmin, vmax, vc) in zi
             fontsize=11, fontweight="bold", va="top",
             bbox=dict(facecolor="white", edgecolor="none", alpha=0.7, pad=2))
     cb = fig.colorbar(cf, ax=ax, pad=0.01, aspect=15)
-    cb.locator = mticker.MaxNLocator(nbins=6)
-    cb.update_ticks()
+    cb.set_ticks(line_lev)
     cb.set_label(unit, fontsize=9)
 
 axes[0].set_xticklabels([])
