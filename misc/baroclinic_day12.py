@@ -35,14 +35,14 @@ fields = [
 ]
 
 # --- Plot ---
-fig, axes = plt.subplots(2, 1, figsize=(12, 5.5), constrained_layout=True)
+fig, axes = plt.subplots(2, 1, figsize=(10, 6), constrained_layout=True)
 
 for ax, (label, field, unit, fill_lev, line_lev, bold_lev, vmin, vmax, vc) in zip(axes, fields):
     norm = mcolors.TwoSlopeNorm(vcenter=vc, vmin=vmin, vmax=vmax)
     cf = ax.tricontourf(x, y, field, levels=fill_lev, cmap="RdBu_r", norm=norm, extend="both")
     ax.tricontour(x, y, field, levels=line_lev, colors="k", linewidths=0.4, alpha=0.5)
     ax.tricontour(x, y, field, levels=bold_lev, colors="k", linewidths=1.5)
-    ax.set_aspect("equal")
+    ax.set_aspect(2.5)
     ax.set_ylabel("y (km)")
     ax.text(0.005, 0.93, f"{label} Day {actual_day:.1f}", transform=ax.transAxes,
             fontsize=11, fontweight="bold", va="top",
