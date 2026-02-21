@@ -21,12 +21,23 @@ day_of = lambda f: step_of(f) / steps_per_halfday * 0.5
 pvtu = min(saves, key=lambda f: abs(day_of(f) - target_day))
 actual_day = day_of(pvtu)
 
-# --- Read and slice ---
+# --- Read, slice, sample onto regular grid ---
 mesh = pv.read(pvtu)
 s = mesh.slice(normal="z", origin=(0, 0, z_target))
-x, y = s.points[:, 0] / 1e3, s.points[:, 1] / 1e3
-p = s["pressure"] / 100   # Pa -> hPa
-T = s["temperature"]       # K
+
+xmin, xmax, ymin, ymax = s.bounds[0:4]
+nx, ny = 800, 120
+grid = pv.ImageData(
+    dimensions=(nx, ny, 1),
+    spacing=((xmax - xmin) / (nx - 1), (ymax - ymin) / (ny - 1), 1),
+    origin=(xmin, ymin, s.bounds[4]),
+)
+grid = grid.sample(s)  # interpolates within Lagrange cells
+
+x = grid.points[:, 0].reshape(ny, nx) / 1e3
+y = grid.points[:, 1].reshape(ny, nx) / 1e3
+p = grid["pressure"].reshape(ny, nx) / 100   # Pa -> hPa
+T = grid["temperature"].reshape(ny, nx)       # K
 
 # --- Contour specs from Ullrich et al. Fig 5 ---
 fields = [
@@ -39,9 +50,9 @@ fig, axes = plt.subplots(2, 1, figsize=(10, 6), constrained_layout=True)
 
 for ax, (label, field, unit, fill_lev, line_lev, bold_lev, vmin, vmax, vc) in zip(axes, fields):
     norm = mcolors.TwoSlopeNorm(vcenter=vc, vmin=vmin, vmax=vmax)
-    cf = ax.tricontourf(x, y, field, levels=fill_lev, cmap="RdBu_r", norm=norm, extend="both")
-    ax.tricontour(x, y, field, levels=line_lev, colors="k", linewidths=0.4, alpha=0.5)
-    ax.tricontour(x, y, field, levels=bold_lev, colors="k", linewidths=1.5)
+    cf = ax.contourf(x, y, field, levels=fill_lev, cmap="RdBu_r", norm=norm, extend="both")
+    ax.contour(x, y, field, levels=line_lev, colors="k", linewidths=0.4, alpha=0.5)
+    ax.contour(x, y, field, levels=bold_lev, colors="k", linewidths=1.5)
     ax.set_aspect(2.5)
     ax.set_ylabel("y (km)")
     ax.text(0.005, 0.93, f"{label} Day {actual_day:.1f}", transform=ax.transAxes,
