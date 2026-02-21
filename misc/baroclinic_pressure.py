@@ -10,7 +10,8 @@ import pyvista as pv
 rundir = sys.argv[1] if len(sys.argv) > 1 else \
     "baroclinic-results/run_20260219_092850_job16021878_Kx12_Ky2_Kz1_L3"
 z_target = 500.0  # meters
-target_days = [8, 10, 12, 15]
+target_days = [6, 12, 18, 24, 30]
+num_plots = len(target_days)
 
 # --- Find saves sorted by step number ---
 step_of = lambda f: int(re.search(r"step(\d+)", f).group(1))
@@ -27,8 +28,8 @@ def read_slice(pvtu):
 
 
 # --- Plot ---
-fig, axes = plt.subplots(4, 1, figsize=(12, 10), constrained_layout=True)
-labels = ["(a)", "(b)", "(c)", "(d)"]
+fig, axes = plt.subplots(num_plots, 1, figsize=(3*num_plots, 10), constrained_layout=True)
+labels = ["(a)", "(b)", "(c)", "(d)", "(e)"]
 
 for ax, td, label in zip(axes, target_days, labels):
     pvtu = min(saves, key=lambda f: abs(day_of(f) - td))
