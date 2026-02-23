@@ -9,3 +9,6 @@ strong_*.txt
 weak_*.txt
 comparison_*.txt
 external/*.tar.gz
+*.txt
+.venv
+profiles

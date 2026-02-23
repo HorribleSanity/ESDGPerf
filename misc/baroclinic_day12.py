@@ -9,6 +9,7 @@ import pyvista as pv
 # --- Settings ---
 rundir = sys.argv[1] if len(sys.argv) > 1 else \
     "baroclinic-results/run_20260220_233508_job16075485_Kx12_Ky2_Kz1_L3"
+print(rundir)
 z_target = 500.0
 target_day = 12
 
@@ -30,8 +31,8 @@ T = s["temperature"]       # K
 
 # --- Contour specs from Ullrich et al. Fig 5 ---
 fields = [
-    ("(a)", p, "hPa", np.arange(926, 955, 1), np.arange(926, 956, 2), [942], 926, 954, 942),
-    ("(b)", T, "K",   np.arange(268, 305, 1), np.arange(268, 306, 2), [290], 268, 304, 290),
+    ("(a)", p, "hPa", np.arange(926, 955, 2), np.arange(926, 956, 2), [942], 926, 954, 942),
+    ("(b)", T, "K",   np.arange(268, 305, 2), np.arange(268, 306, 2), [290], 268, 304, 290),
 ]
 
 # --- Plot ---

@@ -7,7 +7,7 @@
 #SBATCH --gpus-per-node=4
 #SBATCH --mem-per-gpu=32G
 #SBATCH --ntasks-per-node=4
-#SBATCH --time=12:00:00
+#SBATCH --time=6:00:00
 #SBATCH --exclusive
 
 echo "=== Baroclinic Instability Run ==="
@@ -44,8 +44,7 @@ P=4
 Kx=12
 Ky=2
 Kz=1
-# 30 days in seconds
-TIMEEND=2592000
+TIMEEND=1296000
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 RUN_DIR="./baroclinic-results/run_${TIMESTAMP}_job${SLURM_JOBID}_Kx${Kx}_Ky${Ky}_Kz${Kz}_L${L}"

@@ -255,6 +255,7 @@ function run(
     # Sound speed at T0=288K is ~340 m/s
     cfl = FT(0.25)
     dt_cfl = cfl * min_node_distance(grid) / 340.0
+    dt_cfl = FT(2.0) #hardcoded
     # Reduce dt slightly so it divides evenly into half a day (43200s)
     steps_per_halfday = ceil(Int, 43200 / dt_cfl)
     dt = FT(43200.0 / steps_per_halfday)
