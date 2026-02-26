@@ -9,7 +9,7 @@ binary = "system"
 cclibs = []
 libmpi = "libmpi_gnu_112"
 mpiexec = "srun"
-preloads = ["libmpi_gtl_cuda.so"]
+preloads = ["/opt/cray/pe/mpich/8.1.32/gtl/lib/libmpi_gtl_cuda.so"]
 preloads_env_switch = "MPICH_GPU_SUPPORT_ENABLED"
 
 [P4est]
