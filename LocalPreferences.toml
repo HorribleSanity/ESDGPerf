@@ -3,14 +3,14 @@ local = "true"
 version = "12.8"
 
 [MPIPreferences]
-__clear__ = ["preloads_env_switch"]
-_format = "1.0"
+_format = "1.1"
 abi = "MPICH"
 binary = "system"
 cclibs = []
 libmpi = "libmpi_gnu_112"
 mpiexec = "srun"
-preloads = []
+preloads = ["libmpi_gtl_cuda.so"]
+preloads_env_switch = "MPICH_GPU_SUPPORT_ENABLED"
 
 [P4est]
 libp4est = "/u/hwaterhouse/local/p4est/lib/libp4est.so"
