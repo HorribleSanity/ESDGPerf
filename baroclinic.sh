@@ -65,6 +65,7 @@ time srun -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/ba
   --elements-in-direction-z ${Kz} \
   --enable-vtk-output \
   --vtk-output-directory "${VTK_DIR}" \
+  --enable-single-buffer-comm \
   2>&1 | tee -a ${RUN_DIR}/baroclinic.log
 
 echo ""

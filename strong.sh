@@ -104,6 +104,7 @@ for P in 4 8 12 16; do
     --enable-vtk-output\
     --vtk-output-directory "${VTK_DIR}"\
     --vtk-output-number-of-saves 5\
+    --enable-single-buffer-comm \
     2>&1 | tee -a ${prefix}.log
 
   echo "Completed ${P} GPU run"

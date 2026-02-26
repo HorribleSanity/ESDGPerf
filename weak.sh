@@ -98,6 +98,7 @@ for P in 4 8 12 16; do
     --elements-in-direction-z ${P} \
     --timing-prefix ${prefix} \
     --enable-timing \
+    --enable-single-buffer-comm \
     2>&1 | tee -a ${prefix}.log
 
   echo "Completed ${P} GPU run"

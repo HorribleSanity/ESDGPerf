@@ -84,6 +84,7 @@ for L in 5 6 7; do
     --elements-in-direction-z 1 \
     --timing-prefix ${prefix} \
     --enable-timing \
+    --enable-single-buffer-comm \
     2>&1 | tee -a ${prefix}.log
 
   echo "Completed L=${L}, ${P} GPU run"

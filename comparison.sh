@@ -73,6 +73,7 @@ for F in Float64 Float32; do
     --enable-vtk-output \
     --vtk-output-directory "${RUN_DIR}/vtk-${TAG}-${F}" \
     --vtk-output-number-of-saves 3 \
+    --enable-single-buffer-comm \
     2>&1 | tee -a ${prefix}.log
 
   echo "<<< Completed ${TAG} ${F}"
