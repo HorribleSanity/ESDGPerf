@@ -26,6 +26,7 @@ echo ------------------------------------------------------
 #module load openmpi
 #module load cuda/12.4.0
 export JULIA_CUDA_MEMORY_POOL=none
+export MPICH_GPU_SUPPORT_ENABLED=1
 
 
 

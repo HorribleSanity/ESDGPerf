@@ -390,7 +390,8 @@ function run(
         outputvtk  = %s
         outputstep = %d
         timeend    = %.16e
-        """ FT N K level kernel en0 η0 dt numberofsteps outputvtk outputstep timeend
+        cuda_mpi  = %s
+        """ FT N K level kernel en0 η0 dt numberofsteps outputvtk outputstep timeend MPI.has_cuda()
     end
 
     (begintimestep, endtimestep) = (CUDA.CuEvent(), CUDA.CuEvent())

@@ -29,6 +29,7 @@ echo "N=${N} L=${L} P=${P} NSTEPS=${NSTEPS}"
 echo "======================================"
 
 export JULIA_CUDA_MEMORY_POOL=none
+export MPICH_GPU_SUPPORT_ENABLED=1
 
 nvidia-smi
 echo ""
