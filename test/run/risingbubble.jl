@@ -356,7 +356,7 @@ function run(
             begintimestep, prevbegintimestep = prevbegintimestep, begintimestep
             endtimestep, prevendtimestep = prevendtimestep, endtimestep
 
-            if step % 50 == 0
+            if step % 100 == 0
                 GC.gc()
                 MPI.Barrier(comm)
             end
