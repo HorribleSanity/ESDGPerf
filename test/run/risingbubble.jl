@@ -300,6 +300,9 @@ function run(
 
     cp = Raven.expand(nodecommpattern(grid), nstate, np)
     cm = commmanager(eltype(q), cp, triplebuffer; comm)
+    if rank == 0
+        @info "CommManager: $(nameof(typeof(cm)))"
+    end
 
     step = 0
     time = FT(0)
