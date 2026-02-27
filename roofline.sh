@@ -6,7 +6,7 @@
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --gpus-per-node=1
-#SBATCH --mem-per-gpu=32G
+#SBATCH --mem=0
 #SBATCH --gpu-bind=closest
 #SBATCH --ntasks=1
 #SBATCH --time=12:00:00

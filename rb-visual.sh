@@ -3,16 +3,16 @@
 #SBATCH --job-name=rb-visual
 #SBATCH --output=rb-visual_%j.txt
 #SBATCH --partition=gpuA100x4
-#SBATCH --nodes=1
+#SBATCH --nodes=2
 #SBATCH --gpus-per-node=4
-#SBATCH --mem-per-gpu=32G
+#SBATCH --mem=0
 #SBATCH --ntasks-per-node=4
 #SBATCH --time=12:00:00
 #SBATCH --exclusive
 
 N=4
 L=6
-P=4
+P=8
 TIMEEND=1000
 
 echo "=== Rising Bubble Visualization ==="
