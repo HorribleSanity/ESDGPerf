@@ -165,7 +165,7 @@ function run(
 
     # Here we minimize the differences between Float32
     # and Float64.
-    cfl = FT(0.25)
+    cfl = FT(0.5)
     dt = cfl * min_node_distance(grid) / 330.0
     numberofsteps = ceil(Int, timeend / dt)
     dt = timeend / numberofsteps
