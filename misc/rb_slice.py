@@ -69,7 +69,8 @@ fig, axes = plt.subplots(nrows, 2, figsize=(8, 3.2 * nrows),
 absmax = 0
 for f64, f32 in picks:
     for pvtu in (f64, f32):
-        s = pv.read(pvtu).slice(normal="y", origin=(0, 0, 1000))
+        mesh = pv.read(pvtu)
+        s = mesh.extract_points(np.abs(mesh.points[:, 1]) < 0.1)
         dth = compute_dtheta(s)
         absmax = max(absmax, abs(dth.min()), abs(dth.max()))
 levels = np.linspace(-absmax, absmax, 41)
@@ -82,7 +83,8 @@ for row, (f64, f32) in enumerate(picks):
 
     for col, pvtu in enumerate((f64, f32)):
         ax = axes[row, col]
-        s = pv.read(pvtu).slice(normal="y", origin=(0, 0, 1000))
+        mesh = pv.read(pvtu)
+        s = mesh.extract_points(np.abs(mesh.points[:, 1]) < 0.1)
         dth = compute_dtheta(s)
         x, z, dth = c0_project(s.points[:, 0], s.points[:, 2], dth)
 
