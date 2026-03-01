@@ -1,8 +1,9 @@
 """Rising bubble δθ at y=0 midplane: Float64 vs Float32.
 
-Usage: python rb_slice.py <run-directory> [--time-end 1000]
+Usage: python rb_slice.py <run-directory>
 """
 import glob, re, sys, os
+import xml.etree.ElementTree as ET
 import warnings; warnings.filterwarnings("ignore")
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,13 +15,7 @@ GAMMA, CV, G, P0, TH0 = 1.4, 719.0, 9.81, 1e5, 300.0
 CP = GAMMA * CV
 R = CP - CV
 
-TIME_END = 1000.0
-rundir = "."
-if len(sys.argv) > 1 and not sys.argv[1].startswith("--"):
-    rundir = sys.argv[1]
-for i, a in enumerate(sys.argv):
-    if a == "--time-end" and i + 1 < len(sys.argv):
-        TIME_END = float(sys.argv[i + 1])
+rundir = sys.argv[1] if len(sys.argv) > 1 else "."
 
 
 def compute_dtheta(mesh):
@@ -44,7 +39,7 @@ def compute_dtheta(mesh):
 
 
 def slice_and_grid(pvtu_path, nx=800, nz=800):
-    """Extract y=0 midplane and interpolate δθ onto regular grid."""
+    """Extract y=0 midplane points, interpolate δθ onto regular grid."""
     mesh = pv.read(pvtu_path)
     mid = mesh.extract_points(np.abs(mesh.points[:, 1]) < 0.1)
     dth = compute_dtheta(mid)
@@ -57,9 +52,20 @@ def slice_and_grid(pvtu_path, nx=800, nz=800):
     return Xi, Zi, Di
 
 
-# --- Discover VTK directories ---
-step_of = lambda f: int(re.search(r"step(\d+)", f).group(1))
+def read_pvd(directory):
+    """Read PVD file to get {pvtu_path: time} mapping."""
+    pvd_files = glob.glob(os.path.join(directory, "*.pvd"))
+    assert pvd_files, f"No PVD file in {directory}"
+    tree = ET.parse(pvd_files[0])
+    result = {}
+    for ds in tree.iter("DataSet"):
+        t = float(ds.attrib["timestep"])
+        pvtu = os.path.join(directory, ds.attrib["file"])
+        result[pvtu] = t
+    return result
 
+
+# --- Discover VTK directories ---
 for prefix in ["vtk-Float", "vtk-visual-Float"]:
     d64 = os.path.join(rundir, f"{prefix}64")
     d32 = os.path.join(rundir, f"{prefix}32")
@@ -68,14 +74,15 @@ for prefix in ["vtk-Float", "vtk-visual-Float"]:
 else:
     sys.exit(f"Could not find Float64/Float32 VTK dirs in {rundir}")
 
-# Pair saves by sorted index (step numbers differ between precisions)
-saves64 = sorted(glob.glob(f"{d64}/*.pvtu"), key=step_of)
-saves32 = sorted(glob.glob(f"{d32}/*.pvtu"), key=step_of)
+times64 = read_pvd(d64)
+times32 = read_pvd(d32)
+
+# Sort by time, pair by index (step numbers differ between precisions)
+saves64 = sorted(times64.keys(), key=lambda f: times64[f])
+saves32 = sorted(times32.keys(), key=lambda f: times32[f])
 n_saves = min(len(saves64), len(saves32))
 assert n_saves >= 2, f"Need at least 2 saves, got {n_saves}"
-
 pairs = list(zip(saves64[:n_saves], saves32[:n_saves]))
-last64, last32 = step_of(saves64[-1]), step_of(saves32[-1])
 
 # Pick 3: IC, middle, end
 if n_saves >= 3:
@@ -84,16 +91,6 @@ else:
     pick_idx = list(range(n_saves))
 picks = [pairs[i] for i in pick_idx]
 nrows = len(picks)
-
-
-def time_label(f64, f32):
-    s64, s32 = step_of(f64), step_of(f32)
-    if s64 == 0 and s32 == 0:
-        return "0"
-    t64 = s64 / last64 * TIME_END
-    t32 = s32 / last32 * TIME_END
-    return f"{(t64 + t32) / 2:.0f}"
-
 
 # --- Global color range ---
 vmin_global, vmax_global = 0.0, 0.0
@@ -123,7 +120,7 @@ fig, axes = plt.subplots(nrows, 2, figsize=(9, 3.8 * nrows + 0.5),
                          squeeze=False, constrained_layout=True)
 
 for row, (f64, f32) in enumerate(picks):
-    t_str = time_label(f64, f32)
+    t = (times64[f64] + times32[f32]) / 2
 
     for col, (pvtu, label) in enumerate([(f64, "Float64"), (f32, "Float32")]):
         ax = axes[row, col]
@@ -139,7 +136,7 @@ for row, (f64, f32) in enumerate(picks):
         if row == 0:
             ax.set_title(label, fontsize=13)
         if col == 0:
-            ax.set_ylabel(f"t = {t_str} s\nz (m)")
+            ax.set_ylabel(f"t = {t:.0f} s\nz (m)")
         else:
             ax.set_yticklabels([])
         if row == nrows - 1:
@@ -147,7 +144,7 @@ for row, (f64, f32) in enumerate(picks):
         else:
             ax.set_xticklabels([])
 
-    print(f"  row {row}: t ≈ {t_str} s")
+    print(f"  row {row}: t = {t:.0f} s")
 
 sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
 cbar = fig.colorbar(sm, ax=axes, shrink=0.8, aspect=35, pad=0.02)
