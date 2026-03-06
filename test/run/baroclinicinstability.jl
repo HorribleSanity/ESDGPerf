@@ -368,6 +368,8 @@ function run(
                         pvd[time] = vtkfile
                     end
                 end
+                GC.gc()
+                CUDA.reclaim()
                 @info "Done outputing" step time
             end
         end
