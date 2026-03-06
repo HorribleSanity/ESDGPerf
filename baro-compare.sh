@@ -7,7 +7,7 @@
 #SBATCH --gpus-per-node=4
 #SBATCH --mem=0
 #SBATCH --ntasks-per-node=4
-#SBATCH --time=12:00:00
+#SBATCH --time=8:00:00
 #SBATCH --exclusive
 
 # Same mesh as Feb 23 run (job16159219) that produced the day12 plot
@@ -17,14 +17,14 @@ P=8
 Kx=12
 Ky=2
 Kz=1
-TIMEEND=1296000  # 15 days
+TIMEEND=1036800  # 12 days
 
 echo "=== Baroclinic Instability Float Comparison ==="
 echo "Job ID: $SLURM_JOBID"
 echo "Node: $SLURM_JOB_NODELIST"
 echo "N=${N} L=${L} P=${P} Kx=${Kx} Ky=${Ky} Kz=${Kz} timeend=${TIMEEND}"
 echo "Resolution: $(( Kx * 2**L )) x $(( Ky * 2**L )) x $(( Kz * 2**L )) elements"
-echo "VTK output every half day (hardcoded in Julia script)"
+echo "VTK output every day (hardcoded in Julia script)"
 echo "================================================"
 
 export JULIA_CUDA_MEMORY_POOL=none

@@ -263,7 +263,7 @@ function run(
     if !isnothing(fixednumberofsteps)
         numberofsteps = fixednumberofsteps
     end
-    outputstep = steps_per_halfday
+    outputstep = 2 * steps_per_halfday  # output every day (was every half day)
     # numberofsteps = ceil(Int, timeend / dt)
     # dt = timeend / numberofsteps
     # outputstep = ceil(Int, timeend / nsaves / dt)
