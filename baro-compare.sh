@@ -73,7 +73,7 @@ for F in Float64 Float32; do
     --vtk-output-directory "${VTK_DIR}" \
     --enable-timing \
     --timing-prefix ${prefix} \
-    --enable-single-buffer-comm \
+    --enable-triple-buffer-comm \
     2>&1 | tee -a ${RUN_DIR}/${F}.log
 
   echo "<<< Completed ${F}"
