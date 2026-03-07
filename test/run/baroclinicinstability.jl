@@ -418,7 +418,6 @@ function run(
             desc = "Time stepping...",
         )
     end
-    GC.enable(false)
     for step = 1:numberofsteps
         NVTX.@mark "time step" payload = step
 
@@ -458,13 +457,8 @@ function run(
             begintimestep, prevbegintimestep = prevbegintimestep, begintimestep
             endtimestep, prevendtimestep = prevendtimestep, endtimestep
 
-            if step % 50 == 0
-                GC.gc()
-                MPI.Barrier(comm)
-            end
         end
     end
-    GC.enable(true)
     if rank == 0
         ProgressMeter.finish!(p)
     end
