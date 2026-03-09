@@ -66,8 +66,19 @@ for day in target_days:
     f32, t32 = closest_to_day(saves32, day)
     print(f"Day {day}: F64 → day {t64:.1f} ({os.path.basename(f64)}), "
           f"F32 → day {t32:.1f} ({os.path.basename(f32)})")
-    data[("Float64", day)] = (t64, *read_slice(f64))
-    data[("Float32", day)] = (t32, *read_slice(f32))
+    x64, y64, p64, T64 = read_slice(f64)
+    x32, y32, p32, T32 = read_slice(f32)
+    data[("Float64", day)] = (t64, x64, y64, p64, T64)
+    data[("Float32", day)] = (t32, x32, y32, p32, T32)
+
+    # Norms of Float64-Float32 difference (interpolate onto same grid isn't
+    # needed since both meshes have identical topology — same x,y points)
+    dp = p64 - p32
+    dT = T64 - T32
+    print(f"  Pressure diff:    L2={np.linalg.norm(dp):.4e} hPa, "
+          f"Linf={np.max(np.abs(dp)):.4e} hPa, mean={np.mean(np.abs(dp)):.4e} hPa")
+    print(f"  Temperature diff: L2={np.linalg.norm(dT):.4e} K,   "
+          f"Linf={np.max(np.abs(dT)):.4e} K,   mean={np.mean(np.abs(dT)):.4e} K")
 
 # --- Plot configs (Ullrich et al. Fig 5 levels) ---
 field_cfgs = {
