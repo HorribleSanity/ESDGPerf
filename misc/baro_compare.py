@@ -17,20 +17,7 @@ SECS_PER_DAY = 86400
 
 
 def read_pvd_times(vtk_dir):
-    """Read PVD file via pyvista → list of (pvtu_path, time_days) sorted by time."""
-    pvd_files = glob.glob(os.path.join(vtk_dir, "*.pvd"))
-    assert pvd_files, f"No PVD file in {vtk_dir}"
-    reader = pv.PVDReader(pvd_files[0])
-    saves = []
-    for i in range(reader.number_time_points):
-        t_sec = reader.time_point_value(i)
-        reader.set_active_time_point(i)
-        saves.append((reader.active_datasets[0].path, t_sec / SECS_PER_DAY))
-    return saves
-
-
-def read_pvd_times_simple(vtk_dir):
-    """Simpler fallback: get times from PVDReader, match to pvtu files by index."""
+    """Read PVD via pyvista for physical times, pair with sorted pvtu files."""
     pvd_files = glob.glob(os.path.join(vtk_dir, "*.pvd"))
     assert pvd_files, f"No PVD file in {vtk_dir}"
     reader = pv.PVDReader(pvd_files[0])
@@ -66,8 +53,8 @@ for prefix in ["vtk-Float", "vtk-visual-Float"]:
 else:
     sys.exit(f"Could not find Float64/Float32 VTK dirs in {rundir}")
 
-saves64 = read_pvd_times_simple(d64)
-saves32 = read_pvd_times_simple(d32)
+saves64 = read_pvd_times(d64)
+saves32 = read_pvd_times(d32)
 
 print(f"Float64: {len(saves64)} saves, days: {[f'{t:.1f}' for _, t in saves64]}")
 print(f"Float32: {len(saves32)} saves, days: {[f'{t:.1f}' for _, t in saves32]}")
