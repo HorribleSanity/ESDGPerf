@@ -1,6 +1,6 @@
-"""Baroclinic instability Float64 vs Float32: density perturbation at z=500m.
+"""Baroclinic instability Float64 vs Float32: density at z=500m.
 
-Reads δρ directly from VTK (prognostic variable, not derived).
+Reads ρ directly from VTK (full conserved variable).
 Rows: day 0, 6, 12. Cols: Float64, Float32.
 
 Usage: python baro_compare_density.py <run-directory>
@@ -33,13 +33,13 @@ def closest_to_day(saves, day):
 
 
 def read_slice(pvtu):
-    """Read PVTU, slice at z_target -> (x_km, y_km, delta_rho)."""
+    """Read PVTU, slice at z_target -> (x_km, y_km, rho)."""
     mesh = pv.read(pvtu)
     s = mesh.slice(normal="z", origin=(0, 0, z_target))
     x = s.points[:, 0] / 1e3
     y = s.points[:, 1] / 1e3
-    drho = np.array(s["δρ"])
-    return x, y, drho
+    rho = np.array(s["ρ"])  # kg/m³
+    return x, y, rho
 
 
 # --- Discover VTK directories ---
@@ -63,18 +63,18 @@ for day in target_days:
     f64, t64 = closest_to_day(saves64, day)
     f32, t32 = closest_to_day(saves32, day)
     print(f"Day {day}: F64 -> day {t64:.1f}, F32 -> day {t32:.1f}")
-    x64, y64, drho64 = read_slice(f64)
-    x32, y32, drho32 = read_slice(f32)
-    data[("Float64", day)] = (t64, x64, y64, drho64)
-    data[("Float32", day)] = (t32, x32, y32, drho32)
+    x64, y64, rho64 = read_slice(f64)
+    x32, y32, rho32 = read_slice(f32)
+    data[("Float64", day)] = (t64, x64, y64, rho64)
+    data[("Float32", day)] = (t32, x32, y32, rho32)
 
-    dd = drho64 - drho32
-    print(f"  δρ diff: L2={np.linalg.norm(dd):.4e}, "
+    dd = rho64 - rho32
+    print(f"  ρ diff: L2={np.linalg.norm(dd):.4e}, "
           f"Linf={np.max(np.abs(dd)):.4e}, mean={np.mean(np.abs(dd)):.4e} kg/m³")
 
-# --- Auto-compute contour levels from Float64 data at last day ---
-all_drho = np.concatenate([data[("Float64", d)][3] for d in target_days])
-vmin, vmax = np.percentile(all_drho, [1, 99])
+# --- Auto-compute contour levels from Float64 data ---
+all_rho = np.concatenate([data[("Float64", d)][3] for d in target_days])
+vmin, vmax = np.percentile(all_rho, [1, 99])
 pad = 0.05 * (vmax - vmin)
 vmin -= pad
 vmax += pad
@@ -94,14 +94,14 @@ norm = mcolors.TwoSlopeNorm(vcenter=vc, vmin=vmin, vmax=vmax)
 
 for row, day in enumerate(target_days):
     for col, prec in enumerate(["Float64", "Float32"]):
-        t, x, y, drho = data[(prec, day)]
+        t, x, y, rho = data[(prec, day)]
         ax = axes[row, col]
 
-        ax.tricontourf(x, y, drho, levels=fill_levels, cmap="RdBu_r",
+        ax.tricontourf(x, y, rho, levels=fill_levels, cmap="RdBu_r",
                        norm=norm, extend="both")
-        ax.tricontour(x, y, drho, levels=line_levels, colors="k",
+        ax.tricontour(x, y, rho, levels=line_levels, colors="k",
                       linewidths=0.4, alpha=0.5)
-        ax.tricontour(x, y, drho, levels=bold_level, colors="k",
+        ax.tricontour(x, y, rho, levels=bold_level, colors="k",
                       linewidths=1.5)
         ax.set_aspect(2.5)
 
@@ -118,7 +118,7 @@ for row, day in enumerate(target_days):
 
 sm = plt.cm.ScalarMappable(cmap="RdBu_r", norm=norm)
 fig.colorbar(sm, ax=axes, shrink=0.8, aspect=35, pad=0.02).set_label("kg/m³")
-fig.suptitle("Baroclinic Instability: δρ at z=500m — Float64 vs Float32",
+fig.suptitle("Baroclinic Instability: ρ at z=500m — Float64 vs Float32",
              fontsize=13, fontweight="bold")
 
 out = f"{rundir}/baro_compare_density.png"
