@@ -359,6 +359,11 @@ function run(
                     pressure = @. (γ_val - 1) * (ρe_a - (ρu_a^2 + ρv_a^2 + ρw_a^2) / (2 * ρ_a) - ρ_a * Φ_a)
                     temperature = @. pressure / (ρ_a * R_d_val)
 
+                    vtkfile["ρ"] = ρ_a
+                    vtkfile["ρu"] = ρu_a
+                    vtkfile["ρv"] = ρv_a
+                    vtkfile["ρw"] = ρw_a
+                    vtkfile["ρe"] = ρe_a
                     vtkfile["pressure"] = pressure
                     vtkfile["temperature"] = temperature
 
