@@ -17,8 +17,8 @@ target_days = [0, 6, 12]
 SECS_PER_DAY = 86400
 
 fields = {
-    "ρ":  {"unit": "kg/m³"},
-    "ρe": {"unit": "J/m³"},
+    "ρ":  {"unit": "kg/m³", "file": "rho"},
+    "ρe": {"unit": "J/m³",  "file": "rhoe"},
 }
 
 
@@ -126,7 +126,7 @@ for name, cfg in fields.items():
     fig.suptitle(f"Baroclinic Instability: {name} at z=500m — Float64 vs Float32",
                  fontsize=13, fontweight="bold")
 
-    out = f"{rundir}/baro_compare_{name}.png"
+    out = f"{rundir}/baro_compare_{cfg['file']}.png"
     plt.savefig(out, dpi=200, bbox_inches="tight")
     print(f"Saved {out}")
     plt.close()
