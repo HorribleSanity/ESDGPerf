@@ -378,10 +378,21 @@ function run(
                 @info "Done outputing" step time
             end
         end
+        if step % outputstep == 0
+            local_m = sum(@. MJ * q[:, _ρ:_ρ, 1:nlocalcells])
+            local_e = sum(@. MJ * q[:, _ρe:_ρe, 1:nlocalcells])
+            total_m = MPI.Allreduce(local_m, +, comm)
+            total_e = MPI.Allreduce(local_e, +, comm)
+            if rank == 0
+                @info @sprintf("Conservation step=%d time=%.16e mass=%.16e energy=%.16e", step, time, total_m, total_e)
+            end
+        end
     end
 
     en0 = sqrt(MPI.Allreduce(sum(@. MJ * q[:, :, 1:nlocalcells]^2), +, comm))
     η0 = entropyintegral(q, aux, MJ, grid)
+    m0 = MPI.Allreduce(sum(@. MJ * q[:, _ρ:_ρ, 1:nlocalcells]), +, comm)
+    e0 = MPI.Allreduce(sum(@. MJ * q[:, _ρe:_ρe, 1:nlocalcells]), +, comm)
 
     if rank == 0
         @info @sprintf """Starting
@@ -392,13 +403,15 @@ function run(
         kernel     = %s
         norm(q)    = %.16e
         η0         = %.16e
+        m0         = %.16e
+        e0         = %.16e
         dt         = %.16e
         nsteps     = %d
         outputvtk  = %s
         outputstep = %d
         timeend    = %.16e
         cuda_mpi  = %s
-        """ FT N K level kernel en0 η0 dt numberofsteps outputvtk outputstep timeend MPI.has_cuda()
+        """ FT N K level kernel en0 η0 m0 e0 dt numberofsteps outputvtk outputstep timeend MPI.has_cuda()
     end
 
     (begintimestep, endtimestep) = (CUDA.CuEvent(), CUDA.CuEvent())
@@ -471,13 +484,21 @@ function run(
     enf = sqrt(MPI.Allreduce(sum(@. MJ * q[:, :, 1:nlocalcells]^2), +, comm))
     ηf = entropyintegral(q, aux, MJ, grid)
     Δη = (ηf - η0) / abs(η0)
+    mf = MPI.Allreduce(sum(@. MJ * q[:, _ρ:_ρ, 1:nlocalcells]), +, comm)
+    ef = MPI.Allreduce(sum(@. MJ * q[:, _ρe:_ρe, 1:nlocalcells]), +, comm)
+    Δm = (mf - m0) / abs(m0)
+    Δe = (ef - e0) / abs(e0)
 
     if rank == 0
         @info @sprintf """Finished
         norm(q)      = %.16e
         ηf           = %.16e
         Δη           = %.16e
-        """ enf ηf Δη
+        mf           = %.16e
+        ef           = %.16e
+        Δm           = %.16e
+        Δe           = %.16e
+        """ enf ηf Δη mf ef Δm Δe
     end
 
     # final output
