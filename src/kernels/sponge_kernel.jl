@@ -15,7 +15,7 @@ function sponge_knl!(dq, q, aux, α_max, z_s, z_top, g, ::Val{Nq}) where {Nq}
 
         if z > z_s
             frac = (z - z_s) / (z_top - z_s)
-            α = α_max * sin(oftype(frac, π) / 2 * frac)^2
+            α = α_max * sin(oftype(frac, π) / oftype(frac, 2) * frac)^2
 
             ρw = q[ijk + Nq3 * (_ρw - 1) + state_offset]
             dq[ijk + Nq3 * (_ρw - 1) + state_offset] -= α * ρw

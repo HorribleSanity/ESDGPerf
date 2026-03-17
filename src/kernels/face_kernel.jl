@@ -36,7 +36,7 @@ function face_knl(
 
             n⃗ = SVector(sgeo[j, 1, e⁻], sgeo[j, 2, e⁻], sgeo[j, 3, e⁻])
             fMJ = sgeo[j, 5, e⁻]
-            MJI = 1 / vgeo[ijk⁻, _MJ, e⁻]
+            MJI = FT(1) / vgeo[ijk⁻, _MJ, e⁻]
 
             @unroll for s = 1:nstate
                 l_q⁻[s] = q[ijk⁻+Nq3*(s-1)+Nq3*nstate*(e⁻-1)]

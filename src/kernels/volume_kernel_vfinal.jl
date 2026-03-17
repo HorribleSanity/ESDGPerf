@@ -6,7 +6,7 @@ directionally_split(::VolumeKernel{:final}) = false
 
 function kernel_vgeo(::VolumeKernel{:final}, vgeo)
     MJ = view(vgeo, :, _MJ:_MJ, :)
-    MJI = 1 ./ MJ
+    MJI = inv.(MJ)
     G = view(vgeo, :, _g11:_g11+8, :)
     G .*= MJ
     @assert _MJI == size(vgeo, 2) + 1
@@ -171,7 +171,7 @@ ave_fast(a::FT, b::FT) where {FT} = muladd(b, FT(1) / FT(2), a)
 #     end
 # end
 @inline function inv_logave_fast(a::FT, b::FT, loga::FT, logb::FT) where {FT}
-    a *= 2
+    a *= FT(2)
     amb = a - b
     apb = a + b
     if abs(amb) < sqrt(logave_ϵ(FT)) * apb # Get rid of abs
@@ -183,7 +183,7 @@ ave_fast(a::FT, b::FT) where {FT} = muladd(b, FT(1) / FT(2), a)
         iapb = FT(1) / apb
         u = amb^2 * iapb^2
 
-        F = 2 + u * (c1 + u * (c2 + u * c3)) # Get rid of c4
+        F = FT(2) + u * (c1 + u * (c2 + u * c3)) # Get rid of c4
         return iapb * F
     else
         iamb = FT(1) / amb
@@ -216,7 +216,7 @@ end
 
 # Modified
 @inline function logave_fast(a::FT, b::FT, loga::FT, logb::FT) where {FT}
-    a *= 2 # Possibly not necessary
+    a *= FT(2) # Possibly not necessary
     amb = a - b
     apb = a + b
     if abs(amb) < sqrt(logave_ϵ(FT)) * apb # Remove absolute value
@@ -228,7 +228,7 @@ end
         iapb = FT(1) / apb
         u = amb^2 * iapb^2
 
-        F = 2 + u * (c1 + u * (c2 + u * c3)) # Taking out c4
+        F = FT(2) + u * (c1 + u * (c2 + u * c3)) # Taking out c4
         iF = FT(1) / F
         return apb * iF
     else
@@ -240,7 +240,7 @@ end
 
 @inline function pressure_prim(ρ, u, v, w, e, Φ)
     FT = typeof(ρ)
-    (_γ(FT) - 1) * ρ * (e - (u * u + v * v + w * w) / 2 - Φ)
+    (_γ(FT) - FT(1)) * ρ * (e - (u * u + v * v + w * w) / FT(2) - Φ)
 end
 
 @inline function volume_dq_prim(
@@ -283,7 +283,7 @@ end
         logb1 = q1[_logb]
         Φ1 = half * s_aux[ijk, _Φ]
 
-        usq1 = 2 * (u1 * u1 + v1 * v1 + w1 * w1)
+        usq1 = FT(2) * (u1 * u1 + v1 * v1 + w1 * w1)
 
         ρ2 = s_q[ljk, _ρ]
         u2 = s_q[ljk, _ρu]
@@ -303,7 +303,7 @@ end
         w_avg = ave_fast(w1, w2)
         b_avg = ave_fast(b1, b2)
         ib_avg = FT(1) / b_avg
-        fac = 2 * b1 * ib2
+        fac = FT(2) * b1 * ib2
         Φ_avg = ave_fast(Φ1, Φ2)
         usq_avg = ave_fast(usq1, usq2)
 
@@ -313,11 +313,11 @@ end
         #ρ_log = logave(2*ρ1, ρ2)
         #ib_log = FT(1) / logave(2*b1, b2)
 
-        p = ρ_avg * ib_avg / 2
-        igm1h = FT(1) / (2 * (_γ(FT) - 1))
-        c = (ib_log * igm1h - usq_avg / 2 + Φ_avg)
-        alpha = b_avg * ρ_log * ib1 / 4
-        D = -alpha * (2 * Φ1 - Φ2)
+        p = ρ_avg * ib_avg * half
+        igm1h = FT(1) / (FT(2) * (_γ(FT) - FT(1)))
+        c = (ib_log * igm1h - usq_avg * half + Φ_avg)
+        alpha = b_avg * ρ_log * ib1 / FT(4)
+        D = -alpha * (FT(2) * Φ1 - Φ2)
         Dfac = -D * fac
 
         ρuhat1 = G11 * u_avg + G12 * v_avg + G13 * w_avg
