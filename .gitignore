@@ -12,3 +12,4 @@ external/*.tar.gz
 *.txt
 .venv
 profiles
+.worktrees
