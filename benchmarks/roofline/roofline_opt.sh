@@ -2,16 +2,15 @@
 #SBATCH --account=bfit-delta-gpu
 #SBATCH --job-name=roofline-opt
 #SBATCH --output=roofline-opt_%A_%a.txt
-#SBATCH --partition=gpuA100x4
+#SBATCH --partition=gpuH200x8
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=0
 #SBATCH --gpu-bind=closest
 #SBATCH --ntasks=1
-#SBATCH --time=12:00:00
+#SBATCH --time=03:00:00
 #SBATCH --constraint=perf,nvperf
-#SBATCH --exclusive
 #SBATCH --array=0-13
 
 # Roofline profiling across 14 volume kernel optimization steps.
