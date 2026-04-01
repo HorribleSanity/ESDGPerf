@@ -32,7 +32,7 @@ function volume_knl(::VolumeKernel{:final},
 
   ijk = i + Nq * (j - 1 + Nq * (k - 1))
 
-  @inbounds @fastmath begin
+  @inbounds begin
     @unroll for s in 1:nstate
       l_dq[s] = dq[ijk + Nq3 * (s - 1) + Nq3 * nstate * (e - 1)]
     end
@@ -149,7 +149,7 @@ end
 
 
 @inline function pressure_prim(ρ, u, v, w, e, Φ)
-  @fastmath begin
+  begin
     FT = typeof(ρ)
     (_γ(FT) - 1) * ρ * (e - (u * u + v * v + w * w) / 2 - Φ)
   end
@@ -158,7 +158,7 @@ end
 @inline function volume_flux_prim(H, q1, aux1, q2, aux2)
   FT = eltype(H)
 
-  @inbounds @fastmath begin
+  @inbounds begin
     ρ1 =  q1[_ρ]
     u1 = q1[_ρu]
     v1 = q1[_ρv]

@@ -36,7 +36,7 @@ BENCH="${REPO}/benchmarks/roofline"
 #
 #             step   name             kernel file                  contract
 STEPS=(
-    "00  baseline         BASELINE                       off"
+    "00  baseline         step00-baseline.jl             off"
     "01  prim             step01-prim.jl                 off"
     "02  logave           step02-logave.jl               off"
     "03  precomp-logs     step03-precomp-logs.jl         off"
@@ -72,13 +72,7 @@ run_step() {
     log "$num" "worktree: $wt"
 
     # ── Swap kernel ──
-    if [ "$kfile" = "BASELINE" ]; then
-        # Step 00: use the v0 kernel by changing which VolumeKernel the test selects.
-        sed -i 's/VolumeKernel{:final}()/VolumeKernel{0}()/' "$wt/test/run/risingbubble.jl"
-        grep -q 'VolumeKernel{0}' "$wt/test/run/risingbubble.jl" || { log "$num" "ERROR: baseline patch failed"; return 1; }
-    else
-        cp "$BENCH/kernels/$kfile" "$wt/src/kernels/volume_kernel_vfinal.jl"
-    fi
+    cp "$BENCH/kernels/$kfile" "$wt/src/kernels/volume_kernel_vfinal.jl"
 
     # ── Swap contract.jl ──
     cp "$BENCH/contract_${contract}.jl" "$wt/src/contract.jl"

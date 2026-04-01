@@ -156,7 +156,7 @@ end
 
 
 @inline function pressure_prim(ρ, u, v, w, e, Φ)
-  @fastmath begin
+  begin
     FT = typeof(ρ)
     (_γ(FT) - 1) * ρ * (e - (u * u + v * v + w * w) / 2 - Φ)
   end
@@ -165,7 +165,7 @@ end
 @inline function volume_flux_prim(H, q1, aux1, q2, aux2)
   FT = eltype(H)
 
-  @inbounds @fastmath begin
+  @inbounds begin
     ρ1 =  q1[_ρ]
     u1 = q1[_ρu]
     v1 = q1[_ρv]
