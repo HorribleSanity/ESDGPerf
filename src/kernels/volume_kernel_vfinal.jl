@@ -110,6 +110,9 @@ function volume_knl(
             @unroll 1 for ll = 2:(Nq÷2+1)
                 l = mod(id + ll - 2, Nq) + 1
 
+                # even Nq: antipodal pair seen by both threads; skip one
+                iseven(Nq) && ll == Nq÷2+1 && l < id && continue
+
                 if dir == 1
                     ljk = l + Nq * ((j - 1) + Nq * (k - 1))
                 elseif dir == 2
