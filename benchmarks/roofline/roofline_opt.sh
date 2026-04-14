@@ -30,8 +30,9 @@ REPO="${SLURM_SUBMIT_DIR}"
 BENCH="${REPO}/benchmarks/roofline"
 
 # ── Step definitions ──────────────────────────────────────────────────────────
-# Step 00 uses VolumeKernel{0} (the v0 baseline); steps 01-13 swap vfinal.jl.
-# Steps 11-13 also enable contract nsz; steps 00-10 disable it.
+# Step 00 is the initial v1 (before optimizations); steps 01-13 are cumulative.
+# Steps 11-13 enable contract nsz; steps 00-10 disable it.
+# All kernels dispatch on VolumeKernel{:final}. No @fastmath anywhere.
 #
 #             step   name             kernel file                  contract
 STEPS=(

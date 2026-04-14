@@ -56,5 +56,5 @@ axes[0].set_xticklabels([])
 axes[-1].set_xlabel("x (km)")
 
 outpath = f"{rundir}/day{target_day}_pT_z{z_target:.0f}m.png"
-plt.savefig(outpath, dpi=200)
+plt.savefig(outpath, dpi=200, bbox_inches='tight')
 print(f"Saved to {outpath}")

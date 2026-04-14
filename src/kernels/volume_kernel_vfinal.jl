@@ -110,8 +110,8 @@ function volume_knl(
             @unroll 1 for ll = 2:(Nq÷2+1)
                 l = mod(id + ll - 2, Nq) + 1
 
-                # even Nq: antipodal pair seen by both threads; skip one
-                iseven(Nq) && ll == Nq÷2+1 && l < id && continue
+                # even Nq: antipodal pair seen by both threads; halve each
+                w = (iseven(Nq) && ll == Nq÷2+1) ? FT(1)/FT(2) : one(FT)
 
                 if dir == 1
                     ljk = l + Nq * ((j - 1) + Nq * (k - 1))
@@ -140,6 +140,7 @@ function volume_knl(
                     ijk_G_dir,
                     ljk_G_dir,
                     3 * Nq3,
+                    w,
                 )
             end
         end
@@ -262,6 +263,7 @@ end
     G1base,
     G2base,
     Gstride,
+    w,
 )
     FT = eltype(dq_ijk)
 
@@ -340,8 +342,8 @@ end
         H1ijk_ρv += G12 * D
         H1ijk_ρw += G13 * D
 
-        Didl = s_D[id, l]
-        Dlid = s_D[l, id]
+        Didl = s_D[id, l] * w
+        Dlid = s_D[l, id] * w
 
         H1ijk_ρ *= Didl
         H1ijk_ρu *= Didl
