@@ -46,7 +46,7 @@ exec "$@"
 EOFA
 chmod 755 launch.sh
 
-$JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 RUN_DIR="./comparison-results/${TAG}_${TIMESTAMP}_job${SLURM_JOBID}"
@@ -73,7 +73,6 @@ for F in Float64 Float32; do
     --enable-vtk-output \
     --vtk-output-directory "${RUN_DIR}/vtk-${TAG}-${F}" \
     --vtk-output-number-of-saves 3 \
-    --enable-single-buffer-comm \
     2>&1 | tee -a ${prefix}.log
 
   echo "<<< Completed ${TAG} ${F}"

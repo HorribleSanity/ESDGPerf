@@ -30,7 +30,7 @@ exec "$@"
 EOFA
 chmod 755 launch.sh
 
-$JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 N=4
 F=Float64
@@ -62,8 +62,7 @@ for L in 5 6 7; do
     --number-of-steps ${STEPS} \
     --elements-in-direction-x 1 \
     --elements-in-direction-y 1 \
-    --elements-in-direction-z 1 \
-  --enable-single-buffer-comm
+    --elements-in-direction-z 1
 
   echo "Completed L=${L}, P=${P}"
 done

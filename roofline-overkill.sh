@@ -41,7 +41,7 @@ echo "Job ID: $SLURM_JOBID"
 kernels="regex:(rkupdate_knl|face_knl|volume_knl)"
 
 # Instantiate once
-$JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 # Loop through configurations
 for N in 2 3; do

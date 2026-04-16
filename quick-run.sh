@@ -33,7 +33,7 @@ exec "$@"
 EOFA
 chmod 755 launch.sh
 
-$JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 N=4
 L=6
@@ -50,7 +50,6 @@ time srun -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/ri
   --elements-in-direction-x 1 \
   --elements-in-direction-y 1 \
   --elements-in-direction-z 1 \
-  --enable-single-buffer-comm \
   2>&1
 
 echo ""

@@ -19,7 +19,7 @@ export CUDA_VISIBLE_DEVICES=0
 JULIA="julia +1.10"
 
 # Instantiate once
-$JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 N=4
 L=3

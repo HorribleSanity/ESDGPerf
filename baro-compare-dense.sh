@@ -47,7 +47,7 @@ exec "$@"
 EOFA
 chmod 755 launch.sh
 
-$JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 RUN_DIR="./baro-compare-results/run_${TIMESTAMP}_job${SLURM_JOBID}_Kx${Kx}_Ky${Ky}_Kz${Kz}_L${L}_dense"

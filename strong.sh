@@ -67,7 +67,7 @@ EOFA
 chmod 755 launch.sh
 
 # Instantiate once
-$JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 # Fixed problem size for strong scaling
 N=4
@@ -104,7 +104,6 @@ for P in 4 8 12 16; do
     --enable-vtk-output\
     --vtk-output-directory "${VTK_DIR}"\
     --vtk-output-number-of-saves 5\
-    --enable-single-buffer-comm \
     2>&1 | tee -a ${prefix}.log
 
   echo "Completed ${P} GPU run"

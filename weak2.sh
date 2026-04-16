@@ -50,7 +50,7 @@ EOFA
 chmod 755 launch.sh
 
 # Instantiate once
-$JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 N=4
 F=Float64
@@ -84,7 +84,6 @@ for L in 5 6 7; do
     --elements-in-direction-z 1 \
     --timing-prefix ${prefix} \
     --enable-timing \
-    --enable-single-buffer-comm \
     2>&1 | tee -a ${prefix}.log
 
   echo "Completed L=${L}, ${P} GPU run"

@@ -36,7 +36,7 @@ EOFA
 chmod 755 launch.sh
 
 # Instantiate once
-$JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 N=4
 L=3
@@ -65,7 +65,6 @@ time srun -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/ba
   --elements-in-direction-z ${Kz} \
   --enable-vtk-output \
   --vtk-output-directory "${VTK_DIR}" \
-  --enable-single-buffer-comm \
   2>&1 | tee -a ${RUN_DIR}/baroclinic.log
 
 echo ""

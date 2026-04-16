@@ -39,7 +39,7 @@ exec "$@"
 EOFA
 chmod 755 launch.sh
 
-$JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 RUN_DIR="./rb-visual-results/run_${TIMESTAMP}_job${SLURM_JOBID}_N${N}_L${L}"
@@ -68,7 +68,6 @@ for F in Float64 Float32; do
     --vtk-output-number-of-saves 10 \
     --enable-timing \
     --timing-prefix ${prefix} \
-    --enable-single-buffer-comm \
     2>&1 | tee -a ${RUN_DIR}/${F}.log
 
   echo "<<< Completed ${F}"
