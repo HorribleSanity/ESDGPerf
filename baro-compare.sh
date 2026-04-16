@@ -28,7 +28,7 @@ echo "VTK output every day (hardcoded in Julia script)"
 echo "================================================"
 
 export JULIA_CUDA_MEMORY_POOL=none
-export MPICH_GPU_SUPPORT_ENABLED=1
+#export MPICH_GPU_SUPPORT_ENABLED=1
 
 nvidia-smi
 echo ""

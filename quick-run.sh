@@ -16,7 +16,7 @@ echo "Node: $SLURM_JOB_NODELIST"
 echo "======================================"
 
 export JULIA_CUDA_MEMORY_POOL=none
-export MPICH_GPU_SUPPORT_ENABLED=1
+#export MPICH_GPU_SUPPORT_ENABLED=1
 
 nvidia-smi
 echo ""
@@ -35,7 +35,7 @@ chmod 755 launch.sh
 
 srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
-N=4
+N=3
 L=6
 F=Float64
 P=4

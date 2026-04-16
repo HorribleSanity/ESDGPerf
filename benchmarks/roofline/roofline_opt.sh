@@ -79,7 +79,7 @@ run_step() {
 
     # ── Precompile (once per step; N/L changes don't trigger recompilation) ──
     log "$num" "precompiling..."
-    $JULIA --project="$wt" -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+    srun -n 1 $JULIA --project="$wt" -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
     # ── Profile all (N, L) combinations ──
     local outdir="${REPO}/ncu-profiles/optimization"
@@ -126,7 +126,7 @@ dcgmi profile --pause 2>/dev/null || true
 trap 'dcgmi profile --resume 2>/dev/null || true' EXIT
 
 # Ensure packages are downloaded (shared depot).
-$JULIA --project="$REPO" -e 'using Pkg; Pkg.instantiate()'
+srun -n 1 $JULIA --project="$REPO" -e 'using Pkg; Pkg.instantiate()'
 
 if [ "${SEQUENTIAL:-false}" = "true" ] || [ -z "${SLURM_ARRAY_TASK_ID:-}" ]; then
     for i in $(seq 0 $((${#STEPS[@]} - 1))); do run_step "$i"; done

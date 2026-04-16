@@ -16,7 +16,7 @@ echo "Node: $SLURM_JOB_NODELIST"
 echo "======================================"
 
 export JULIA_CUDA_MEMORY_POOL=none
-export MPICH_GPU_SUPPORT_ENABLED=1
+#export MPICH_GPU_SUPPORT_ENABLED=1
 
 echo "=== GPU Check ==="
 nvidia-smi

@@ -30,7 +30,7 @@ echo "DOF: $(( Kx * Ky * Kz * (2**L)**3 * (N+1)**3 ))"
 echo "====================================================="
 
 export JULIA_CUDA_MEMORY_POOL=none
-export MPICH_GPU_SUPPORT_ENABLED=1
+#export MPICH_GPU_SUPPORT_ENABLED=1
 
 nvidia-smi
 echo ""
