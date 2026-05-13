@@ -13,3 +13,5 @@ external/*.tar.gz
 .venv
 profiles
 .worktrees
+.claude
+rb-visual-results/
