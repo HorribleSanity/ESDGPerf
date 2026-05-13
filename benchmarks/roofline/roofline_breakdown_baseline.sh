@@ -9,8 +9,9 @@
 #SBATCH --mem=0
 #SBATCH --gpu-bind=closest
 #SBATCH --ntasks=1
-#SBATCH --time=01:00:00
+#SBATCH --time=02:00:00
 #SBATCH --constraint=perf,nvperf
+#SBATCH --exclusive
 
 # Profile baseline kernel for FULL kernel breakdown (volume + face + RK update)
 # at all polynomial orders, L=5, on A100. Output is used to produce the
