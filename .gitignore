@@ -17,3 +17,4 @@ profiles
 .claude
 rb-visual-results/
 initial_conditions.F90
+LocalPreferences.toml
