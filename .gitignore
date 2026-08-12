@@ -16,3 +16,4 @@ profiles
 .worktrees
 .claude
 rb-visual-results/
+initial_conditions.F90
