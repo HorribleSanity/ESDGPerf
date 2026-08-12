@@ -10,6 +10,9 @@
 #SBATCH --time=12:00:00
 #SBATCH --exclusive
 
+# Times manually selected source versions of the logarithmic-average
+# implementation. TAG labels output only; it does not select an implementation.
+
 # ============================================================
 # Set this tag before each submission:
 #   "baseline"  = original logavg

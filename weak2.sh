@@ -10,6 +10,8 @@
 #SBATCH --time=02:00:00
 #SBATCH --exclusive
 
+# P4est based scaling (refining a coarse element)
+
 echo 'Job is running on nodes:'
 echo $SLURM_JOB_NODELIST
 echo ------------------------------------------------------

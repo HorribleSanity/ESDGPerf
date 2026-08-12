@@ -10,7 +10,11 @@
 #SBATCH --time=04:00:00
 #SBATCH --exclusive
 
-N=3
+# Runs the rising thermal bubble in Float64 and Float32.
+# Writes per-step timing TSV files and VTK visualization output.
+# Uses the initial condition currently selected in risingbubble.jl
+
+N=4
 L=6
 P=8
 TIMEEND=1000

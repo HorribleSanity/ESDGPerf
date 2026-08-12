@@ -10,6 +10,11 @@
 #SBATCH --time=8:00:00
 #SBATCH --exclusive
 
+
+# Reproduces the paper's coarse baroclinic-instability comparison:
+# N=4, L=3, K=(12,2,1), 12 simulated days, 8 GPUs,
+# with Float64 and Float32 timing and VTK output.
+
 # Same mesh as Feb 23 run (job16159219) that produced the day12 plot
 N=4
 L=3

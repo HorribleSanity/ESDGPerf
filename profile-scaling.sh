@@ -10,6 +10,9 @@
 #SBATCH --time=02:00:00
 #SBATCH --exclusive
 
+# Collects per-rank Nsight Systems profiles for the
+# refinement-based weak-scaling configurations.
+
 echo "=== Multi-GPU Nsight Systems Profiling (Weak Scaling) ==="
 echo "Job ID: $SLURM_JOBID"
 echo "Node: $SLURM_JOB_NODELIST"

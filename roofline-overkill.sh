@@ -13,6 +13,9 @@
 #SBATCH --constraint=perf,nvperf
 #SBATCH --exclusive
 
+# Collects the full Nsight Compute metric set for selected small N/L cases.
+# This is more expensive than the focused roofline collection.
+
 echo 'Job is running on nodes:'
 echo $SLURM_JOB_NODELIST
 echo ------------------------------------------------------

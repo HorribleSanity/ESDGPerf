@@ -9,6 +9,8 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --time=00:30:00
 
+# Collects a single-GPU Nsight Systems profile of the rising-bubble solver.
+
 echo "=== Nsight Systems Profiling Run ==="
 echo "Job ID: $SLURM_JOBID"
 echo "Node: $SLURM_JOB_NODELIST"

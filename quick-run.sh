@@ -10,6 +10,8 @@
 #SBATCH --time=01:00:00
 #SBATCH --exclusive
 
+# Quick 100-step run to verify that the multi-GPU code executes.
+
 echo "=== Quick Run ==="
 echo "Job ID: $SLURM_JOBID"
 echo "Node: $SLURM_JOB_NODELIST"

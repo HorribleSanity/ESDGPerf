@@ -13,6 +13,8 @@
 #SBATCH --constraint=perf,nvperf
 #SBATCH --exclusive
 
+# Collects Nsight Compute roofline metrics for the configured N/L cases.
+
 echo 'Job is running on nodes:'
 echo $SLURM_JOB_NODELIST
 echo ------------------------------------------------------

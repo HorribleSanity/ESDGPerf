@@ -10,6 +10,13 @@
 #SBATCH --time=8:00:00
 #SBATCH --exclusive
 
+
+# Reproduces the paper's fine baroclinic timing comparison:
+# N=4, L=3, K=(36,6,3), one simulated day, and 8 GPUs.
+# The larger 41.5M-DOF mesh raises GPU utilization.
+#
+# Requires dt_cfl = 0.5 in test/run/baroclinicinstability.jl.
+
 # Dense baroclinic run: 3x coarse elements in each direction vs original
 # Matches rising bubble DOF ballpark (~41M vs 32M)
 # dt must be changed from hardcoded 2.0 to ~0.5 in baroclinicinstability.jl line 258

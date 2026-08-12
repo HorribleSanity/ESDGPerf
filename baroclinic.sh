@@ -10,6 +10,9 @@
 #SBATCH --time=6:00:00
 #SBATCH --exclusive
 
+# Runs the coarse baroclinic instability case in Float64 for 15 simulated days
+# on 4 GPUs. This is not the configuration used for the paper timing table.
+
 echo "=== Baroclinic Instability Run ==="
 echo "Job ID: $SLURM_JOBID"
 echo "Node: $SLURM_JOB_NODELIST"

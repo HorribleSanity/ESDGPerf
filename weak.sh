@@ -10,6 +10,8 @@
 #SBATCH --time=02:00:00
 #SBATCH --exclusive
 
+# Element based weak scaling
+
 echo 'Job is running on nodes:'
 echo $SLURM_JOB_NODELIST
 echo ------------------------------------------------------

@@ -1,7 +1,6 @@
 #!/bin/bash
 # Verify every kernel file is correct.
 # For each step: show the git commit, what changed, and diff against our file.
-# Human-readable output — read it and convince yourself.
 
 KDIR="benchmarks/roofline/kernels"
 PATCH='s/@cuStaticSharedMem/CuStaticSharedArray/g; s/VolumeKernel{1}/VolumeKernel{:final}/g; s/@fastmath //g'
