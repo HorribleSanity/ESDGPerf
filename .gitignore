@@ -5,6 +5,7 @@ notes*
 strong-scaling-results/
 weak-scaling-results/
 comparison-results/
+baroclinic-results/
 strong_*.txt
 weak_*.txt
 comparison_*.txt
