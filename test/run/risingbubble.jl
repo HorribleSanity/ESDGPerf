@@ -69,8 +69,8 @@ end
     x⃗c = SVector{3,FT}(0, 0, 260)
 
     r = sqrt((x⃗ - x⃗c)' * (x⃗ - x⃗c))
-    #δθ = r <= rc ? δθc : zero(FT)
-    δθ = r <= rc ? δθc * (1 + cospi(r / rc)) / 2 : zero(FT)
+    #δθ = r <= rc ? δθc : zero(FT) # Sharp
+    δθ = r <= rc ? δθc * (1 + cospi(r / rc)) / 2 : zero(FT) # Smooth
 
     θ = θref + δθ
     π_exner = 1 - g / (cp_d * θ) * z
