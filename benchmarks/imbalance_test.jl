@@ -14,6 +14,7 @@ function build_grid(
     Nq = N + 1
     cell = LobattoCell{FT,Array}(Nq, Nq, Nq)
 
+    # Rising bubble params
     domain_width = FT(2e3)
     domain_height = FT(2e3)
     vx = range(-domain_width / 2; stop = domain_width / 2, length = K[1] + 1)
@@ -24,7 +25,30 @@ function build_grid(
     grid_manager = GridManager(cell, coarse_grid; comm, min_level = level)
     grid = generate(grid_manager)
 
-    # Add partition-imbalance measurements here.
+    pattern = nodecommpattern(grid)
+    rank = MPI.Comm_rank(comm)
+
+    metrics = (
+        cells = length(grid),
+        communicating_cells = length(communicatingcells(grid)),
+        send_nodes = length(pattern.sendindices),
+        neighbor_ranks = length(pattern.sendranks),
+    )
+
+    all_metrics = MPI.gather(metrics, comm; root = 0)
+
+    if rank == 0
+        for name in propertynames(metrics)
+            values = getproperty.(all_metrics, name)
+            mean_value = sum(values) / length(values)
+            imbalance = maximum(values) / mean_value
+
+            println(
+                "$name: min=$(minimum(values)), mean=$mean_value, ",
+                "max=$(maximum(values)), max/mean=$imbalance",
+            )
+        end
+    end
 
     return grid
 end
