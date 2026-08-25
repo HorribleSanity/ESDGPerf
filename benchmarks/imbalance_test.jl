@@ -10,6 +10,7 @@ function build_grid(
     K,
     level;
     comm = MPI.COMM_WORLD,
+    output_file = nothing,
 )
     Nq = N + 1
     cell = LobattoCell{FT,Array}(Nq, Nq, Nq)
@@ -29,24 +30,49 @@ function build_grid(
     rank = MPI.Comm_rank(comm)
 
     metrics = (
-        cells = length(grid),
-        communicating_cells = length(communicatingcells(grid)),
-        send_nodes = length(pattern.sendindices),
-        neighbor_ranks = length(pattern.sendranks),
+        rank = rank,
+        cells = length(grid), # Number of elements
+        communicating_cells = length(communicatingcells(grid)), # Local cells touching another rank
+        send_nodes = length(pattern.sendindices), # Nodal indices before expansion over 5 state fields
+        neighbor_ranks = length(pattern.sendranks), # Remote ranks; self is not included
     )
 
     all_metrics = MPI.gather(metrics, comm; root = 0)
 
     if rank == 0
-        for name in propertynames(metrics)
+        for name in (:cells, :communicating_cells, :send_nodes, :neighbor_ranks)
             values = getproperty.(all_metrics, name)
             mean_value = sum(values) / length(values)
-            imbalance = maximum(values) / mean_value
+            imbalance = iszero(mean_value) ? "N/A" : maximum(values) / mean_value
 
             println(
                 "$name: min=$(minimum(values)), mean=$mean_value, ",
                 "max=$(maximum(values)), max/mean=$imbalance",
             )
+        end
+
+        if !isnothing(output_file)
+            write_header = !isfile(output_file) || filesize(output_file) == 0
+            open(output_file, "a") do io
+                if write_header
+                    println(
+                        io,
+                        "N\tL\tKx\tKy\tKz\tmpi_ranks\trank\tcells\t",
+                        "communicating_cells\tsend_nodes\tneighbor_ranks",
+                    )
+                end
+
+                mpi_ranks = MPI.Comm_size(comm)
+                for values in sort(all_metrics; by = values -> values.rank)
+                    println(
+                        io,
+                        "$N\t$level\t$(K[1])\t$(K[2])\t$(K[3])\t$mpi_ranks\t",
+                        "$(values.rank)\t$(values.cells)\t",
+                        "$(values.communicating_cells)\t$(values.send_nodes)\t",
+                        "$(values.neighbor_ranks)",
+                    )
+                end
+            end
         end
     end
 
@@ -85,6 +111,10 @@ function parse_commandline()
         help = "floating-point type (Float32 or Float64)"
         arg_type = Symbol
         default = :Float64
+        "--output-file"
+        help = "append per-rank metrics to this TSV file"
+        arg_type = String
+        default = ""
     end
 
     return parse_args(settings)
@@ -117,8 +147,10 @@ function main()
     Ky = max(parsed_args["elements-in-direction-y"], K)
     Kz = max(parsed_args["elements-in-direction-z"], K)
     level = parsed_args["refinement-level"]
+    output_file = parsed_args["output-file"]
+    output_file = isempty(output_file) ? nothing : output_file
 
-    build_grid(FT, N, (Kx, Ky, Kz), level; comm)
+    build_grid(FT, N, (Kx, Ky, Kz), level; comm, output_file)
 end
 
 main()
