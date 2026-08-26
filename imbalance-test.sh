@@ -14,7 +14,7 @@ set -euo pipefail
 
 JULIA="julia +1.10"
 
-srun -n 1 $JULIA --startup-file=no --project=. -e \
+srun --nodes=1 --ntasks=1 $JULIA --startup-file=no --project=. -e \
     'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 N=4
