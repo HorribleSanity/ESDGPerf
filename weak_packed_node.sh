@@ -10,6 +10,8 @@
 #SBATCH --time=03:00:00
 #SBATCH --exclusive
 
+set -euo pipefail
+
 # Element based weak scaling
 
 echo 'Job is running on nodes:'
@@ -86,7 +88,7 @@ echo "Results will be saved to: ${RUN_DIR}"
 
 # Loop through GPU counts
 for P in 1 2 4 8 12 16; do
-  NNODES=$((P + 3) / 4)
+  NNODES=$(((P + 3) / 4))
   prefix="${RUN_DIR}/weak-${SLURM_JOBID}-${F}-N${N}-L${L}-P${P}"
 
   echo "Running N=${N} L=${L} F=${F} with ${P} GPUs on ${NNODES} nodes..."
