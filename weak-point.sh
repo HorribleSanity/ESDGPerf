@@ -50,8 +50,8 @@ echo "=== GPU Check ==="
 nvidia-smi
 echo ""
 
-echo "=== MPI Version ==="
-mpiexec --version
+echo "=== Slurm Launcher Version ==="
+srun --version
 echo ""
 
 echo "=== MPI Environment Variables ==="
