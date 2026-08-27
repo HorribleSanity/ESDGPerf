@@ -6,7 +6,6 @@
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=4
 #SBATCH --mem=0
-#SBATCH --ntasks-per-node=4
 #SBATCH --time=00:30:00
 #SBATCH --exclusive
 
