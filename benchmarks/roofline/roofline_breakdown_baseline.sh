@@ -24,6 +24,7 @@ set -euo pipefail
 
 REPO="${SLURM_SUBMIT_DIR}"
 BENCH="${REPO}/benchmarks/roofline"
+OUTPUT_ROOT="${ESDG_OUTPUT_ROOT:-/scratch/bfit/${USER}/ESDGPerf}"
 
 # Step 00 is the pre-optimization baseline volume kernel.
 KFILE="step00-baseline.jl"
@@ -45,7 +46,8 @@ dcgmi profile --pause 2>/dev/null || true
 trap 'dcgmi profile --resume 2>/dev/null || true' EXIT
 
 # ── Set up isolated worktree ──
-wt="${REPO}/.worktrees/breakdown-baseline-${SLURM_JOBID}"
+wt="${OUTPUT_ROOT}/worktrees/breakdown-baseline-${SLURM_JOBID}"
+mkdir -p "$(dirname "$wt")"
 [ -d "$wt" ] && { git -C "$REPO" worktree remove "$wt" --force 2>/dev/null || rm -rf "$wt"; }
 git -C "$REPO" worktree add "$wt" HEAD --detach --quiet
 log "worktree: $wt"
@@ -57,7 +59,7 @@ log "precompiling..."
 srun -n 1 $JULIA --project="$wt" -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 # ── Profile all (N, L) ──
-outdir="${REPO}/ncu-profiles/breakdown-baseline-a100"
+outdir="${OUTPUT_ROOT}/ncu-profiles/breakdown-baseline-a100"
 mkdir -p "$outdir"
 
 for N in "${N_VALUES[@]}"; do

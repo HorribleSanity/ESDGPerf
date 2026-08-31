@@ -13,13 +13,16 @@
 set -euo pipefail
 
 JULIA="julia +1.10"
+OUTPUT_ROOT="${ESDG_OUTPUT_ROOT:-/scratch/bfit/${USER}/ESDGPerf}"
 
 srun --nodes=1 --ntasks=1 $JULIA --startup-file=no --project=. -e \
     'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 N=4
 L=6
-RESULTS="imbalance-results_${SLURM_JOB_ID}.tsv"
+RESULTS_DIR="${OUTPUT_ROOT}/imbalance-results"
+mkdir -p "${RESULTS_DIR}"
+RESULTS="${RESULTS_DIR}/imbalance-results_${SLURM_JOB_ID}.tsv"
 
 echo "Writing per-rank data to ${RESULTS}"
 

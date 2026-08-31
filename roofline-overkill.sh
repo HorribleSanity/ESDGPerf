@@ -33,6 +33,9 @@ module load cuda/12.4.0
 
 JULIA=$(which julia)
 NCU=$(which ncu)
+OUTPUT_ROOT="${ESDG_OUTPUT_ROOT:-/scratch/bfit/${USER}/ESDGPerf}"
+outdir="${OUTPUT_ROOT}/ncu-profiles/overkill-${SLURM_JOBID}"
+mkdir -p "${outdir}"
 
 #export CUDA_VISIBLE_DEVICES=2
 
@@ -50,7 +53,7 @@ srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 for N in 2 3; do
   for L in 1 2 3; do
     for F in Float64; do
-      prefix="./ncu-profiles/profile-${SLURM_JOBID}-${F}-N${N}-L${L}"
+      prefix="${outdir}/profile-${SLURM_JOBID}-${F}-N${N}-L${L}"
       
       echo "Profiling N=${N} L=${L} F=${F}..."
       $NCU --clock-control none \
@@ -76,5 +79,5 @@ for N in 2 3; do
 done
 
 echo "All profiling complete!"
-echo "Results in current directory"
-ls -lh ./ncu-profiles/profile-*.csv
+echo "Results: ${outdir}"
+ls -lh "${outdir}"/profile-*.csv

@@ -50,6 +50,7 @@ echo ""
 
 #JULIA=$(which julia)
 JULIA="julia +1.10"
+OUTPUT_ROOT="${ESDG_OUTPUT_ROOT:-/scratch/bfit/${USER}/ESDGPerf}"
 #MPI=/u/hwaterhouse/.julia/bin/mpiexecjl
 #MPI=mpirun
 
@@ -66,7 +67,7 @@ F=Float64
 
 # Create unique directory for this run using timestamp and job ID
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-RUN_DIR="./strong-scaling-results/run_${TIMESTAMP}_job${SLURM_JOBID}_N${N}_L${L}"
+RUN_DIR="${OUTPUT_ROOT}/strong-scaling-results/run_${TIMESTAMP}_job${SLURM_JOBID}_N${N}_L${L}"
 mkdir -p ${RUN_DIR}
 
 echo "Results will be saved to: ${RUN_DIR}"

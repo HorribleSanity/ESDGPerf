@@ -45,6 +45,7 @@ echo ------------------------------------------------------
 
 export JULIA_CUDA_MEMORY_POOL=none
 JULIA="julia +1.10"
+OUTPUT_ROOT="${ESDG_OUTPUT_ROOT:-/scratch/bfit/${USER}/ESDGPerf}"
 
 echo "=== GPU Check ==="
 nvidia-smi
@@ -74,7 +75,7 @@ L=6
 F=Float64
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-RUN_DIR="./weak-scaling-results/run_${TIMESTAMP}_job${SLURM_JOBID}_N${N}_L${L}_P${P}_packed"
+RUN_DIR="${OUTPUT_ROOT}/weak-scaling-results/run_${TIMESTAMP}_job${SLURM_JOBID}_N${N}_L${L}_P${P}_packed"
 mkdir -p "$RUN_DIR"
 prefix="${RUN_DIR}/weak-${SLURM_JOBID}-${F}-N${N}-L${L}-P${P}"
 

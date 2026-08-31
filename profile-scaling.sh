@@ -22,6 +22,7 @@ export JULIA_CUDA_MEMORY_POOL=none
 #export MPICH_GPU_SUPPORT_ENABLED=1
 
 JULIA="julia +1.10"
+OUTPUT_ROOT="${ESDG_OUTPUT_ROOT:-/scratch/bfit/${USER}/ESDGPerf}"
 
 srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
@@ -30,13 +31,14 @@ F=Float64
 STEPS=50
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+PROFILE_DIR="${OUTPUT_ROOT}/profiles/scaling_${TIMESTAMP}_job${SLURM_JOBID}"
 
 # Mirror weak scaling: Kx=Ky=Kz=1, increase L with GPU count
 # L=5/P=1, L=6/P=8, L=7/P=64
 for L in 5 6 7; do
   P=$(( 8 ** (L - 5) ))
-  OUTDIR="./profiles/scaling_${TIMESTAMP}_job${SLURM_JOBID}/L${L}_P${P}"
-  mkdir -p ${OUTDIR}
+  OUTDIR="${PROFILE_DIR}/L${L}_P${P}"
+  mkdir -p "${OUTDIR}"
 
   echo ""
   echo "Profiling N=${N} L=${L} P=${P} for ${STEPS} steps..."
@@ -62,4 +64,4 @@ done
 
 echo ""
 echo "All profiling complete!"
-find ./profiles/scaling_${TIMESTAMP}_job${SLURM_JOBID} -name "*.nsys-rep" -ls
+find "${PROFILE_DIR}" -name "*.nsys-rep" -ls

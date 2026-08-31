@@ -28,6 +28,7 @@ set -euo pipefail
 
 REPO="${SLURM_SUBMIT_DIR}"
 BENCH="${REPO}/benchmarks/roofline"
+OUTPUT_ROOT="${ESDG_OUTPUT_ROOT:-/scratch/bfit/${USER}/ESDGPerf}"
 
 # ── Step definitions ──────────────────────────────────────────────────────────
 # Step 00 is the initial v1 (before optimizations); steps 01-13 are cumulative.
@@ -66,7 +67,8 @@ run_step() {
     log "$num" "── $name ──"
 
     # Create an isolated worktree (full repo checkout at HEAD in a separate dir).
-    local wt="${REPO}/.worktrees/s${num}-${SLURM_ARRAY_JOB_ID:-$SLURM_JOBID}"
+    local wt="${OUTPUT_ROOT}/worktrees/s${num}-${SLURM_ARRAY_JOB_ID:-$SLURM_JOBID}"
+    mkdir -p "$(dirname "$wt")"
     [ -d "$wt" ] && { git -C "$REPO" worktree remove "$wt" --force 2>/dev/null || rm -rf "$wt"; }
     git -C "$REPO" worktree add "$wt" HEAD --detach --quiet
     log "$num" "worktree: $wt"
@@ -82,7 +84,7 @@ run_step() {
     srun -n 1 $JULIA --project="$wt" -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
     # ── Profile all (N, L) combinations ──
-    local outdir="${REPO}/ncu-profiles/optimization"
+    local outdir="${OUTPUT_ROOT}/ncu-profiles/optimization"
     mkdir -p "$outdir"
 
     for N in "${N_VALUES[@]}"; do
@@ -135,4 +137,4 @@ else
 fi
 
 echo "done. CSV count:"
-ls "${REPO}/ncu-profiles/optimization/"opt*.csv 2>/dev/null | wc -l
+ls "${OUTPUT_ROOT}/ncu-profiles/optimization/"opt*.csv 2>/dev/null | wc -l

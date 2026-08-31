@@ -26,6 +26,7 @@ nvidia-smi
 echo ""
 
 JULIA="julia +1.10"
+OUTPUT_ROOT="${ESDG_OUTPUT_ROOT:-/scratch/bfit/${USER}/ESDGPerf}"
 
 # Instantiate once
 srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
@@ -40,7 +41,7 @@ Kz=1
 TIMEEND=1296000
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-RUN_DIR="./baroclinic-results/run_${TIMESTAMP}_job${SLURM_JOBID}_Kx${Kx}_Ky${Ky}_Kz${Kz}_L${L}"
+RUN_DIR="${OUTPUT_ROOT}/baroclinic-results/run_${TIMESTAMP}_job${SLURM_JOBID}_Kx${Kx}_Ky${Ky}_Kz${Kz}_L${L}"
 VTK_DIR="${RUN_DIR}/vtk"
 mkdir -p ${VTK_DIR}
 

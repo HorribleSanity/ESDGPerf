@@ -36,6 +36,7 @@ srun --version
 echo ""
 
 JULIA="julia +1.10"
+OUTPUT_ROOT="${ESDG_OUTPUT_ROOT:-/scratch/bfit/${USER}/ESDGPerf}"
 
 echo "Using JULIA: $JULIA"
 echo "Job ID: $SLURM_JOBID"
@@ -48,7 +49,7 @@ F=Float64
 
 # Create unique directory for this run
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-RUN_DIR="./weak-scaling-results/run_${TIMESTAMP}_job${SLURM_JOBID}_N${N}_sfc"
+RUN_DIR="${OUTPUT_ROOT}/weak-scaling-results/run_${TIMESTAMP}_job${SLURM_JOBID}_N${N}_sfc"
 mkdir -p ${RUN_DIR}
 
 echo "Results will be saved to: ${RUN_DIR}"

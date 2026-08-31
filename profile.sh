@@ -19,6 +19,7 @@ export JULIA_CUDA_MEMORY_POOL=none
 export CUDA_VISIBLE_DEVICES=0
 
 JULIA="julia +1.10"
+OUTPUT_ROOT="${ESDG_OUTPUT_ROOT:-/scratch/bfit/${USER}/ESDGPerf}"
 
 # Instantiate once
 srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
@@ -27,8 +28,8 @@ N=4
 L=3
 STEPS=500
 
-OUTDIR="./profiles"
-mkdir -p ${OUTDIR}
+OUTDIR="${OUTPUT_ROOT}/profiles"
+mkdir -p "${OUTDIR}"
 PROFILE="${OUTDIR}/risingbubble_N${N}_L${L}_job${SLURM_JOBID}"
 
 echo "Profiling rising bubble N=${N} L=${L} for ${STEPS} steps"

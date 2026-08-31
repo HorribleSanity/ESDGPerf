@@ -29,6 +29,7 @@ echo ------------------------------------------------------
 
 JULIA=$(which julia)
 NCU=$(which ncu)
+OUTPUT_ROOT="${ESDG_OUTPUT_ROOT:-/scratch/bfit/${USER}/ESDGPerf}"
 
 #export CUDA_VISIBLE_DEVICES=2
 
@@ -42,7 +43,7 @@ kernels="regex:(rkupdate_knl|face_knl|volume_knl)"
 # Instantiate once
 srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
-outdir="./ncu-profiles/roofline-${SLURM_JOBID}"
+outdir="${OUTPUT_ROOT}/ncu-profiles/roofline-${SLURM_JOBID}"
 mkdir -p "${outdir}"
 echo "Results: ${outdir}"
 
