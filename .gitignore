@@ -17,4 +17,9 @@ profiles
 .claude
 rb-visual-results/
 initial_conditions.F90
+__pycache__/
+# Machine-specific Julia preferences
 LocalPreferences.toml
+LocalPreferences.*.toml
+!LocalPreferences.example.toml
+!LocalPreferences.*.example.toml

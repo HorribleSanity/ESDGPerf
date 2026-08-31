@@ -12,14 +12,12 @@
 
 
 # Reproduces the paper's fine baroclinic timing comparison:
-# N=4, L=3, K=(36,6,3), one simulated day, and 8 GPUs.
+# N=4, L=3, K=(36,6,3), one simulated day, a 0.5-second timestep,
+# and 8 GPUs.
 # The larger 41.5M-DOF mesh raises GPU utilization.
-#
-# Requires dt_cfl = 0.5 in test/run/baroclinicinstability.jl.
 
 # Dense baroclinic run: 3x coarse elements in each direction vs original
 # Matches rising bubble DOF ballpark (~41M vs 32M)
-# dt must be changed from hardcoded 2.0 to ~0.5 in baroclinicinstability.jl line 258
 N=4
 L=3
 P=8
@@ -27,11 +25,12 @@ Kx=36
 Ky=6
 Kz=3
 TIMEEND=86400  # 1 day (enough for timing comparison)
+TIMESTEP=0.5
 
 echo "=== Baroclinic Instability Dense Float Comparison ==="
 echo "Job ID: $SLURM_JOBID"
 echo "Node: $SLURM_JOB_NODELIST"
-echo "N=${N} L=${L} P=${P} Kx=${Kx} Ky=${Ky} Kz=${Kz} timeend=${TIMEEND}"
+echo "N=${N} L=${L} P=${P} Kx=${Kx} Ky=${Ky} Kz=${Kz} timeend=${TIMEEND} timestep=${TIMESTEP}"
 echo "Resolution: $(( Kx * 2**L )) x $(( Ky * 2**L )) x $(( Kz * 2**L )) elements"
 echo "DOF: $(( Kx * Ky * Kz * (2**L)**3 * (N+1)**3 ))"
 echo "====================================================="
@@ -43,16 +42,6 @@ nvidia-smi
 echo ""
 
 JULIA="julia +1.10"
-
-cat > launch.sh <<'EOFA'
-#!/bin/bash
-ngpu=$(nvidia-smi -L | grep -c UUID)
-rank="${SLURM_LOCALID:-${OMPI_COMM_WORLD_LOCAL_RANK:-0}}"
-device=$((rank % ngpu))
-export CUDA_VISIBLE_DEVICES=$device
-exec "$@"
-EOFA
-chmod 755 launch.sh
 
 srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
@@ -75,6 +64,7 @@ for F in Float64 Float32; do
     --refinement-level ${L} \
     --floating-point-type ${F} \
     --time-end ${TIMEEND} \
+    --time-step ${TIMESTEP} \
     --elements-in-direction-x ${Kx} \
     --elements-in-direction-y ${Ky} \
     --elements-in-direction-z ${Kz} \

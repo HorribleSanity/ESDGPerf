@@ -47,8 +47,8 @@ mkdir -p "${outdir}"
 echo "Results: ${outdir}"
 
 # Loop through configurations
-for N in 6 7; do
-  for L in 2; do
+for N in 2 3 4 5 6; do
+  for L in 2 3 4 5 6; do
     for F in Float64; do
       prefix="${outdir}/profile-${F}-N${N}-L${L}"
       

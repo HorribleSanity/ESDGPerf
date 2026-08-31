@@ -10,9 +10,8 @@
 #SBATCH --time=04:00:00
 #SBATCH --exclusive
 
-# Runs the rising thermal bubble in Float64 and Float32.
+# Runs the smooth and sharp rising thermal bubbles in Float64 and Float32.
 # Writes per-step timing TSV files and VTK visualization output.
-# Uses the initial condition currently selected in risingbubble.jl
 
 N=4
 L=6
@@ -33,16 +32,6 @@ echo ""
 
 JULIA="julia +1.10"
 
-cat > launch.sh <<'EOFA'
-#!/bin/bash
-ngpu=$(nvidia-smi -L | grep -c UUID)
-rank="${SLURM_LOCALID:-${OMPI_COMM_WORLD_LOCAL_RANK:-0}}"
-device=$((rank % ngpu))
-export CUDA_VISIBLE_DEVICES=$device
-exec "$@"
-EOFA
-chmod 755 launch.sh
-
 srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
@@ -51,30 +40,33 @@ mkdir -p ${RUN_DIR}
 
 echo "Results: ${RUN_DIR}"
 
-for F in Float64 Float32; do
-  VTK_DIR="${RUN_DIR}/vtk-${F}"
-  mkdir -p ${VTK_DIR}
-  prefix="${RUN_DIR}/timing-${F}-N${N}-L${L}-P${P}"
+for PROFILE in smooth sharp; do
+  for F in Float64 Float32; do
+    VTK_DIR="${RUN_DIR}/vtk-${PROFILE}-${F}"
+    mkdir -p ${VTK_DIR}
+    prefix="${RUN_DIR}/timing-${PROFILE}-${F}-N${N}-L${L}-P${P}"
 
-  echo ""
-  echo ">>> Running ${F} N=${N} L=${L} P=${P} timeend=${TIMEEND} ..."
+    echo ""
+    echo ">>> Running ${PROFILE} profile with ${F}, N=${N}, L=${L}, P=${P}, timeend=${TIMEEND} ..."
 
-  time srun -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/risingbubble.jl \
-    --polynomial-order ${N} \
-    --refinement-level ${L} \
-    --floating-point-type ${F} \
-    --time-end ${TIMEEND} \
-    --elements-in-direction-x 1 \
-    --elements-in-direction-y 1 \
-    --elements-in-direction-z 1 \
-    --enable-vtk-output \
-    --vtk-output-directory "${VTK_DIR}" \
-    --vtk-output-number-of-saves 10 \
-    --enable-timing \
-    --timing-prefix ${prefix} \
-    2>&1 | tee -a ${RUN_DIR}/${F}.log
+    time srun -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/risingbubble.jl \
+      --polynomial-order ${N} \
+      --refinement-level ${L} \
+      --floating-point-type ${F} \
+      --bubble-profile ${PROFILE} \
+      --time-end ${TIMEEND} \
+      --elements-in-direction-x 1 \
+      --elements-in-direction-y 1 \
+      --elements-in-direction-z 1 \
+      --enable-vtk-output \
+      --vtk-output-directory "${VTK_DIR}" \
+      --vtk-output-number-of-saves 10 \
+      --enable-timing \
+      --timing-prefix ${prefix} \
+      2>&1 | tee -a ${RUN_DIR}/${PROFILE}-${F}.log
 
-  echo "<<< Completed ${F}"
+    echo "<<< Completed ${PROFILE} ${F}"
+  done
 done
 
 echo ""

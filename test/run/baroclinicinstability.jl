@@ -190,6 +190,7 @@ function run(
     enabletiming = false,
     timingprefix = "timing",
     triplebuffer = nothing,
+    timestep = 2.0,
 )
     A = CuArray
     Nq = N + 1
@@ -253,9 +254,10 @@ function run(
     sponge_params = (α_sponge_max, z_sponge_start, H, g)
 
     # Sound speed at T0=288K is ~340 m/s
-    cfl = FT(0.25)
-    dt_cfl = cfl * min_node_distance(grid) / 340.0
-    dt_cfl = FT(2.0) #hardcoded
+    # cfl = FT(0.25)
+    # dt_cfl = cfl * min_node_distance(grid) / 340.0
+    # The paper runs instead use a fixed timestep supplied on the command line.
+    dt_cfl = FT(timestep)
     # Reduce dt slightly so it divides evenly into half a day (43200s)
     steps_per_halfday = ceil(Int, 43200 / dt_cfl)
     dt = FT(43200.0 / steps_per_halfday)
@@ -541,6 +543,10 @@ function parse_commandline()
         help = "End time of the simulation"
         arg_type = Float64
         default = 864000.0
+        "--time-step"
+        help = "time step in seconds"
+        arg_type = Float64
+        default = 2.0
         "--enable-vtk-output"
         help = "enable vtk output"
         action = :store_true
@@ -645,6 +651,8 @@ function main()
     end
 
     timeend = parsed_args["time-end"]
+    timestep = parsed_args["time-step"]
+    timestep > 0 || error("Time step must be positive")
     N = parsed_args["polynomial-order"]
     K = parsed_args["elements-per-direction"]
     Kx = max(parsed_args["elements-in-direction-x"], K)
@@ -688,6 +696,7 @@ function main()
         enabletiming,
         timingprefix,
         triplebuffer,
+        timestep,
     )
 end
 

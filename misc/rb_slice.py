@@ -1,6 +1,6 @@
 """Rising bubble δθ at y=0 midplane: Float64 vs Float32.
 
-Usage: python rb_slice.py <run-directory>
+Usage: python rb_slice.py <run-directory> [smooth|sharp]
 """
 import glob, re, sys, os
 import xml.etree.ElementTree as ET
@@ -16,6 +16,10 @@ CP = GAMMA * CV
 R = CP - CV
 
 rundir = sys.argv[1] if len(sys.argv) > 1 else "."
+profile = sys.argv[2] if len(sys.argv) > 2 else None
+
+if profile not in (None, "smooth", "sharp"):
+    sys.exit("Profile must be 'smooth' or 'sharp'")
 
 
 def compute_dtheta(mesh):
@@ -66,7 +70,11 @@ def read_pvd(directory):
 
 
 # --- Discover VTK directories ---
-for prefix in ["vtk-Float", "vtk-visual-Float"]:
+prefixes = ([f"vtk-{profile}-Float"] if profile else []) + [
+    "vtk-Float",
+    "vtk-visual-Float",
+]
+for prefix in prefixes:
     d64 = os.path.join(rundir, f"{prefix}64")
     d32 = os.path.join(rundir, f"{prefix}32")
     if os.path.isdir(d64) and os.path.isdir(d32):
@@ -152,6 +160,7 @@ cbar.set_label(r"$\delta\theta$ [K]")
 fig.suptitle(r"Rising Bubble: $\delta\theta$ (y = 0 midplane)",
              fontsize=14, fontweight="bold")
 
-outpath = os.path.join(rundir, "rb_dtheta_slice.png")
+suffix = f"_{profile}" if profile else ""
+outpath = os.path.join(rundir, f"rb_dtheta_slice{suffix}.png")
 plt.savefig(outpath, dpi=300, bbox_inches="tight")
 print(f"Saved to {outpath}")

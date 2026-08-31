@@ -23,16 +23,6 @@ export JULIA_CUDA_MEMORY_POOL=none
 
 JULIA="julia +1.10"
 
-cat > launch.sh <<'EOFA'
-#!/bin/bash
-ngpu=$(nvidia-smi -L | grep -c UUID)
-rank="${SLURM_LOCALID:-${OMPI_COMM_WORLD_LOCAL_RANK:-0}}"
-device=$((rank % ngpu))
-export CUDA_VISIBLE_DEVICES=$device
-exec "$@"
-EOFA
-chmod 755 launch.sh
-
 srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 N=4

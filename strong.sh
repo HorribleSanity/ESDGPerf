@@ -32,13 +32,12 @@ export JULIA_CUDA_MEMORY_POOL=none
 
 
 
-# ===== ADD DIAGNOSTIC CHECKS HERE =====
 echo "=== GPU Check ==="
 nvidia-smi
 echo ""
 
-echo "=== MPI Version ==="
-mpiexec --version
+echo "=== Slurm Launcher Version ==="
+srun --version
 echo ""
 
 echo "=== MPI Environment Variables ==="
@@ -56,17 +55,6 @@ JULIA="julia +1.10"
 
 echo "Using JULIA: $JULIA"
 echo "Job ID: $SLURM_JOBID"
-
-# Create launch script for GPU selection
-cat > launch.sh <<'EOFA'
-#!/bin/bash
-ngpu=$(nvidia-smi -L | grep -c UUID)
-rank="${SLURM_LOCALID:-${OMPI_COMM_WORLD_LOCAL_RANK:-0}}"
-device=$((rank % ngpu))
-export CUDA_VISIBLE_DEVICES=$device
-exec "$@"
-EOFA
-chmod 755 launch.sh
 
 # Instantiate once
 srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'

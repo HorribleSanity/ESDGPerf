@@ -13,7 +13,7 @@
 
 # Reproduces the paper's coarse baroclinic-instability comparison:
 # N=4, L=3, K=(12,2,1), 12 simulated days, 8 GPUs,
-# with Float64 and Float32 timing and VTK output.
+# with a 2.0-second timestep, Float64 and Float32 timing, and VTK output.
 
 # Same mesh as Feb 23 run (job16159219) that produced the day12 plot
 N=4
@@ -23,11 +23,12 @@ Kx=12
 Ky=2
 Kz=1
 TIMEEND=1036800  # 12 days
+TIMESTEP=2.0
 
 echo "=== Baroclinic Instability Float Comparison ==="
 echo "Job ID: $SLURM_JOBID"
 echo "Node: $SLURM_JOB_NODELIST"
-echo "N=${N} L=${L} P=${P} Kx=${Kx} Ky=${Ky} Kz=${Kz} timeend=${TIMEEND}"
+echo "N=${N} L=${L} P=${P} Kx=${Kx} Ky=${Ky} Kz=${Kz} timeend=${TIMEEND} timestep=${TIMESTEP}"
 echo "Resolution: $(( Kx * 2**L )) x $(( Ky * 2**L )) x $(( Kz * 2**L )) elements"
 echo "VTK output every day (hardcoded in Julia script)"
 echo "================================================"
@@ -39,16 +40,6 @@ nvidia-smi
 echo ""
 
 JULIA="julia +1.10"
-
-cat > launch.sh <<'EOFA'
-#!/bin/bash
-ngpu=$(nvidia-smi -L | grep -c UUID)
-rank="${SLURM_LOCALID:-${OMPI_COMM_WORLD_LOCAL_RANK:-0}}"
-device=$((rank % ngpu))
-export CUDA_VISIBLE_DEVICES=$device
-exec "$@"
-EOFA
-chmod 755 launch.sh
 
 srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
@@ -71,6 +62,7 @@ for F in Float64 Float32; do
     --refinement-level ${L} \
     --floating-point-type ${F} \
     --time-end ${TIMEEND} \
+    --time-step ${TIMESTEP} \
     --elements-in-direction-x ${Kx} \
     --elements-in-direction-y ${Ky} \
     --elements-in-direction-z ${Kz} \

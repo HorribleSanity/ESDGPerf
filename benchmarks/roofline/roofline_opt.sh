@@ -2,7 +2,7 @@
 #SBATCH --account=bfit-delta-gpu
 #SBATCH --job-name=roofline-opt
 #SBATCH --output=roofline-opt_%A_%a.txt
-#SBATCH --partition=gpuH200x8
+#SBATCH --partition=gpuA100x4
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --gpus-per-node=1

@@ -49,7 +49,7 @@ _grav(FT) = FT(9.81)
     aux[_Φ] = Φ
 end
 
-@inline function risingbubble!(state, aux, x⃗, t)
+@inline function risingbubble!(state, aux, x⃗, t, ::Val{profile}) where {profile}
     FT = eltype(state)
     γ = _γ(FT)
     x, y, z = x⃗
@@ -69,8 +69,13 @@ end
     x⃗c = SVector{3,FT}(0, 0, 260)
 
     r = sqrt((x⃗ - x⃗c)' * (x⃗ - x⃗c))
-    #δθ = r <= rc ? δθc : zero(FT) # Sharp
-    δθ = r <= rc ? δθc * (1 + cospi(r / rc)) / 2 : zero(FT) # Smooth
+    δθ = if profile === :sharp
+        r <= rc ? δθc : zero(FT)
+    elseif profile === :smooth
+        r <= rc ? δθc * (1 + cospi(r / rc)) / 2 : zero(FT)
+    else
+        error("Unsupported rising-bubble profile: $profile")
+    end
 
     θ = θref + δθ
     π_exner = 1 - g / (cp_d * θ) * z
@@ -88,6 +93,11 @@ end
     aux[_Φ] = Φ
 end
 
+@inline risingbubble_sharp!(state, aux, x⃗, t) =
+    risingbubble!(state, aux, x⃗, t, Val(:sharp))
+@inline risingbubble_smooth!(state, aux, x⃗, t) =
+    risingbubble!(state, aux, x⃗, t, Val(:smooth))
+
 function run(
     kernel,
     FT,
@@ -103,6 +113,7 @@ function run(
     enabletiming = false,
     timingprefix = "timing",
     triplebuffer = nothing,
+    bubbleprofile = :smooth,
 )
     A = CuArray
     Nq = N + 1
@@ -152,8 +163,16 @@ function run(
     fill!(q, NaN)
     fill!(aux, NaN)
 
+    bubbleinitialcondition = if bubbleprofile === :sharp
+        risingbubble_sharp!
+    elseif bubbleprofile === :smooth
+        risingbubble_smooth!
+    else
+        error("Unsupported rising-bubble profile: $bubbleprofile")
+    end
+
     initialize!(risingbubbleref!, qref, aux, vgeo, FT(0), grid)
-    initialize!(risingbubble!, q, aux, vgeo, FT(0), grid)
+    initialize!(bubbleinitialcondition, q, aux, vgeo, FT(0), grid)
 
     cpaux = Raven.expand(nodecommpattern(grid), naux, np)
     cmaux = commmanager(eltype(q), cpaux; comm)
@@ -462,6 +481,10 @@ function parse_commandline()
         help = "floating-point type (Float32 or Float64)"
         arg_type = Symbol
         default = :Float64
+        "--bubble-profile"
+        help = "initial potential-temperature perturbation profile (smooth or sharp)"
+        arg_type = Symbol
+        default = :smooth
         "--number-of-steps", "-S"
         help = "number of time steps to take"
         arg_type = Int
@@ -541,6 +564,10 @@ function main()
     nsaves = parsed_args["vtk-output-number-of-saves"]
     enabletriplebuffercomm = parsed_args["enable-triple-buffer-comm"]
     enablesinglebuffercomm = parsed_args["enable-single-buffer-comm"]
+    bubbleprofile = parsed_args["bubble-profile"]
+
+    bubbleprofile in (:smooth, :sharp) ||
+        error("Unsupported bubble profile $bubbleprofile; expected smooth or sharp")
 
     if fixednumberofsteps < 0
         fixednumberofsteps = nothing
@@ -570,6 +597,7 @@ function main()
         enabletiming,
         timingprefix,
         triplebuffer,
+        bubbleprofile,
     )
 end
 
