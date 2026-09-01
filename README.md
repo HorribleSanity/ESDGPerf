@@ -24,13 +24,60 @@ other systems.
 Clone the repository and instantiate the Julia environment:
 
 ```sh
-git clone https://github.com/HorribleSanity/ESDGPerf.git
+git clone git@github.com:HorribleSanity/ESDGPerf.git
 cd ESDGPerf
-julia +1.10 --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+julia +1.10 --project=. -e 'using Pkg; Pkg.instantiate()'
 ```
+
+The command `julia +1.10` uses
+[Juliaup](https://github.com/JuliaLang/juliaup) notation.
 
 `LocalPreferences.toml` is not tracked because the MPI, CUDA, and p4est
 configuration is system-specific.
+
+### NCSA Delta configuration
+
+Select the CUDA 12.8 artifact runtime before precompiling on a login node:
+
+```sh
+julia +1.10 --project=. -e \
+  'using CUDA; CUDA.set_runtime_version!(v"12.8")'
+```
+
+Configure MPI.jl to use Delta's system Cray MPICH library and the Slurm
+launcher:
+
+```sh
+julia +1.10 --project=. -e \
+  'using MPIPreferences; MPIPreferences.use_system_binary(
+      library_names=["libmpi_gnu_112"],
+      abi="MPICH",
+      mpiexec="srun",
+  )'
+```
+
+Configure P4est.jl to use a p4est installation built against the same system
+MPI library:
+
+```sh
+julia +1.10 --project=. -e \
+  'using P4est
+   P4est.set_library_p4est!("/path/to/libp4est.so")
+   P4est.set_library_sc!("/path/to/libsc.so")'
+```
+
+These commands write machine-specific settings to `LocalPreferences.toml`.
+Replace the p4est paths with those for the local installation and restart Julia
+after changing any setting. See the
+[MPI.jl configuration documentation](https://juliaparallel.org/MPI.jl/stable/configuration/)
+for additional MPI options.
+
+After configuring the machine-specific preferences, precompile the environment
+in a new Julia process:
+
+```sh
+julia +1.10 --project=. -e 'using Pkg; Pkg.precompile()'
+```
 
 ## Quick test
 
