@@ -1,5 +1,13 @@
+include(joinpath(@__DIR__, "sanitize_environ.jl"))
+
 using MPI
 MPI.Init(threadlevel=:multiple)
+
+# Work around malformed environment entries introduced by Cray MPICH after
+# MPI_Init in multi-node jobs: https://github.com/CliMA/Oceananigans.jl/discussions/5513
+if Sys.islinux() && haskey(ENV, "CRAY_MPICH_VERSION")
+    SanitizeEnviron.sanitize_environ!()
+end
 
 using Raven
 using ESDGPerf
