@@ -535,8 +535,8 @@ function main()
     end
 
     if rank == 0
-        InteractiveUtils.versioninfo()
-        CUDA.versioninfo()
+        # InteractiveUtils.versioninfo()
+        # CUDA.versioninfo()
     end
 
     FT_symbol = parsed_args["floating-point-type"]
