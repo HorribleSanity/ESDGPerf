@@ -41,7 +41,7 @@ Configure CUDA.jl to use Delta's system CUDA toolkit:
 
 ```sh
 julia +1.10 --project=. -e \
-  'using CUDA; CUDA.set_runtime_version!(local_toolkit=true)'
+  'using CUDA; CUDA.set_runtime_version!(v"13.2", local_toolkit=true)'
 ```
 
 Configure MPI.jl to use Delta's system Cray MPICH library and the Slurm
@@ -65,7 +65,7 @@ cd p4est-2.8.6
 mkdir build
 cd build
 
-../configure CC=cc CFLAGS="-O2 -Wall -Wno-unused-parameter" \
+../configure CC=mpicc CFLAGS="-O2 -Wall -Wno-unused-parameter" \
   --enable-mpi \
   --enable-shared \
   --prefix="$HOME/local/p4est"
