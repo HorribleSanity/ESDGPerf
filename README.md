@@ -37,11 +37,11 @@ configuration is system-specific.
 
 ### NCSA Delta configuration
 
-Select the CUDA 12.8 artifact runtime before precompiling on a login node:
+Configure CUDA.jl to use Delta's system CUDA toolkit:
 
 ```sh
 julia +1.10 --project=. -e \
-  'using CUDA; CUDA.set_runtime_version!(v"12.8")'
+  'using CUDA; CUDA.set_runtime_version!(local_toolkit=true)'
 ```
 
 Configure MPI.jl to use Delta's system Cray MPICH library and the Slurm
