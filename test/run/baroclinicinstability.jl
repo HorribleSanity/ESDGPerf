@@ -636,7 +636,7 @@ function main()
     end
 
     if rank == 0
-        InteractiveUtils.versioninfo(verbose = true)
+        InteractiveUtils.versioninfo()
         CUDA.versioninfo()
     end
 
