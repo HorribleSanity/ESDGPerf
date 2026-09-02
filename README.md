@@ -56,19 +56,34 @@ julia +1.10 --project=. -e \
   )'
 ```
 
-Configure P4est.jl to use a p4est installation built against the same system
-MPI library:
+Build [p4est](https://github.com/cburstedde/p4est) against the same system MPI
+library, following the
+[P4est.jl instructions for custom MPI installations](https://github.com/trixi-framework/P4est.jl#using-a-custom-version-of-mpi-andor-p4est):
+
+```sh
+cd p4est-2.8.6
+mkdir build
+cd build
+
+../configure CC=cc CFLAGS="-O2 -Wall -Wno-unused-parameter" \
+  --enable-mpi \
+  --enable-shared \
+  --prefix="$HOME/local/p4est"
+
+make -j4
+make install
+```
+
+Configure P4est.jl to use the resulting installation:
 
 ```sh
 julia +1.10 --project=. -e \
   'using P4est
-   P4est.set_library_p4est!("/path/to/libp4est.so")
-   P4est.set_library_sc!("/path/to/libsc.so")'
+   P4est.set_library_p4est!("/path/to/libp4est.so")'
 ```
 
 These commands write machine-specific settings to `LocalPreferences.toml`.
-Replace the p4est paths with those for the local installation and restart Julia
-after changing any setting. See the
+Restart Julia after changing any setting. See the
 [MPI.jl configuration documentation](https://juliaparallel.org/MPI.jl/stable/configuration/)
 for additional MPI options.
 
