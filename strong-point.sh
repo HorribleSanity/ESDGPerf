@@ -88,7 +88,18 @@ srun --nodes="$NNODES" \
     --ntasks-per-node=4 \
     bash -c 'echo "rank=${SLURM_PROCID} local_rank=${SLURM_LOCALID} node=$(hostname)"'
 
-time srun --nodes="$NNODES" \
+# One power sampler per node; %N keeps each node's CSV separate.
+srun --overlap --nodes="$NNODES" --ntasks="$NNODES" \
+    --ntasks-per-node=1 --cpus-per-task=1 --kill-on-bad-exit=1 \
+    --output="${prefix}-power-%N.csv" --error="${prefix}-power-%N.err" \
+    nvidia-smi --query-gpu=timestamp,index,uuid,power.draw \
+    --format=csv --loop-ms=250 &
+SMI_PID=$!
+trap 'kill "$SMI_PID" 2>/dev/null || true; wait "$SMI_PID" 2>/dev/null || true' EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
+time srun --overlap --nodes="$NNODES" \
     --ntasks="$P" \
     --ntasks-per-node=4 \
     ./launch.sh $JULIA --project=. test/run/risingbubble.jl \
@@ -101,8 +112,6 @@ time srun --nodes="$NNODES" \
     --elements-in-direction-z 1 \
     --timing-prefix "$prefix" \
     --enable-timing \
-    --enable-vtk-output \
-    --vtk-output-directory "$VTK_DIR" \
     2>&1 | tee -a "${prefix}.log"
 
 echo "Completed ${P} GPU run"
