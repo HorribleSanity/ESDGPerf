@@ -69,6 +69,7 @@ F=Float64
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 RUN_DIR="${OUTPUT_ROOT}/strong-scaling-results/run_${TIMESTAMP}_job${SLURM_JOBID}_N${N}_L${L}"
 mkdir -p ${RUN_DIR}
+bash scripts/record_run_metadata.sh "$RUN_DIR" "$0"
 
 echo "Results will be saved to: ${RUN_DIR}"
 
@@ -83,6 +84,7 @@ for P in 4 8 12 16; do
   echo "Running N=${N} L=${L} F=${F} with ${P} GPUs..."
 
   time srun -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/risingbubble.jl \
+    --enable-triple-buffer-comm \
     --number-of-steps 1000 \
     --polynomial-order ${N} \
     --refinement-level ${L} \

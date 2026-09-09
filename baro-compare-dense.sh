@@ -10,6 +10,8 @@
 #SBATCH --time=8:00:00
 #SBATCH --exclusive
 
+set -euo pipefail
+
 
 # Reproduces the paper's fine baroclinic timing comparison:
 # N=4, L=3, K=(36,6,3), one simulated day, a 0.5-second timestep,
@@ -49,6 +51,7 @@ srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 RUN_DIR="${OUTPUT_ROOT}/baro-compare-results/run_${TIMESTAMP}_job${SLURM_JOBID}_Kx${Kx}_Ky${Ky}_Kz${Kz}_L${L}_dense"
 mkdir -p ${RUN_DIR}
+bash scripts/record_run_metadata.sh "$RUN_DIR" "$0"
 
 echo "Results: ${RUN_DIR}"
 

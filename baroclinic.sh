@@ -10,6 +10,8 @@
 #SBATCH --time=6:00:00
 #SBATCH --exclusive
 
+set -euo pipefail
+
 # Runs the coarse baroclinic instability case in Float64 for 15 simulated days
 # on 4 GPUs. This is not the configuration used for the paper timing table.
 
@@ -44,11 +46,13 @@ TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 RUN_DIR="${OUTPUT_ROOT}/baroclinic-results/run_${TIMESTAMP}_job${SLURM_JOBID}_Kx${Kx}_Ky${Ky}_Kz${Kz}_L${L}"
 VTK_DIR="${RUN_DIR}/vtk"
 mkdir -p ${VTK_DIR}
+bash scripts/record_run_metadata.sh "$RUN_DIR" "$0"
 
 echo "Results will be saved to: ${RUN_DIR}"
 echo "Resolution: Kx=${Kx} Ky=${Ky} Kz=${Kz} L=${L} N=${N} => $(( Kx * 2**L )) x $(( Ky * 2**L )) x $(( Kz * 2**L )) elements"
 
 time srun -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/baroclinicinstability.jl \
+  --enable-triple-buffer-comm \
   --polynomial-order ${N} \
   --refinement-level ${L} \
   --floating-point-type ${F} \

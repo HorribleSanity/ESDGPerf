@@ -120,15 +120,11 @@ function run(
     fixednumberofsteps = nothing,
     enabletiming = false,
     timingprefix = "timing",
-    triplebuffer = nothing,
+    triplebuffer = Val(true),
     bubbleprofile = :smooth,
 )
     A = CuArray
     Nq = N + 1
-
-    if isnothing(triplebuffer)
-        triplebuffer = Val(Raven.usetriplebuffer(A))
-    end
 
     rank = MPI.Comm_rank(comm)
 
@@ -183,7 +179,7 @@ function run(
     initialize!(bubbleinitialcondition, q, aux, vgeo, FT(0), grid)
 
     cpaux = Raven.expand(nodecommpattern(grid), naux, np)
-    cmaux = commmanager(eltype(q), cpaux; comm)
+    cmaux = commmanager(eltype(q), cpaux, triplebuffer; comm)
     share!(aux, cmaux)
 
     dq = similar(q)
@@ -330,6 +326,8 @@ function run(
     cm = commmanager(eltype(q), cp, triplebuffer; comm)
     if rank == 0
         @info "CommManager: $(nameof(typeof(cm)))"
+        @info "Communication buffers" state_device_buffer = string(typeof(cm.sendbufferdevice)) state_mpi_buffer = string(eltype(cm.sendbuffers)) auxiliary_manager = string(nameof(typeof(cmaux)))
+        @info "Package versions" julia = string(VERSION) raven = string(Base.pkgversion(Raven)) cuda = string(Base.pkgversion(CUDA)) mpi = string(Base.pkgversion(MPI))
     end
 
     step = 0
@@ -581,12 +579,15 @@ function main()
         fixednumberofsteps = nothing
     end
 
+    enabletriplebuffercomm && enablesinglebuffercomm &&
+        error("Choose only one communication-buffer override")
+
     triplebuffer = if enabletriplebuffercomm
         Val(true)
     elseif enablesinglebuffercomm
         Val(false)
     else
-        nothing
+        Val(true)
     end
 
     kernel = VolumeKernel{:final}()

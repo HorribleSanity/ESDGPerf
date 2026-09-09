@@ -7,8 +7,10 @@
 #SBATCH --gpus-per-node=4
 #SBATCH --mem=0
 #SBATCH --ntasks-per-node=4
-#SBATCH --time=04:00:00
+#SBATCH --time=08:00:00
 #SBATCH --exclusive
+
+set -euo pipefail
 
 # Runs the smooth and sharp rising thermal bubbles in Float64 and Float32.
 # Writes per-step timing TSV files and VTK visualization output.
@@ -38,6 +40,7 @@ srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 RUN_DIR="${OUTPUT_ROOT}/rb-visual-results/run_${TIMESTAMP}_job${SLURM_JOBID}_N${N}_L${L}"
 mkdir -p ${RUN_DIR}
+bash scripts/record_run_metadata.sh "$RUN_DIR" "$0"
 
 echo "Results: ${RUN_DIR}"
 
@@ -51,6 +54,7 @@ for PROFILE in smooth sharp; do
     echo ">>> Running ${PROFILE} profile with ${F}, N=${N}, L=${L}, P=${P}, timeend=${TIMEEND} ..."
 
     time srun -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/risingbubble.jl \
+      --enable-triple-buffer-comm \
       --polynomial-order ${N} \
       --refinement-level ${L} \
       --floating-point-type ${F} \

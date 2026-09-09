@@ -35,6 +35,7 @@ P=4
 echo "Running N=${N} L=${L} F=${F} with ${P} GPUs..."
 
 time srun -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/risingbubble.jl \
+  --enable-triple-buffer-comm \
   --number-of-steps 100 \
   --polynomial-order ${N} \
   --refinement-level ${L} \

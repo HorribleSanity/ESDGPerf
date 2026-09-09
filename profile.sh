@@ -41,6 +41,7 @@ srun -n 1 nsys profile \
   --force-overwrite=true \
   -o ${PROFILE} \
   ${JULIA} --project=. test/run/risingbubble.jl \
+  --enable-triple-buffer-comm \
   --polynomial-order ${N} \
   --refinement-level ${L} \
   --number-of-steps ${STEPS}

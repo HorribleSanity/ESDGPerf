@@ -49,6 +49,7 @@ nvidia-smi --query-gpu=timestamp,power.draw,index --format=csv -lms 100 --filena
 SMI_PID=$!
 
 time srun -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/risingbubble.jl \
+  --enable-triple-buffer-comm \
   --number-of-steps 1000 \
   --polynomial-order ${N} \
   --refinement-level ${L} \

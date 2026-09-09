@@ -51,6 +51,7 @@ for L in 5 6 7; do
     --force-overwrite=true \
     -o ${OUTDIR}/rank%q{SLURM_PROCID} \
     ${JULIA} --project=. test/run/risingbubble.jl \
+    --enable-triple-buffer-comm \
     --polynomial-order ${N} \
     --refinement-level ${L} \
     --floating-point-type ${F} \

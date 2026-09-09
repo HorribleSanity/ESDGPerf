@@ -74,7 +74,7 @@ function run(kernel, FT, N, K; outputvtk = false, vtkdir = "output", comm = MPI.
     initialize!(vortex!, q, aux, vgeo, FT(0), grid)
 
     cpaux = Raven.expand(nodecommpattern(grid), naux, np)
-    cmaux = commmanager(eltype(q), cpaux; comm)
+    cmaux = commmanager(eltype(q), cpaux, Val(true); comm)
     share!(aux, cmaux)
 
     dq = similar(q)
@@ -146,7 +146,10 @@ function run(kernel, FT, N, K; outputvtk = false, vtkdir = "output", comm = MPI.
     do_output(step, time, q)
 
     cp = Raven.expand(nodecommpattern(grid), nstate, np)
-    cm = commmanager(eltype(q), cp; comm)
+    cm = commmanager(eltype(q), cp, Val(true); comm)
+    if rank == 0
+        @info "CommManager: $(nameof(typeof(cm)))"
+    end
 
     for step = 1:numberofsteps
         for stage in eachindex(RKA, RKB)

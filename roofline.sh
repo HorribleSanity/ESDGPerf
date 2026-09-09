@@ -61,6 +61,7 @@ for N in 2 3 4 5 6; do
            -o ${prefix} \
            -f \
            $JULIA --project=. test/run/risingbubble.jl \
+           --enable-triple-buffer-comm \
            --number-of-steps 1 --polynomial-order ${N} \
            --refinement-level ${L} --floating-point-type ${F} 2>&1 | tee -a ${prefix}.log
       

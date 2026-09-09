@@ -26,6 +26,17 @@ esac
 
 NNODES=$(((P + 3) / 4))
 
+export ESDG_SAMPLE_POWER="${ESDG_SAMPLE_POWER:-1}"
+export ESDG_POWER_INTERVAL_MS="${ESDG_POWER_INTERVAL_MS:-250}"
+if [[ "$ESDG_SAMPLE_POWER" != 0 && "$ESDG_SAMPLE_POWER" != 1 ]]; then
+    echo "ESDG_SAMPLE_POWER must be 0 or 1." >&2
+    exit 1
+fi
+if [[ ! "$ESDG_POWER_INTERVAL_MS" =~ ^[1-9][0-9]*$ ]]; then
+    echo "ESDG_POWER_INTERVAL_MS must be a positive integer." >&2
+    exit 1
+fi
+
 if (( SLURM_JOB_NUM_NODES != NNODES )); then
     echo "Expected ${NNODES} allocated nodes for P=${P}, but received ${SLURM_JOB_NUM_NODES}." >&2
     exit 1
@@ -77,6 +88,7 @@ F=Float64
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 RUN_DIR="${OUTPUT_ROOT}/strong-scaling-results/run_${TIMESTAMP}_job${SLURM_JOBID}_N${N}_L${L}_P${P}_packed"
 mkdir -p "$RUN_DIR"
+bash scripts/record_run_metadata.sh "$RUN_DIR" "$0"
 prefix="${RUN_DIR}/strong-${SLURM_JOBID}-${F}-N${N}-L${L}-P${P}"
 VTK_DIR="${RUN_DIR}/vtk"
 
@@ -89,20 +101,24 @@ srun --nodes="$NNODES" \
     bash -c 'echo "rank=${SLURM_PROCID} local_rank=${SLURM_LOCALID} node=$(hostname)"'
 
 # One power sampler per node; %N keeps each node's CSV separate.
-srun --overlap --nodes="$NNODES" --ntasks="$NNODES" \
-    --ntasks-per-node=1 --cpus-per-task=1 --kill-on-bad-exit=1 \
-    --output="${prefix}-power-%N.csv" --error="${prefix}-power-%N.err" \
-    nvidia-smi --query-gpu=timestamp,index,uuid,power.draw \
-    --format=csv --loop-ms=250 &
-SMI_PID=$!
-trap 'kill "$SMI_PID" 2>/dev/null || true; wait "$SMI_PID" 2>/dev/null || true' EXIT
-trap 'exit 130' INT
-trap 'exit 143' TERM
+echo "Power sampling: ${ESDG_SAMPLE_POWER}; interval: ${ESDG_POWER_INTERVAL_MS} ms"
+if [[ "$ESDG_SAMPLE_POWER" == 1 ]]; then
+    srun --overlap --nodes="$NNODES" --ntasks="$NNODES" \
+        --ntasks-per-node=1 --cpus-per-task=1 --kill-on-bad-exit=1 \
+        --output="${prefix}-power-%N.csv" --error="${prefix}-power-%N.err" \
+        nvidia-smi --query-gpu=timestamp,index,uuid,power.draw \
+        --format=csv --loop-ms="$ESDG_POWER_INTERVAL_MS" &
+    SMI_PID=$!
+    trap 'kill "$SMI_PID" 2>/dev/null || true; wait "$SMI_PID" 2>/dev/null || true' EXIT
+    trap 'exit 130' INT
+    trap 'exit 143' TERM
+fi
 
 time srun --overlap --nodes="$NNODES" \
     --ntasks="$P" \
     --ntasks-per-node=4 \
     ./launch.sh $JULIA --project=. test/run/risingbubble.jl \
+    --enable-triple-buffer-comm \
     --number-of-steps 1000 \
     --polynomial-order "$N" \
     --refinement-level "$L" \
