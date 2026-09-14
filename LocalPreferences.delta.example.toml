@@ -1,0 +1,24 @@
+# Delta only: use as LocalPreferences.toml with the default Cray modules.
+# Adjust the P4est paths for your account and local build.
+[CUDA]
+nonblocking_synchronization = false
+
+[CUDACore]
+nonblocking_synchronization = false
+
+[CUDA_Runtime_jll]
+local = "true"
+
+[MPIPreferences]
+_format = "1.1"
+abi = "MPICH"
+binary = "system"
+cclibs = []
+libmpi = "libmpi_gnu_112"
+mpiexec = "srun"
+preloads = ["/opt/cray/pe/lib64/libmpi_gtl_cuda.so.0"]
+preloads_env_switch = "MPICH_GPU_SUPPORT_ENABLED"
+
+[P4est]
+libp4est = "/u/hwaterhouse/local/p4est/lib/libp4est.so"
+libsc = "/u/hwaterhouse/local/p4est/lib/libsc.so"

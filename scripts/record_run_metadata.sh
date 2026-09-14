@@ -24,6 +24,7 @@ git diff --binary HEAD -- . > "${METADATA_DIR}/working-tree.patch"
     printf 'host=%s\n' "$(hostname)"
     for name in SLURM_JOB_ID SLURM_JOBID SLURM_JOB_NODELIST SLURM_NTASKS \
         JULIA_CUDA_MEMORY_POOL JULIA_MPI_HAS_CUDA MPICH_GPU_SUPPORT_ENABLED \
+        MPICH_SMP_SINGLE_COPY_MODE \
         CRAY_MPICH_VERSION ESDG_SAMPLE_POWER ESDG_POWER_INTERVAL_MS; do
         printf '%s=%s\n' "$name" "${!name-}"
     done

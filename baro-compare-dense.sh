@@ -38,7 +38,8 @@ echo "DOF: $(( Kx * Ky * Kz * (2**L)**3 * (N+1)**3 ))"
 echo "====================================================="
 
 export JULIA_CUDA_MEMORY_POOL=none
-#export MPICH_GPU_SUPPORT_ENABLED=1
+# Enable CUDA-aware MPI with Delta's Cray MPICH.
+export MPICH_GPU_SUPPORT_ENABLED=1
 
 nvidia-smi
 echo ""
@@ -49,7 +50,7 @@ OUTPUT_ROOT="${ESDG_OUTPUT_ROOT:-/scratch/bfit/${USER}/ESDGPerf}"
 srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-RUN_DIR="${OUTPUT_ROOT}/baro-compare-results/run_${TIMESTAMP}_job${SLURM_JOBID}_Kx${Kx}_Ky${Ky}_Kz${Kz}_L${L}_dense"
+RUN_DIR="${OUTPUT_ROOT}/baro-compare-results/run_${TIMESTAMP}_job${SLURM_JOBID}_Kx${Kx}_Ky${Ky}_Kz${Kz}_L${L}_dense_gpu-buffer"
 mkdir -p ${RUN_DIR}
 bash scripts/record_run_metadata.sh "$RUN_DIR" "$0"
 
@@ -63,7 +64,7 @@ for F in Float64 Float32; do
   echo ""
   echo ">>> Running ${F} N=${N} L=${L} Kx=${Kx} Ky=${Ky} Kz=${Kz} P=${P} timeend=${TIMEEND} ..."
 
-  time srun -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/baroclinicinstability.jl \
+  time srun --kill-on-bad-exit=1 -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/baroclinicinstability.jl \
     --polynomial-order ${N} \
     --refinement-level ${L} \
     --floating-point-type ${F} \
@@ -74,7 +75,7 @@ for F in Float64 Float32; do
     --elements-in-direction-z ${Kz} \
     --enable-timing \
     --timing-prefix ${prefix} \
-    --enable-triple-buffer-comm \
+    --enable-single-buffer-comm \
     2>&1 | tee -a ${RUN_DIR}/${F}.log
 
   echo "<<< Completed ${F}"

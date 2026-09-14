@@ -27,7 +27,8 @@ echo "N=${N} L=${L} P=${P} timeend=${TIMEEND}"
 echo "======================================"
 
 export JULIA_CUDA_MEMORY_POOL=none
-#export MPICH_GPU_SUPPORT_ENABLED=1
+# Enable CUDA-aware MPI with Delta's Cray MPICH.
+export MPICH_GPU_SUPPORT_ENABLED=1
 
 nvidia-smi
 echo ""
@@ -38,7 +39,7 @@ OUTPUT_ROOT="${ESDG_OUTPUT_ROOT:-/scratch/bfit/${USER}/ESDGPerf}"
 srun -n 1 $JULIA --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-RUN_DIR="${OUTPUT_ROOT}/rb-visual-results/run_${TIMESTAMP}_job${SLURM_JOBID}_N${N}_L${L}"
+RUN_DIR="${OUTPUT_ROOT}/rb-visual-results/run_${TIMESTAMP}_job${SLURM_JOBID}_N${N}_L${L}_gpu-buffer"
 mkdir -p ${RUN_DIR}
 bash scripts/record_run_metadata.sh "$RUN_DIR" "$0"
 
@@ -53,8 +54,8 @@ for PROFILE in smooth sharp; do
     echo ""
     echo ">>> Running ${PROFILE} profile with ${F}, N=${N}, L=${L}, P=${P}, timeend=${TIMEEND} ..."
 
-    time srun -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/risingbubble.jl \
-      --enable-triple-buffer-comm \
+    time srun --kill-on-bad-exit=1 -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/risingbubble.jl \
+      --enable-single-buffer-comm \
       --polynomial-order ${N} \
       --refinement-level ${L} \
       --floating-point-type ${F} \
