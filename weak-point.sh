@@ -44,6 +44,8 @@ echo "SLURM: PATH:                   $PATH"
 echo ------------------------------------------------------
 
 export JULIA_CUDA_MEMORY_POOL=none
+# Enable CUDA-aware MPI with Delta's Cray MPICH.
+export MPICH_GPU_SUPPORT_ENABLED=1
 JULIA="julia +1.10"
 OUTPUT_ROOT="${ESDG_OUTPUT_ROOT:-/scratch/bfit/${USER}/ESDGPerf}"
 
@@ -75,7 +77,7 @@ L=6
 F=Float64
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-RUN_DIR="${OUTPUT_ROOT}/weak-scaling-results/run_${TIMESTAMP}_job${SLURM_JOBID}_N${N}_L${L}_P${P}_packed"
+RUN_DIR="${OUTPUT_ROOT}/weak-scaling-results/run_${TIMESTAMP}_job${SLURM_JOBID}_N${N}_L${L}_P${P}_packed_gpu-buffer"
 mkdir -p "$RUN_DIR"
 bash scripts/record_run_metadata.sh "$RUN_DIR" "$0"
 prefix="${RUN_DIR}/weak-${SLURM_JOBID}-${F}-N${N}-L${L}-P${P}"
@@ -88,11 +90,11 @@ srun --nodes="$NNODES" \
     --ntasks-per-node=4 \
     bash -c 'echo "rank=${SLURM_PROCID} local_rank=${SLURM_LOCALID} node=$(hostname)"'
 
-time srun --nodes="$NNODES" \
+time srun --kill-on-bad-exit=1 --nodes="$NNODES" \
     --ntasks="$P" \
     --ntasks-per-node=4 \
     ./launch.sh $JULIA --project=. test/run/risingbubble.jl \
-    --enable-triple-buffer-comm \
+    --enable-single-buffer-comm \
     --number-of-steps 1000 \
     --polynomial-order "$N" \
     --refinement-level "$L" \
