@@ -44,6 +44,13 @@ julia +1.10 --project=. -e \
   'using CUDA; CUDA.set_runtime_version!(v"13.2", local_toolkit=true)'
 ```
 
+Set the same synchronization setting as used in the paper if desired in `LocalPreferences.toml`:
+
+```toml
+[CUDACore]
+nonblocking_synchronization = false
+```
+
 Configure MPI.jl to use Delta's system Cray MPICH library and the Slurm
 launcher:
 
@@ -87,7 +94,7 @@ make -j4
 make install
 ```
 
-Configure P4est.jl to use the resulting installation:
+Return to the ESDGPerf repository and then configure P4est.jl to use the just built p4est:
 
 ```sh
 julia +1.10 --project=. -e \
@@ -134,16 +141,27 @@ The principal batch scripts are:
 | Load-imbalance diagnostic | `imbalance-test.sh` |
 | Nsight Systems profiling | `profile.sh`, `profile-scaling.sh` |
 
+Submit scaling points from the repository root. These examples use eight
+GPUs on two nodes, with one MPI rank per GPU:
+
+```sh
+P=8 sbatch --nodes=2 --ntasks=8 strong-point.sh
+P=8 sbatch --nodes=2 --ntasks=8 weak-point.sh
+P=8 sbatch --nodes=2 --ntasks=8 weak-refinement-point.sh
+```
+
+For other points, use `P` tasks and `ceil(P/4)` nodes.
+
 Large result files are written to
 `/scratch/bfit/$USER/ESDGPerf` by default. Set `ESDG_OUTPUT_ROOT` to use a
 different location.
 
 ## Repository structure
 
-- `src/`: solver kernels and supporting implementation
+- `src/`: main source including GPU kernels
 - `test/run/`: rising-bubble and baroclinic-instability drivers
-- `benchmarks/`: kernel benchmarks and load-imbalance diagnostics
-- `misc/`: post-processing utilities
+- `benchmarks/`: kernel benchmarks and load-imbalance diagnostic
+- `misc/`: plotting scripts
 
 ## Citation
 
