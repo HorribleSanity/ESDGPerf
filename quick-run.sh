@@ -10,6 +10,8 @@
 #SBATCH --time=01:00:00
 #SBATCH --exclusive
 
+set -euo pipefail
+
 # Quick 100-step run to verify that the multi-GPU code executes.
 
 echo "=== Quick Run ==="
@@ -18,7 +20,7 @@ echo "Node: $SLURM_JOB_NODELIST"
 echo "======================================"
 
 export JULIA_CUDA_MEMORY_POOL=none
-#export MPICH_GPU_SUPPORT_ENABLED=1
+export MPICH_GPU_SUPPORT_ENABLED=1
 
 nvidia-smi
 echo ""
@@ -35,7 +37,7 @@ P=4
 echo "Running N=${N} L=${L} F=${F} with ${P} GPUs..."
 
 time srun -n $P --ntasks-per-node=4 ./launch.sh ${JULIA} --project=. test/run/risingbubble.jl \
-  --enable-triple-buffer-comm \
+  --enable-single-buffer-comm \
   --number-of-steps 100 \
   --polynomial-order ${N} \
   --refinement-level ${L} \
