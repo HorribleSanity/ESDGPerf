@@ -56,6 +56,19 @@ julia +1.10 --project=. -e \
   )'
 ```
 
+NCSA's [CUDA-aware MPI instructions](https://docs.ncsa.illinois.edu/systems/delta/en/latest/user_guide/prog_env.html#gpudirect-for-mpi-cuda)
+require `libmpi_gtl_cuda` and `MPICH_GPU_SUPPORT_ENABLED=1`. The CUDA-aware batch
+scripts set that environment variable. Following
+[MPI.jl's preload documentation](https://juliaparallel.org/MPI.jl/stable/configuration/#Notes-about-vendor-provided-MPI-backends),
+set these values in the existing `[MPIPreferences]` section of
+`LocalPreferences.toml`:
+
+```toml
+_format = "1.1"
+preloads = ["/opt/cray/pe/lib64/libmpi_gtl_cuda.so.0"]
+preloads_env_switch = "MPICH_GPU_SUPPORT_ENABLED"
+```
+
 Build [p4est](https://github.com/cburstedde/p4est) against the same system MPI
 library, following the
 [P4est.jl instructions for custom MPI installations](https://github.com/trixi-framework/P4est.jl#using-a-custom-version-of-mpi-andor-p4est):
@@ -114,8 +127,8 @@ The principal batch scripts are:
 | Optimization-step timings | `benchmarks/roofline/roofline_opt.sh` |
 | Roofline measurements | `roofline.sh` |
 | Strong scaling | `strong-point.sh` |
-| Coarse-element weak scaling | `weak-coarse.sh` |
-| Refinement-based weak scaling | `weak-refinement.sh` |
+| Coarse-element weak scaling | `weak-point.sh` |
+| Refinement-based weak scaling | `weak-refinement-point.sh` |
 | Rising-bubble accuracy tests | `rb-visual.sh` |
 | Baroclinic-instability tests | `baro-compare.sh`, `baro-compare-dense.sh` |
 | Load-imbalance diagnostic | `imbalance-test.sh` |
