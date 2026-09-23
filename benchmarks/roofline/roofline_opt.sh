@@ -22,7 +22,7 @@
 # Usage:
 #   sbatch benchmarks/roofline/roofline_opt.sh            # all 14 in parallel
 #   sbatch --array=0,13 benchmarks/roofline/roofline_opt.sh   # just first & last
-#   SEQUENTIAL=true sbatch benchmarks/roofline/roofline_opt.sh # all 14, one node
+#   SEQUENTIAL=true sbatch --array=0 benchmarks/roofline/roofline_opt.sh # all 14, one node
 
 set -euo pipefail
 
@@ -71,6 +71,7 @@ run_step() {
     mkdir -p "$(dirname "$wt")"
     [ -d "$wt" ] && { git -C "$REPO" worktree remove "$wt" --force 2>/dev/null || rm -rf "$wt"; }
     git -C "$REPO" worktree add "$wt" HEAD --detach --quiet
+    cp "$REPO/LocalPreferences.toml" "$wt/LocalPreferences.toml"
     log "$num" "worktree: $wt"
 
     # ── Swap kernel ──
@@ -118,7 +119,7 @@ run_step() {
 
 echo "=== roofline-opt | job ${SLURM_ARRAY_JOB_ID:-$SLURM_JOBID} | task ${SLURM_ARRAY_TASK_ID:-all} | $(hostname) ==="
 
-JULIA=$(which julia)
+JULIA="julia +1.10"
 NCU=$(which ncu)
 echo "julia: $JULIA"
 echo "ncu:   $NCU"
